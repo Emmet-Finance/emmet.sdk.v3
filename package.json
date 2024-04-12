@@ -13,5 +13,11 @@
     "@biomejs/biome": "^1.5.3",
     "@types/node": "^20.12.7",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@ton/core": "^0.56.3",
+    "@ton/crypto": "^3.2.0",
+    "@ton/ton": "^13.11.1",
+    "ethers": "^6.11.1"
   }
 }
