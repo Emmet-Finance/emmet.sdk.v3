@@ -15,6 +15,7 @@
     "indentStyle": "space"
   },
   "files": {
-    "include": ["src/**/*.ts"]
+    "include": ["src/**/*.ts"],
+    "ignore": ["src/contracts/**/*.ts"]
   }
 }
