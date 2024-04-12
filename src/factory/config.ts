@@ -8,24 +8,20 @@ import type { ChainParams } from "./types";
 export namespace ChainFactoryConfigs {
   export function TestNet() {
     return {
-      bscParams: {
-        contract: ethers.getAddress(""),
-        provider: new JsonRpcProvider(TestNetRpcUri.BSC),
-      },
-      ethParams: {
-        contract: ethers.getAddress(""),
-        provider: new JsonRpcProvider(TestNetRpcUri.ETH),
-      },
       tonParams: {
         bridge: Address.parse(
-          "EQAB_H1ffzTxxowHfepvk6Vry90awbY5xAtZ8F8jQnK50-EN",
+          "EQAB_H1ffzTxxowHfepvk6Vry90awbY5xAtZ8F8jQnK50-EN"
         ),
-        client: new TonClient({ apiKey: "", endpoint: "" }),
+        client: new TonClient({
+          endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+        }),
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
       },
       polygonParams: {
-        contract: ethers.getAddress(""),
-        provider: new JsonRpcProvider(TestNetRpcUri.ETH),
+        contract: ethers.getAddress(
+          "0x379388Ae42f2EeE0CD30B89541CFaf90843F8762"
+        ),
+        provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
       },
     } satisfies Partial<ChainParams>;
   }
