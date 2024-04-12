@@ -5,9 +5,11 @@ import {
   type Signer,
 } from "ethers";
 import type {
+  GetApprovedTokenAmount,
   GetBalance,
   GetProvider,
   GetTokenBalance,
+  PreTransfer,
   SendInstallment,
   ValidateAddress,
 } from ".";
@@ -20,7 +22,7 @@ export type Web3Helper = GetBalance &
   GetProvider<Provider> &
   SendInstallment<Signer, ContractTransactionResponse> &
   ValidateAddress &
-  GetTokenBalance;
+  GetTokenBalance & GetApprovedTokenAmount & PreTransfer<Signer>;
 
 export interface Web3Params {
   provider: Provider;
@@ -30,6 +32,11 @@ export interface Web3Params {
 export function web3Helper({ provider, contract }: Web3Params): Web3Helper {
   const bridge = FTBridge__factory.connect(contract, provider);
   return {
+    preTransfer: async (signer, tid, amt) => {
+       const approved = await WrappedERC20__factory.connect(tid, signer ).approve(contract, amt)
+       return approved.hash
+    },
+    getApprovedAmount: async (tid, owner) => await WrappedERC20__factory.connect(tid, provider ).allowance(owner, bridge),
     balance: (addr) => provider.getBalance(addr),
     provider: () => provider,
     validateAddress: (addr) => Promise.resolve(isAddress(addr)),

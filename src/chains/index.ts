@@ -75,3 +75,31 @@ export interface ValidateAddress {
    */
   validateAddress: (addr: string) => Promise<boolean>;
 }
+
+/**
+ * Represents a pre-transfer function that can be used to perform additional operations before transferring tokens.
+ * @template Signer The type of the signer.
+ */
+export interface PreTransfer<Signer> {
+  /**
+   * Performs pre-transfer operations.
+   * @param signer The signer object.
+   * @param token The token to be transferred.
+   * @param amount The amount of tokens to be transferred.
+   * @returns A promise that resolves to a string which is the hash of the transaction.
+   */
+  preTransfer: (signer: Signer, token: string, amount: bigint) => Promise<string>;
+}
+
+/**
+ * Represents an interface for getting the approved token amount for a particular user.
+ */
+export interface GetApprovedTokenAmount {
+  /**
+   * Retrieves the approved amount of a token for a given owner.
+   * @param token - The token to retrieve the approved amount for.
+   * @param owner - The owner of the token.
+   * @returns A Promise that resolves to the approved amount as a bigint.
+   */
+  getApprovedAmount: (token: string, owner: string) => Promise<bigint>;
+}
