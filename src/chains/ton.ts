@@ -21,7 +21,8 @@ import { sha256_sync } from "@ton/crypto";
 export type TonHelper = GetBalance &
   GetProvider<TonClient> &
   SendInstallment<Sender, undefined> &
-  ValidateAddress & GetTokenBalance;
+  ValidateAddress &
+  GetTokenBalance;
 
 export interface TonParams {
   client: TonClient;
@@ -34,7 +35,7 @@ export function tonHandler({
   bridge,
   nativeTokenId,
 }: TonParams): TonHelper {
-    const bridgeReader = client.open(Bridge.fromAddress(bridge));
+  const bridgeReader = client.open(Bridge.fromAddress(bridge));
   function transferTon(
     bridge: OpenedContract<Bridge>,
     sender: Sender,
@@ -60,7 +61,7 @@ export function tonHandler({
 
   async function isWrappedToken(tokenId: bigint) {
     const wrapped = await bridgeReader.getWrappedTokens();
-    return wrapped.get(tokenId) !== null
+    return wrapped.get(tokenId) !== null;
   }
 
   //@ts-ignore
@@ -70,12 +71,12 @@ export function tonHandler({
     _to: string,
     _tokenId: bigint,
     _chainId: number,
-    _amount: bigint
+    _amount: bigint,
   ) {
     const jc = client.open(JettonMaster.create(jetton));
-    const jwa = await jc.getWalletAddress(sender.address!)
-    const jw =  client.open(JettonWallet.create(jwa));
-    console.log(jw)
+    const jwa = await jc.getWalletAddress(sender.address!);
+    const jw = client.open(JettonWallet.create(jwa));
+    console.log(jw);
   }
 
   return {
@@ -90,10 +91,10 @@ export function tonHandler({
       }
     },
     tokenBalance: async (token, addr) => {
-        const jc = client.open(JettonMaster.create(Address.parse(token)));
-    const jwa = await jc.getWalletAddress(Address.parse(addr))
-    const jw =  client.open(JettonWallet.create(jwa));
-    return jw.getBalance()
+      const jc = client.open(JettonMaster.create(Address.parse(token)));
+      const jwa = await jc.getWalletAddress(Address.parse(addr));
+      const jw = client.open(JettonWallet.create(jwa));
+      return jw.getBalance();
     },
     sendInstallment: async (signer, amt, cid, tokenSymbol, destAddress) => {
       const bc = client.open(Bridge.fromAddress(bridge));
@@ -103,7 +104,7 @@ export function tonHandler({
         transferTon(bc, signer, destAddress, tid, cid, amt);
       } else if (await isWrappedToken(tid)) {
       } else {
-        throw new Error(`Need to transfer `)
+        throw new Error("Need to transfer ");
       }
 
       return {

@@ -16,9 +16,8 @@ export interface SendInstallment<Signer, Ret> {
   ) => Promise<{ hash: string; tx: Ret }>;
 }
 
-
 export interface GetTokenBalance {
-    tokenBalance: (token: string, address: string) => Promise<bigint>
+  tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
 
 export interface ValidateAddress {
