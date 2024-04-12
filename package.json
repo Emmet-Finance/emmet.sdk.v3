@@ -1,0 +1,17 @@
+{
+  "name": "emmet.js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "imsk17",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "format": "npx @biomejs/biome format src/ --write",
+    "lint": "npx @biomejs/biome lint src/  "
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.3",
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}
