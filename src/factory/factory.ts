@@ -34,20 +34,52 @@ CHAIN_INFO.set(Chain.TON, {
 });
 
 export function ChainFactoryBuilder(
-  chainParams: Partial<ChainParams>,
+  chainParams: Partial<ChainParams>
 ): ChainFactory {
   const helpers: HelperMap<ChainNonce> = new Map();
 
   const cToP = mapNonceToParams(chainParams);
 
+  const inner = async <T extends ChainNonce>(chain: T) => {
+    let helper = helpers.get(chain);
+    if (helper === undefined) {
+      helper = CHAIN_INFO.get(chain)!.constructor(cToP.get(chain)!);
+      helpers.set(chain, helper);
+    }
+    return helper!;
+  };
+
   return {
-    inner: async (chain) => {
-      let helper = helpers.get(chain);
-      if (helper === undefined) {
-        helper = CHAIN_INFO.get(chain)!.constructor(cToP.get(chain)!);
-        helpers.set(chain, helper);
+    inner,
+    preTransfer: async (chain,signer,  tid, amt) => {
+      const pt = await chain.preTransfer(signer, tid, amt)
+      return pt
+    },
+    sendInstallment: async (
+      chain,
+      signer,
+      amount,
+      chainId,
+      tokenSymbol,
+      destAddress
+    ) => {
+      const dc = await inner(chainId as ChainNonce);
+      if (!dc) {
+        throw new Error(`Unsupported destination chain id: ${chainId}`);
       }
-      return helper!;
+      const isValid = await dc.validateAddress(destAddress);
+      if (!isValid) {
+        throw new Error(
+          `Invalid destination user address for chain id: ${chainId}`
+        );
+      }
+      return await chain.sendInstallment(
+        signer,
+        amount,
+        chainId,
+        tokenSymbol,
+        destAddress
+      );
     },
   };
 }

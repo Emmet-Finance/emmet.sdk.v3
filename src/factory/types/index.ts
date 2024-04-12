@@ -1,5 +1,6 @@
 import type { Web3Helper, Web3Params } from "../../chains/web3";
 import type { TonHelper, TonParams } from "../../chains/ton";
+import type { PreTransfer, SendInstallment } from "../../chains";
 
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
@@ -25,6 +26,20 @@ export type ParamMap = {
 
 export type InferChainParam<K extends ChainNonce> = MetaMap[K][1];
 export type InferChainH<K extends ChainNonce> = MetaMap[K][0];
+export type InferSigner<K> = K extends SendInstallment<
+  infer S,
+  unknown
+>
+  ? S
+  : never;
+
+  export type InferRet<K> = K extends SendInstallment<
+  unknown,
+  infer R
+>
+  ? R
+  : never;
+
 
 export interface ChainParams {
   bscParams: Web3Params;
@@ -52,4 +67,13 @@ export type HelperMap<K extends ChainNonce> = Map<
 
 export interface ChainFactory {
   inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
+  sendInstallment: <Signer, RetTx>(
+    chain: SendInstallment<Signer, RetTx>,
+    signer: Signer,
+    amount: bigint,
+    chainId: number,
+    tokenSymbol: string,
+    destAddress: string
+  ) => Promise<{ hash: string; tx: RetTx }>;
+  preTransfer: <Signer>(chain: PreTransfer<Signer>, signer: Signer, tid: string, amount: bigint) => Promise<string>
 }
