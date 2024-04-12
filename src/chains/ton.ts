@@ -18,9 +18,15 @@ import type {
 import { Bridge } from "../contracts/ton";
 import { sha256_sync } from "@ton/crypto";
 
+export type TonGasArgs  ={ value: bigint; bounce?: boolean | null | undefined };
+
 export type TonHelper = GetBalance &
   GetProvider<TonClient> &
-  SendInstallment<Sender, undefined> &
+  SendInstallment<
+    Sender,
+    undefined,
+    TonGasArgs
+  > &
   ValidateAddress &
   GetTokenBalance;
 
@@ -43,11 +49,14 @@ export function tonHandler({
     tokenId: bigint,
     chainId: number,
     amount: bigint,
+    gasArgs?: TonGasArgs
   ) {
     return bridge.send(
       sender,
       {
-        value: toNano("0.8"),
+        //@ts-ignore
+        value: amount + toNano("0.3"),
+        ...gasArgs,
       },
       {
         $$type: "FreezeTon",
@@ -55,7 +64,7 @@ export function tonHandler({
         target_chain: BigInt(chainId),
         to: beginCell().storeStringRefTail(to).endCell(),
         token_id: tokenId, // Should map to some token in the tokens table
-      },
+      }
     );
   }
 
@@ -96,12 +105,12 @@ export function tonHandler({
       const jw = client.open(JettonWallet.create(jwa));
       return jw.getBalance();
     },
-    sendInstallment: async (signer, amt, cid, tokenSymbol, destAddress) => {
+    sendInstallment: async (signer, amt, cid, tokenSymbol, destAddress, gasArgs) => {
       const bc = client.open(Bridge.fromAddress(bridge));
       const tid = BigInt(`0x${sha256_sync(tokenSymbol).toString("hex")}`);
 
       if (tid === nativeTokenId) {
-        transferTon(bc, signer, destAddress, tid, cid, amt);
+        transferTon(bc, signer, destAddress, tid, cid, amt, gasArgs);
       } else if (await isWrappedToken(tid)) {
       } else {
         throw new Error("Need to transfer ");

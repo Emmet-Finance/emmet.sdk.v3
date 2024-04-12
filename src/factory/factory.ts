@@ -51,8 +51,8 @@ export function ChainFactoryBuilder(
 
   return {
     inner,
-    preTransfer: async (chain,signer,  tid, amt) => {
-      const pt = await chain.preTransfer(signer, tid, amt)
+    preTransfer: async (chain,signer,  tid, amt, ga) => {
+      const pt = await chain.preTransfer(signer, tid, amt, ga)
       return pt
     },
     sendInstallment: async (
@@ -61,7 +61,8 @@ export function ChainFactoryBuilder(
       amount,
       chainId,
       tokenSymbol,
-      destAddress
+      destAddress,
+      gasArgs
     ) => {
       const dc = await inner(chainId as ChainNonce);
       if (!dc) {
@@ -78,7 +79,8 @@ export function ChainFactoryBuilder(
         amount,
         chainId,
         tokenSymbol,
-        destAddress
+        destAddress,
+        gasArgs
       );
     },
   };

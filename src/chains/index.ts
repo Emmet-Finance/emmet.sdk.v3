@@ -29,7 +29,7 @@ export interface GetProvider<T> {
  * @template Signer The type of the signer.
  * @template Ret The type of the return value.
  */
-export interface SendInstallment<Signer, Ret> {
+export interface SendInstallment<Signer, Ret, GasArgs> {
   /**
    * Sends a fungible token installment.
    * @param signer The signer of the txn.
@@ -45,6 +45,7 @@ export interface SendInstallment<Signer, Ret> {
     chainId: number,
     tokenSymbol: string,
     destAddress: string,
+    gasArgs?: GasArgs
   ) => Promise<{ hash: string; tx: Ret }>;
 }
 
@@ -80,7 +81,7 @@ export interface ValidateAddress {
  * Represents a pre-transfer function that can be used to perform additional operations before transferring tokens.
  * @template Signer The type of the signer.
  */
-export interface PreTransfer<Signer> {
+export interface PreTransfer<Signer, GasArgs> {
   /**
    * Performs pre-transfer operations.
    * @param signer The signer object.
@@ -88,7 +89,7 @@ export interface PreTransfer<Signer> {
    * @param amount The amount of tokens to be transferred.
    * @returns A promise that resolves to a string which is the hash of the transaction.
    */
-  preTransfer: (signer: Signer, token: string, amount: bigint) => Promise<string>;
+  preTransfer: (signer: Signer, token: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
 }
 
 /**

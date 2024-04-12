@@ -28,17 +28,15 @@ export type InferChainParam<K extends ChainNonce> = MetaMap[K][1];
 export type InferChainH<K extends ChainNonce> = MetaMap[K][0];
 export type InferSigner<K> = K extends SendInstallment<
   infer S,
+  unknown,
   unknown
 >
   ? S
   : never;
 
-  export type InferRet<K> = K extends SendInstallment<
-  unknown,
-  infer R
->
-  ? R
-  : never;
+  export type InferRet<K> = K extends SendInstallment<unknown, infer R, unknown>
+    ? R
+    : never;
 
 
 export interface ChainParams {
@@ -67,13 +65,20 @@ export type HelperMap<K extends ChainNonce> = Map<
 
 export interface ChainFactory {
   inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
-  sendInstallment: <Signer, RetTx>(
-    chain: SendInstallment<Signer, RetTx>,
+  sendInstallment: <Signer, RetTx, GasArgs>(
+    chain: SendInstallment<Signer, RetTx, GasArgs>,
     signer: Signer,
     amount: bigint,
     chainId: number,
     tokenSymbol: string,
-    destAddress: string
+    destAddress: string,
+    gasArgs?: GasArgs
   ) => Promise<{ hash: string; tx: RetTx }>;
-  preTransfer: <Signer>(chain: PreTransfer<Signer>, signer: Signer, tid: string, amount: bigint) => Promise<string>
+  preTransfer: <Signer, GasArgs>(
+    chain: PreTransfer<Signer, GasArgs>,
+    signer: Signer,
+    tid: string,
+    amount: bigint,
+    gasArgs: GasArgs
+  ) => Promise<string>;
 }
