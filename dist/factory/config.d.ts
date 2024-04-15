@@ -9,11 +9,13 @@ export declare namespace ChainFactoryConfigs {
             nativeTokenId: bigint;
             oracle: Address;
             burner: Address;
+            chainName: string;
         };
         polygonParams: {
             contract: string;
             provider: ethers.JsonRpcProvider;
             oracle: string;
+            chainName: string;
         };
     };
 }
