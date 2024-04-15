@@ -7,10 +7,13 @@ export declare namespace ChainFactoryConfigs {
             bridge: Address;
             client: TonClient;
             nativeTokenId: bigint;
+            oracle: Address;
+            burner: Address;
         };
         polygonParams: {
             contract: string;
             provider: ethers.JsonRpcProvider;
+            oracle: string;
         };
     };
 }

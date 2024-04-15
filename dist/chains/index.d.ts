@@ -94,4 +94,10 @@ export interface GetApprovedTokenAmount {
      */
     getApprovedAmount: (token: string, owner: string) => Promise<bigint>;
 }
+export interface CalculateCoinFees {
+    calculateCoinFees: (coin_name: string, amt: bigint) => Promise<bigint>;
+}
+export interface CalculateDestinationTransactionFees {
+    calculateTransactionFees: (chain_name: string) => Promise<bigint>;
+}
 //# sourceMappingURL=index.d.ts.map
