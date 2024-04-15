@@ -5,6 +5,8 @@ import {
   type Signer,
 } from "ethers";
 import type {
+  CalculateCoinFees,
+  CalculateDestinationTransactionFees,
   GetApprovedTokenAmount,
   GetBalance,
   GetProvider,
@@ -18,6 +20,7 @@ import {
   WrappedERC20__factory,
 } from "../contracts/evm/typechain-types";
 import type { PayableOverrides } from "../contracts/evm/typechain-types/common";
+import { IEmmetFeeOracle__factory } from "../contracts/evm/typechain-types/factories/contracts/PriceOracle";
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -25,28 +28,39 @@ export type Web3Helper = GetBalance &
   ValidateAddress &
   GetTokenBalance &
   GetApprovedTokenAmount &
-  PreTransfer<Signer, PayableOverrides>;
+  PreTransfer<Signer, PayableOverrides> &
+  CalculateCoinFees &
+  CalculateDestinationTransactionFees;
 
 export interface Web3Params {
   provider: Provider;
   contract: string;
+  oracle: string;
 }
 
-export function web3Helper({ provider, contract }: Web3Params): Web3Helper {
+export function web3Helper({
+  provider,
+  contract,
+  oracle,
+}: Web3Params): Web3Helper {
   const bridge = FTBridge__factory.connect(contract, provider);
+  const orac = IEmmetFeeOracle__factory.connect(oracle, provider);
   return {
+    calculateCoinFees: (coinName, amt) => orac.calculateCoinFees(coinName, amt),
+    calculateTransactionFees: async (destChain) =>
+      orac.calculateTransactionFee(destChain),
     preTransfer: async (signer, tid, amt, gasArgs) => {
       const approved = await WrappedERC20__factory.connect(tid, signer).approve(
         contract,
         amt,
-        gasArgs
+        gasArgs,
       );
       return approved.hash;
     },
     getApprovedAmount: async (tid, owner) =>
       await WrappedERC20__factory.connect(tid, provider).allowance(
         owner,
-        bridge
+        bridge,
       ),
     balance: (addr) => provider.getBalance(addr),
     provider: () => provider,
@@ -61,7 +75,7 @@ export function web3Helper({ provider, contract }: Web3Params): Web3Helper {
           destinationAddress: da,
           tokenSymbol: ts,
         },
-        { ...gasArgs }
+        { ...gasArgs },
       );
       return {
         tx: tx,

@@ -28,6 +28,7 @@ export namespace ChainFactoryConfigs {
           "0x379388Ae42f2EeE0CD30B89541CFaf90843F8762",
         ),
         provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
+        oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
       },
     } satisfies Partial<ChainParams>;
   }
