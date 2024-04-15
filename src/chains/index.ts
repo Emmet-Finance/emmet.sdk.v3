@@ -111,3 +111,11 @@ export interface CalculateCoinFees {
 export interface CalculateDestinationTransactionFees {
   calculateTransactionFees: (chain_name: string) => Promise<bigint>;
 }
+
+export interface GetCoinPrice {
+  getCoinPrice: (coin_name: string) => Promise<bigint>
+}
+
+export interface ChainName {
+  chainName: () => string;
+}

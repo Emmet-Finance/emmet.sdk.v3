@@ -7,8 +7,10 @@ import {
 import type {
   CalculateCoinFees,
   CalculateDestinationTransactionFees,
+  ChainName,
   GetApprovedTokenAmount,
   GetBalance,
+  GetCoinPrice,
   GetProvider,
   GetTokenBalance,
   PreTransfer,
@@ -30,22 +32,27 @@ export type Web3Helper = GetBalance &
   GetApprovedTokenAmount &
   PreTransfer<Signer, PayableOverrides> &
   CalculateCoinFees &
-  CalculateDestinationTransactionFees;
+  CalculateDestinationTransactionFees  & GetCoinPrice &
+ChainName;
 
 export interface Web3Params {
   provider: Provider;
   contract: string;
   oracle: string;
+  chainName: string;
 }
 
 export function web3Helper({
   provider,
   contract,
   oracle,
+  chainName
 }: Web3Params): Web3Helper {
   const bridge = FTBridge__factory.connect(contract, provider);
   const orac = IEmmetFeeOracle__factory.connect(oracle, provider);
   return {
+    chainName: () => chainName,
+    getCoinPrice: (c) => orac.getCoinPrice(c),
     calculateCoinFees: (coinName, amt) => orac.calculateCoinFees(coinName, amt),
     calculateTransactionFees: async (destChain) =>
       orac.calculateTransactionFee(destChain),

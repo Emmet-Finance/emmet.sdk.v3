@@ -11,7 +11,9 @@ import {
 import type {
   CalculateCoinFees,
   CalculateDestinationTransactionFees,
+  ChainName,
   GetBalance,
+  GetCoinPrice,
   GetProvider,
   GetTokenBalance,
   SendInstallment,
@@ -31,7 +33,9 @@ export type TonHelper = GetBalance &
   ValidateAddress &
   GetTokenBalance &
   CalculateCoinFees &
-  CalculateDestinationTransactionFees;
+  CalculateDestinationTransactionFees &
+  GetCoinPrice &
+ChainName;
 
 export interface TonParams {
   client: TonClient;
@@ -39,6 +43,7 @@ export interface TonParams {
   nativeTokenId: bigint;
   oracle: Address;
   burner: Address;
+  chainName: string;
 }
 
 export function tonHandler({
@@ -47,6 +52,7 @@ export function tonHandler({
   nativeTokenId,
   oracle,
   burner,
+  chainName,
 }: TonParams): TonHelper {
   const oracleContract = client.open(Oracle.fromAddress(oracle));
   const bridgeReader = client.open(Bridge.fromAddress(bridge));
@@ -177,6 +183,16 @@ export function tonHandler({
   }
 
   return {
+    chainName: () => chainName,
+    getCoinPrice:async (coin) => {
+      const pf = await oracleContract.getPriceFeed();
+      const cid = BigInt(`0x${sha256_sync(coin).toString('hex')}`)
+      const data = pf.get(cid)
+      if (!data) {
+        throw new Error(`No price info found for symbol ${coin}, id ${cid}`)
+      }
+      return data.price
+    } ,
     calculateTransactionFees: async (chain_name) =>
       oracleContract.getCalculateTransactionFees(chain_name),
     calculateCoinFees: async (coin_name, amt) =>
