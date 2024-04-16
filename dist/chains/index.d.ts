@@ -106,4 +106,7 @@ export interface GetCoinPrice {
 export interface ChainName {
     chainName: () => string;
 }
+export interface NativeCoinName {
+    nativeCoin: () => string;
+}
 //# sourceMappingURL=index.d.ts.map

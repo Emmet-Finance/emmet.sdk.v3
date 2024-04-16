@@ -16,6 +16,7 @@ export declare namespace ChainFactoryConfigs {
             provider: ethers.JsonRpcProvider;
             oracle: string;
             chainName: string;
+            nativeCoin: string;
         };
     };
 }
