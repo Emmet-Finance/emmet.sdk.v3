@@ -13,7 +13,8 @@ export namespace ChainFactoryConfigs {
           "EQAB_H1ffzTxxowHfepvk6Vry90awbY5xAtZ8F8jQnK50-EN",
         ),
         client: new TonClient({
-          endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+          endpoint:
+            "https://testnet.toncenter.com/api/v2/jsonRPC?api_key=9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
           apiKey:
             "9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
         }),
