@@ -30,7 +30,8 @@ export namespace ChainFactoryConfigs {
         ),
         provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
         oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
-        chainName: "polygon"
+        chainName: "polygon",
+        nativeCoin: "MATIC"
       },
     } satisfies Partial<ChainParams>;
   }

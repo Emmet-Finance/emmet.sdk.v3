@@ -16,6 +16,7 @@ import type {
   GetCoinPrice,
   GetProvider,
   GetTokenBalance,
+  NativeCoinName,
   SendInstallment,
   ValidateAddress,
 } from ".";
@@ -35,7 +36,8 @@ export type TonHelper = GetBalance &
   CalculateCoinFees &
   CalculateDestinationTransactionFees &
   GetCoinPrice &
-ChainName;
+  ChainName &
+  NativeCoinName;
 
 export interface TonParams {
   client: TonClient;
@@ -183,6 +185,7 @@ export function tonHandler({
   }
 
   return {
+    nativeCoin: () => "TON",
     chainName: () => chainName,
     getCoinPrice:async (coin) => {
       const pf = await oracleContract.getPriceFeed();
