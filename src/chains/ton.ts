@@ -126,6 +126,7 @@ export function tonHandler({
     signer: Sender,
     target_chain: number,
     destAddress: string,
+    amt: bigint,
     gasArgs?: TonGasArgs,
   ) => {
     const ntd = await bridgeReader.getNativeTokens();
@@ -141,7 +142,7 @@ export function tonHandler({
       { value: 500000000n, ...gasArgs },
       {
         $$type: "JettonTransfer",
-        amount: 1n,
+        amount: amt,
         custom_payload: null,
         destination: bridge,
         forward_payload: beginCell()
@@ -175,7 +176,7 @@ export function tonHandler({
         gasArgs,
       );
     } else {
-      transferJettonToBridge(tokenId, sender, chainId, destAddress, gasArgs);
+      transferJettonToBridge(tokenId, sender, chainId, destAddress, amount,gasArgs);
     }
   };
 
