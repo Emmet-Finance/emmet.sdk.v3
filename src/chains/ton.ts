@@ -146,7 +146,7 @@ export function tonHandler({
         destination: bridge,
         forward_payload: beginCell()
           .storeUint(target_chain, 16) // Target Chain
-          .storeUint(tid, 16) // TokenID
+          .storeUint(tid, 256) // TokenID
           .storeRef(beginCell().storeStringTail(destAddress).asCell())
           .endCell(),
         forward_ton_amount: 50000000n,
@@ -180,6 +180,11 @@ export function tonHandler({
   };
 
   async function isWrappedToken(tokenId: bigint) {
+    const native = await bridgeReader.getNativeTokens();
+    const isNative = native.get(tokenId)
+    if (isNative) {
+      return false
+    }
     const wrapped = await bridgeReader.getWrappedTokens();
     return wrapped.get(tokenId) !== null;
   }
