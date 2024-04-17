@@ -10,7 +10,7 @@ export namespace ChainFactoryConfigs {
     return {
       tonParams: {
         bridge: Address.parse(
-          "EQAB_H1ffzTxxowHfepvk6Vry90awbY5xAtZ8F8jQnK50-EN",
+          "kQAO5aBzIQmXXlPYQyPvTXc4s_cM5UuMYhoKPxphJNmbSgc2"
         ),
         client: new TonClient({
           endpoint:
@@ -20,16 +20,16 @@ export namespace ChainFactoryConfigs {
         }),
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
         oracle: Address.parse(
-          "EQAx41_27fvdX4C30RxQmzbiLeHyO090XzGHBadgGfdp5Uqd",
+          "EQAx41_27fvdX4C30RxQmzbiLeHyO090XzGHBadgGfdp5Uqd"
         ),
         burner: Address.parse(
-          "EQBtE7sxSqbDZwuWhxxQRzSZZ3UAm8j4mhR25iWS2xfEmZ6D",
+          "EQBtE7sxSqbDZwuWhxxQRzSZZ3UAm8j4mhR25iWS2xfEmZ6D"
         ),
         chainName: "tonTestnet",
       },
       polygonParams: {
         contract: ethers.getAddress(
-          "0x379388Ae42f2EeE0CD30B89541CFaf90843F8762",
+          "0x379388Ae42f2EeE0CD30B89541CFaf90843F8762"
         ),
         provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
         oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
