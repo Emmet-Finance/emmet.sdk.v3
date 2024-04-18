@@ -29,7 +29,7 @@ export namespace ChainFactoryConfigs {
       },
       polygonParams: {
         contract: ethers.getAddress(
-          "0x379388Ae42f2EeE0CD30B89541CFaf90843F8762"
+          "0x6b30f76cece9f92d27f0e9ad78312e77709e74a5"
         ),
         provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
         oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
