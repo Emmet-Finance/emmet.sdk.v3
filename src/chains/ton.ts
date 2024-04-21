@@ -30,7 +30,7 @@ export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
 export type TonHelper = GetBalance &
   GetProvider<TonClient> &
-  SendInstallment<Sender, undefined, TonGasArgs> &
+  SendInstallment<Sender, string, TonGasArgs> &
   ValidateAddress &
   GetTokenBalance &
   CalculateCoinFees &
@@ -66,7 +66,7 @@ export function tonHandler({
     chainId: number,
     amount: bigint,
     gasArgs?: TonGasArgs,
-  ) {
+  ): Promise<string> {
     return bridge.send(
       sender,
       {
@@ -81,7 +81,7 @@ export function tonHandler({
         to: beginCell().storeStringRefTail(to).endCell(),
         token_id: tokenId, // Should map to some token in the tokens table
       },
-    );
+    ) as unknown as Promise<string>;
   }
 
   const transferJettonToBurner = async (
@@ -91,7 +91,7 @@ export function tonHandler({
     destAddress: string,
     cid: number,
     gasArgs?: TonGasArgs,
-  ) => {
+  ): Promise<string> => {
     const wtd = await bridgeReader.getWrappedTokens();
     const wt = wtd.get(tid)!;
     const jt = client.open(WrappedJetton.fromAddress(wt.address));
@@ -101,7 +101,7 @@ export function tonHandler({
       ),
     );
 
-    await jtw.send(
+    return (await jtw.send(
       signer,
       { value: toNano("0.25"), ...gasArgs },
       {
@@ -119,7 +119,7 @@ export function tonHandler({
         forward_ton_amount: toNano("0.35"),
         response_destination: bridge,
       },
-    );
+    )) as unknown as Promise<string>;
   };
   const transferJettonToBridge = async (
     tid: bigint,
@@ -137,7 +137,7 @@ export function tonHandler({
         await jt.getGetWalletAddress(signer.address!),
       ),
     );
-    await jtw.send(
+    return (await jtw.send(
       signer,
       { value: toNano("0.35"), ...gasArgs },
       {
@@ -154,7 +154,7 @@ export function tonHandler({
         query_id: 0n,
         response_destination: bridge,
       },
-    );
+    )) as unknown as Promise<string>;
   };
 
   const transferJetton = async (
@@ -165,9 +165,9 @@ export function tonHandler({
     amount: bigint,
     destAddress: string,
     gasArgs?: TonGasArgs,
-  ) => {
+  ): Promise<string> => {
     if (to.toString() === burner.toString()) {
-      transferJettonToBurner(
+      return await transferJettonToBurner(
         tokenId,
         sender,
         amount,
@@ -175,16 +175,23 @@ export function tonHandler({
         chainId,
         gasArgs,
       );
-    } else {
-      transferJettonToBridge(tokenId, sender, chainId, destAddress, amount,gasArgs);
     }
+
+    return await transferJettonToBridge(
+      tokenId,
+      sender,
+      chainId,
+      destAddress,
+      amount,
+      gasArgs,
+    );
   };
 
   async function isWrappedToken(tokenId: bigint) {
     const native = await bridgeReader.getNativeTokens();
-    const isNative = native.get(tokenId)
+    const isNative = native.get(tokenId);
     if (isNative) {
-      return false
+      return false;
     }
     const wrapped = await bridgeReader.getWrappedTokens();
     return wrapped.get(tokenId) !== null;
@@ -193,15 +200,15 @@ export function tonHandler({
   return {
     nativeCoin: () => "TON",
     chainName: () => chainName,
-    getCoinPrice:async (coin) => {
+    getCoinPrice: async (coin) => {
       const pf = await oracleContract.getPriceFeed();
-      const cid = BigInt(`0x${sha256_sync(coin).toString('hex')}`)
-      const data = pf.get(cid)
+      const cid = BigInt(`0x${sha256_sync(coin).toString("hex")}`);
+      const data = pf.get(cid);
       if (!data) {
-        throw new Error(`No price info found for symbol ${coin}, id ${cid}`)
+        throw new Error(`No price info found for symbol ${coin}, id ${cid}`);
       }
-      return data.price
-    } ,
+      return data.price;
+    },
     calculateTransactionFees: async (chain_name) =>
       oracleContract.getCalculateTransactionFees(chain_name),
     calculateCoinFees: async (coin_name, amt) =>
@@ -232,11 +239,19 @@ export function tonHandler({
     ) => {
       const bc = client.open(Bridge.fromAddress(bridge));
       const tid = BigInt(`0x${sha256_sync(tokenSymbol).toString("hex")}`);
-
+      let hash = "";
       if (tid === nativeTokenId) {
-        transferTon(bc, signer, destAddress, tid, cid, amt, gasArgs);
+        hash = await transferTon(
+          bc,
+          signer,
+          destAddress,
+          tid,
+          cid,
+          amt,
+          gasArgs,
+        );
       } else if (await isWrappedToken(tid)) {
-        await transferJetton(
+        hash = await transferJetton(
           burner,
           signer,
           tid,
@@ -246,7 +261,7 @@ export function tonHandler({
           gasArgs,
         );
       } else {
-        await transferJetton(
+        hash = await transferJetton(
           bridge,
           signer,
           tid,
@@ -258,8 +273,8 @@ export function tonHandler({
       }
 
       return {
-        hash: "",
-        tx: undefined,
+        hash: hash,
+        tx: hash,
       };
     },
   };
