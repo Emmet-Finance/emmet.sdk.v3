@@ -113,12 +113,12 @@ export function tonHandler({
         forward_payload: beginCell()
           .storeAddress(bridge)
           .storeUint(cid, 16)
-          .storeUint(tid, 16)
+          .storeRef(beginCell().storeUint(tid, 256).asCell())
           .storeRef(beginCell().storeStringRefTail(destAddress).asCell())
           .endCell(),
         forward_ton_amount: toNano("0.40"),
         response_destination: bridge,
-      },
+      }
     )) as unknown as Promise<string>;
   };
   const transferJettonToBridge = async (
