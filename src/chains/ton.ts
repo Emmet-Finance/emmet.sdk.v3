@@ -58,7 +58,7 @@ export function tonHandler({
 }: TonParams): TonHelper {
   const oracleContract = client.open(Oracle.fromAddress(oracle));
   const bridgeReader = client.open(Bridge.fromAddress(bridge));
-  function transferTon(
+  async function transferTon(
     bridge: OpenedContract<Bridge>,
     sender: Sender,
     to: string,
@@ -67,7 +67,7 @@ export function tonHandler({
     amount: bigint,
     gasArgs?: TonGasArgs,
   ): Promise<string> {
-    return bridge.send(
+    return await bridge.send(
       sender,
       {
         //@ts-ignore
