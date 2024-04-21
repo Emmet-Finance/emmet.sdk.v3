@@ -1,6 +1,6 @@
-import { Cell, Slice, Address, Builder, ContractProvider, Sender, Contract, ContractABI } from '@ton/core';
+import { Cell, Slice, Address, Builder, ContractProvider, Sender, Contract, ContractABI } from "@ton/core";
 export type StateInit = {
-    $$type: 'StateInit';
+    $$type: "StateInit";
     code: Cell;
     data: Cell;
 };
@@ -11,7 +11,7 @@ export declare function loadStateInit(slice: Slice): {
     data: Cell;
 };
 export type Context = {
-    $$type: 'Context';
+    $$type: "Context";
     bounced: boolean;
     sender: Address;
     value: bigint;
@@ -26,7 +26,7 @@ export declare function loadContext(slice: Slice): {
     raw: Cell;
 };
 export type SendParameters = {
-    $$type: 'SendParameters';
+    $$type: "SendParameters";
     bounce: boolean;
     to: Address;
     value: bigint;
@@ -47,7 +47,7 @@ export declare function loadSendParameters(slice: Slice): {
     data: Cell | null;
 };
 export type Deploy = {
-    $$type: 'Deploy';
+    $$type: "Deploy";
     queryId: bigint;
 };
 export declare function storeDeploy(src: Deploy): (builder: Builder) => void;
@@ -56,7 +56,7 @@ export declare function loadDeploy(slice: Slice): {
     queryId: bigint;
 };
 export type DeployOk = {
-    $$type: 'DeployOk';
+    $$type: "DeployOk";
     queryId: bigint;
 };
 export declare function storeDeployOk(src: DeployOk): (builder: Builder) => void;
@@ -65,7 +65,7 @@ export declare function loadDeployOk(slice: Slice): {
     queryId: bigint;
 };
 export type FactoryDeploy = {
-    $$type: 'FactoryDeploy';
+    $$type: "FactoryDeploy";
     queryId: bigint;
     cashback: Address;
 };
@@ -76,7 +76,7 @@ export declare function loadFactoryDeploy(slice: Slice): {
     cashback: Address;
 };
 export type JettonTransfer = {
-    $$type: 'JettonTransfer';
+    $$type: "JettonTransfer";
     query_id: bigint;
     amount: bigint;
     destination: Address;
@@ -97,7 +97,7 @@ export declare function loadJettonTransfer(slice: Slice): {
     forward_payload: Cell;
 };
 export type JettonTransferNotification = {
-    $$type: 'JettonTransferNotification';
+    $$type: "JettonTransferNotification";
     query_id: bigint;
     amount: bigint;
     sender: Address;
@@ -112,7 +112,7 @@ export declare function loadJettonTransferNotification(slice: Slice): {
     forward_payload: Cell;
 };
 export type JettonBurn = {
-    $$type: 'JettonBurn';
+    $$type: "JettonBurn";
     query_id: bigint;
     amount: bigint;
     response_destination: Address;
@@ -131,7 +131,7 @@ export declare function loadJettonBurn(slice: Slice): {
     forward_payload: Cell;
 };
 export type JettonExcesses = {
-    $$type: 'JettonExcesses';
+    $$type: "JettonExcesses";
     query_id: bigint;
 };
 export declare function storeJettonExcesses(src: JettonExcesses): (builder: Builder) => void;
@@ -140,7 +140,7 @@ export declare function loadJettonExcesses(slice: Slice): {
     query_id: bigint;
 };
 export type JettonInternalTransfer = {
-    $$type: 'JettonInternalTransfer';
+    $$type: "JettonInternalTransfer";
     query_id: bigint;
     amount: bigint;
     from: Address;
@@ -159,7 +159,7 @@ export declare function loadJettonInternalTransfer(slice: Slice): {
     forward_payload: Cell;
 };
 export type JettonBurnNotification = {
-    $$type: 'JettonBurnNotification';
+    $$type: "JettonBurnNotification";
     query_id: bigint;
     amount: bigint;
     sender: Address;
@@ -178,7 +178,7 @@ export declare function loadJettonBurnNotification(slice: Slice): {
     forward_payload: Cell;
 };
 export type WalletData = {
-    $$type: 'WalletData';
+    $$type: "WalletData";
     balance: bigint;
     owner: Address;
     jetton: Address;
@@ -193,7 +193,7 @@ export declare function loadWalletData(slice: Slice): {
     jetton_wallet_code: Cell;
 };
 export type JettonData = {
-    $$type: 'JettonData';
+    $$type: "JettonData";
     total_supply: bigint;
     mintable: boolean;
     admin_address: Address;
@@ -210,7 +210,7 @@ export declare function loadJettonData(slice: Slice): {
     jetton_wallet_code: Cell;
 };
 export type JettonMint = {
-    $$type: 'JettonMint';
+    $$type: "JettonMint";
     origin: Address;
     receiver: Address;
     amount: bigint;
@@ -228,26 +228,107 @@ export declare function loadJettonMint(slice: Slice): {
     forward_ton_amount: bigint;
     forward_payload: Cell;
 };
-export type AddValidator = {
-    $$type: 'AddValidator';
-    new_validator: Address;
+export type UpdateAdmin = {
+    $$type: "UpdateAdmin";
+    new_admin: Address;
 };
-export declare function storeAddValidator(src: AddValidator): (builder: Builder) => void;
-export declare function loadAddValidator(slice: Slice): {
-    $$type: "AddValidator";
-    new_validator: Address;
+export declare function storeUpdateAdmin(src: UpdateAdmin): (builder: Builder) => void;
+export declare function loadUpdateAdmin(slice: Slice): {
+    $$type: "UpdateAdmin";
+    new_admin: Address;
 };
-export type RemoveValidator = {
-    $$type: 'RemoveValidator';
-    validator: Address;
+export type UpdateOwner = {
+    $$type: "UpdateOwner";
+    new_owner: Address;
 };
-export declare function storeRemoveValidator(src: RemoveValidator): (builder: Builder) => void;
-export declare function loadRemoveValidator(slice: Slice): {
-    $$type: "RemoveValidator";
-    validator: Address;
+export declare function storeUpdateOwner(src: UpdateOwner): (builder: Builder) => void;
+export declare function loadUpdateOwner(slice: Slice): {
+    $$type: "UpdateOwner";
+    new_owner: Address;
+};
+export type UpdateBridgeAdmin = {
+    $$type: "UpdateBridgeAdmin";
+    new_admin: Address;
+};
+export declare function storeUpdateBridgeAdmin(src: UpdateBridgeAdmin): (builder: Builder) => void;
+export declare function loadUpdateBridgeAdmin(slice: Slice): {
+    $$type: "UpdateBridgeAdmin";
+    new_admin: Address;
+};
+export type RevokeBridgeValidatorRole = {
+    $$type: "RevokeBridgeValidatorRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokeBridgeValidatorRole(src: RevokeBridgeValidatorRole): (builder: Builder) => void;
+export declare function loadRevokeBridgeValidatorRole(slice: Slice): {
+    $$type: "RevokeBridgeValidatorRole";
+    address_to_be_revoked: Address;
+};
+export type RevokeMappingAdminRole = {
+    $$type: "RevokeMappingAdminRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokeMappingAdminRole(src: RevokeMappingAdminRole): (builder: Builder) => void;
+export declare function loadRevokeMappingAdminRole(slice: Slice): {
+    $$type: "RevokeMappingAdminRole";
+    address_to_be_revoked: Address;
+};
+export type RevokePauserRole = {
+    $$type: "RevokePauserRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokePauserRole(src: RevokePauserRole): (builder: Builder) => void;
+export declare function loadRevokePauserRole(slice: Slice): {
+    $$type: "RevokePauserRole";
+    address_to_be_revoked: Address;
+};
+export type RevokeWithdrawerRole = {
+    $$type: "RevokeWithdrawerRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokeWithdrawerRole(src: RevokeWithdrawerRole): (builder: Builder) => void;
+export declare function loadRevokeWithdrawerRole(slice: Slice): {
+    $$type: "RevokeWithdrawerRole";
+    address_to_be_revoked: Address;
+};
+export type GrantBridgeValidatorRole = {
+    $$type: "GrantBridgeValidatorRole";
+    address: Address;
+};
+export declare function storeGrantBridgeValidatorRole(src: GrantBridgeValidatorRole): (builder: Builder) => void;
+export declare function loadGrantBridgeValidatorRole(slice: Slice): {
+    $$type: "GrantBridgeValidatorRole";
+    address: Address;
+};
+export type GrantMappingAdminRole = {
+    $$type: "GrantMappingAdminRole";
+    address: Address;
+};
+export declare function storeGrantMappingAdminRole(src: GrantMappingAdminRole): (builder: Builder) => void;
+export declare function loadGrantMappingAdminRole(slice: Slice): {
+    $$type: "GrantMappingAdminRole";
+    address: Address;
+};
+export type GrantPauserRole = {
+    $$type: "GrantPauserRole";
+    address: Address;
+};
+export declare function storeGrantPauserRole(src: GrantPauserRole): (builder: Builder) => void;
+export declare function loadGrantPauserRole(slice: Slice): {
+    $$type: "GrantPauserRole";
+    address: Address;
+};
+export type GrantWithdrawerRole = {
+    $$type: "GrantWithdrawerRole";
+    address: Address;
+};
+export declare function storeGrantWithdrawerRole(src: GrantWithdrawerRole): (builder: Builder) => void;
+export declare function loadGrantWithdrawerRole(slice: Slice): {
+    $$type: "GrantWithdrawerRole";
+    address: Address;
 };
 export type TokenType = {
-    $$type: 'TokenType';
+    $$type: "TokenType";
     is_native_coin: boolean;
     is_native_token: boolean;
     is_wrapped_token: boolean;
@@ -260,7 +341,7 @@ export declare function loadTokenType(slice: Slice): {
     is_wrapped_token: boolean;
 };
 export type SendInstallment = {
-    $$type: 'SendInstallment';
+    $$type: "SendInstallment";
     amount: bigint;
     tx_id: bigint;
     native_chain_nonce: bigint;
@@ -279,7 +360,7 @@ export declare function loadSendInstallment(slice: Slice): {
     destination_address: Cell;
 };
 export type ReceivedInstallment = {
-    $$type: 'ReceivedInstallment';
+    $$type: "ReceivedInstallment";
     amount: bigint;
     tx_id: bigint;
     chain_nonce: bigint;
@@ -298,7 +379,7 @@ export declare function loadReceivedInstallment(slice: Slice): {
     destination_address: Address;
 };
 export type FreezeTon = {
-    $$type: 'FreezeTon';
+    $$type: "FreezeTon";
     target_chain: bigint;
     token_id: bigint;
     to: Cell;
@@ -313,7 +394,7 @@ export declare function loadFreezeTon(slice: Slice): {
     amount: bigint;
 };
 export type MapNativeContract = {
-    $$type: 'MapNativeContract';
+    $$type: "MapNativeContract";
     token_id: bigint;
     token_symbol: string;
     contract: Address;
@@ -328,7 +409,7 @@ export declare function loadMapNativeContract(slice: Slice): {
     decimals: bigint;
 };
 export type MapWrappedContract = {
-    $$type: 'MapWrappedContract';
+    $$type: "MapWrappedContract";
     token_id: bigint;
     token_symbol: string;
     contract: Address;
@@ -343,7 +424,7 @@ export declare function loadMapWrappedContract(slice: Slice): {
     decimals: bigint;
 };
 export type AddChain = {
-    $$type: 'AddChain';
+    $$type: "AddChain";
     chain_id: bigint;
     chain_name: string;
 };
@@ -354,7 +435,7 @@ export declare function loadAddChain(slice: Slice): {
     chain_name: string;
 };
 export type UpdateChain = {
-    $$type: 'UpdateChain';
+    $$type: "UpdateChain";
     chain_id: bigint;
     chain_name: string;
 };
@@ -365,7 +446,7 @@ export declare function loadUpdateChain(slice: Slice): {
     chain_name: string;
 };
 export type ReceiveInstallment = {
-    $$type: 'ReceiveInstallment';
+    $$type: "ReceiveInstallment";
     tx_id: bigint;
     installment: InstallmentIn;
 };
@@ -382,7 +463,7 @@ export declare function loadReceiveInstallment(slice: Slice): {
     };
 };
 export type SetChainFee = {
-    $$type: 'SetChainFee';
+    $$type: "SetChainFee";
     chain_id: bigint;
     fee: bigint;
 };
@@ -393,7 +474,7 @@ export declare function loadSetChainFee(slice: Slice): {
     fee: bigint;
 };
 export type InstallmentIn = {
-    $$type: 'InstallmentIn';
+    $$type: "InstallmentIn";
     amount: bigint;
     to: Address;
     chain_id: bigint;
@@ -408,7 +489,7 @@ export declare function loadInstallmentIn(slice: Slice): {
     token_id: bigint;
 };
 export type InstallmentOut = {
-    $$type: 'InstallmentOut';
+    $$type: "InstallmentOut";
     amount: bigint;
     to: string;
     target_chain: bigint;
@@ -423,7 +504,7 @@ export declare function loadInstallmentOut(slice: Slice): {
     token_id: bigint;
 };
 export type Token = {
-    $$type: 'Token';
+    $$type: "Token";
     address: Address;
     decimals: bigint;
 };
@@ -434,7 +515,7 @@ export declare function loadToken(slice: Slice): {
     decimals: bigint;
 };
 export type ChainName = {
-    $$type: 'ChainName';
+    $$type: "ChainName";
     name: string;
 };
 export declare function storeChainName(src: ChainName): (builder: Builder) => void;
@@ -443,7 +524,7 @@ export declare function loadChainName(slice: Slice): {
     name: string;
 };
 export type TokenSymbol = {
-    $$type: 'TokenSymbol';
+    $$type: "TokenSymbol";
     symbol: string;
 };
 export declare function storeTokenSymbol(src: TokenSymbol): (builder: Builder) => void;
@@ -452,13 +533,49 @@ export declare function loadTokenSymbol(slice: Slice): {
     symbol: string;
 };
 export type UpdateBaseUri = {
-    $$type: 'UpdateBaseUri';
+    $$type: "UpdateBaseUri";
     new_base_uri: string;
 };
 export declare function storeUpdateBaseUri(src: UpdateBaseUri): (builder: Builder) => void;
 export declare function loadUpdateBaseUri(slice: Slice): {
     $$type: "UpdateBaseUri";
     new_base_uri: string;
+};
+export type UpdateTransferFee = {
+    $$type: "UpdateTransferFee";
+    new_fee: bigint;
+};
+export declare function storeUpdateTransferFee(src: UpdateTransferFee): (builder: Builder) => void;
+export declare function loadUpdateTransferFee(slice: Slice): {
+    $$type: "UpdateTransferFee";
+    new_fee: bigint;
+};
+export type RemoveNativeMappedContract = {
+    $$type: "RemoveNativeMappedContract";
+    token_id: bigint;
+};
+export declare function storeRemoveNativeMappedContract(src: RemoveNativeMappedContract): (builder: Builder) => void;
+export declare function loadRemoveNativeMappedContract(slice: Slice): {
+    $$type: "RemoveNativeMappedContract";
+    token_id: bigint;
+};
+export type RemoveWrappedMappedContract = {
+    $$type: "RemoveWrappedMappedContract";
+    token_id: bigint;
+};
+export declare function storeRemoveWrappedMappedContract(src: RemoveWrappedMappedContract): (builder: Builder) => void;
+export declare function loadRemoveWrappedMappedContract(slice: Slice): {
+    $$type: "RemoveWrappedMappedContract";
+    token_id: bigint;
+};
+export type UpdateProtocolFee = {
+    $$type: "UpdateProtocolFee";
+    new_fee: bigint;
+};
+export declare function storeUpdateProtocolFee(src: UpdateProtocolFee): (builder: Builder) => void;
+export declare function loadUpdateProtocolFee(slice: Slice): {
+    $$type: "UpdateProtocolFee";
+    new_fee: bigint;
 };
 export declare class WrappedJettonWallet implements Contract {
     static init(owner: Address, jetton_master: Address): Promise<{
