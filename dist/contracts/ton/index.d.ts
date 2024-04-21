@@ -228,23 +228,104 @@ export declare function loadJettonMint(slice: Slice): {
     forward_ton_amount: bigint;
     forward_payload: Cell;
 };
-export type AddValidator = {
-    $$type: "AddValidator";
-    new_validator: Address;
+export type UpdateAdmin = {
+    $$type: "UpdateAdmin";
+    new_admin: Address;
 };
-export declare function storeAddValidator(src: AddValidator): (builder: Builder) => void;
-export declare function loadAddValidator(slice: Slice): {
-    $$type: "AddValidator";
-    new_validator: Address;
+export declare function storeUpdateAdmin(src: UpdateAdmin): (builder: Builder) => void;
+export declare function loadUpdateAdmin(slice: Slice): {
+    $$type: "UpdateAdmin";
+    new_admin: Address;
 };
-export type RemoveValidator = {
-    $$type: "RemoveValidator";
-    validator: Address;
+export type UpdateOwner = {
+    $$type: "UpdateOwner";
+    new_owner: Address;
 };
-export declare function storeRemoveValidator(src: RemoveValidator): (builder: Builder) => void;
-export declare function loadRemoveValidator(slice: Slice): {
-    $$type: "RemoveValidator";
-    validator: Address;
+export declare function storeUpdateOwner(src: UpdateOwner): (builder: Builder) => void;
+export declare function loadUpdateOwner(slice: Slice): {
+    $$type: "UpdateOwner";
+    new_owner: Address;
+};
+export type UpdateBridgeAdmin = {
+    $$type: "UpdateBridgeAdmin";
+    new_admin: Address;
+};
+export declare function storeUpdateBridgeAdmin(src: UpdateBridgeAdmin): (builder: Builder) => void;
+export declare function loadUpdateBridgeAdmin(slice: Slice): {
+    $$type: "UpdateBridgeAdmin";
+    new_admin: Address;
+};
+export type RevokeBridgeValidatorRole = {
+    $$type: "RevokeBridgeValidatorRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokeBridgeValidatorRole(src: RevokeBridgeValidatorRole): (builder: Builder) => void;
+export declare function loadRevokeBridgeValidatorRole(slice: Slice): {
+    $$type: "RevokeBridgeValidatorRole";
+    address_to_be_revoked: Address;
+};
+export type RevokeMappingAdminRole = {
+    $$type: "RevokeMappingAdminRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokeMappingAdminRole(src: RevokeMappingAdminRole): (builder: Builder) => void;
+export declare function loadRevokeMappingAdminRole(slice: Slice): {
+    $$type: "RevokeMappingAdminRole";
+    address_to_be_revoked: Address;
+};
+export type RevokePauserRole = {
+    $$type: "RevokePauserRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokePauserRole(src: RevokePauserRole): (builder: Builder) => void;
+export declare function loadRevokePauserRole(slice: Slice): {
+    $$type: "RevokePauserRole";
+    address_to_be_revoked: Address;
+};
+export type RevokeWithdrawerRole = {
+    $$type: "RevokeWithdrawerRole";
+    address_to_be_revoked: Address;
+};
+export declare function storeRevokeWithdrawerRole(src: RevokeWithdrawerRole): (builder: Builder) => void;
+export declare function loadRevokeWithdrawerRole(slice: Slice): {
+    $$type: "RevokeWithdrawerRole";
+    address_to_be_revoked: Address;
+};
+export type GrantBridgeValidatorRole = {
+    $$type: "GrantBridgeValidatorRole";
+    address: Address;
+};
+export declare function storeGrantBridgeValidatorRole(src: GrantBridgeValidatorRole): (builder: Builder) => void;
+export declare function loadGrantBridgeValidatorRole(slice: Slice): {
+    $$type: "GrantBridgeValidatorRole";
+    address: Address;
+};
+export type GrantMappingAdminRole = {
+    $$type: "GrantMappingAdminRole";
+    address: Address;
+};
+export declare function storeGrantMappingAdminRole(src: GrantMappingAdminRole): (builder: Builder) => void;
+export declare function loadGrantMappingAdminRole(slice: Slice): {
+    $$type: "GrantMappingAdminRole";
+    address: Address;
+};
+export type GrantPauserRole = {
+    $$type: "GrantPauserRole";
+    address: Address;
+};
+export declare function storeGrantPauserRole(src: GrantPauserRole): (builder: Builder) => void;
+export declare function loadGrantPauserRole(slice: Slice): {
+    $$type: "GrantPauserRole";
+    address: Address;
+};
+export type GrantWithdrawerRole = {
+    $$type: "GrantWithdrawerRole";
+    address: Address;
+};
+export declare function storeGrantWithdrawerRole(src: GrantWithdrawerRole): (builder: Builder) => void;
+export declare function loadGrantWithdrawerRole(slice: Slice): {
+    $$type: "GrantWithdrawerRole";
+    address: Address;
 };
 export type TokenType = {
     $$type: "TokenType";
@@ -451,12 +532,57 @@ export declare function loadTokenSymbol(slice: Slice): {
     $$type: "TokenSymbol";
     symbol: string;
 };
+export type UpdateBaseUri = {
+    $$type: "UpdateBaseUri";
+    new_base_uri: string;
+};
+export declare function storeUpdateBaseUri(src: UpdateBaseUri): (builder: Builder) => void;
+export declare function loadUpdateBaseUri(slice: Slice): {
+    $$type: "UpdateBaseUri";
+    new_base_uri: string;
+};
+export type UpdateTransferFee = {
+    $$type: "UpdateTransferFee";
+    new_fee: bigint;
+};
+export declare function storeUpdateTransferFee(src: UpdateTransferFee): (builder: Builder) => void;
+export declare function loadUpdateTransferFee(slice: Slice): {
+    $$type: "UpdateTransferFee";
+    new_fee: bigint;
+};
+export type RemoveNativeMappedContract = {
+    $$type: "RemoveNativeMappedContract";
+    token_id: bigint;
+};
+export declare function storeRemoveNativeMappedContract(src: RemoveNativeMappedContract): (builder: Builder) => void;
+export declare function loadRemoveNativeMappedContract(slice: Slice): {
+    $$type: "RemoveNativeMappedContract";
+    token_id: bigint;
+};
+export type RemoveWrappedMappedContract = {
+    $$type: "RemoveWrappedMappedContract";
+    token_id: bigint;
+};
+export declare function storeRemoveWrappedMappedContract(src: RemoveWrappedMappedContract): (builder: Builder) => void;
+export declare function loadRemoveWrappedMappedContract(slice: Slice): {
+    $$type: "RemoveWrappedMappedContract";
+    token_id: bigint;
+};
+export type UpdateProtocolFee = {
+    $$type: "UpdateProtocolFee";
+    new_fee: bigint;
+};
+export declare function storeUpdateProtocolFee(src: UpdateProtocolFee): (builder: Builder) => void;
+export declare function loadUpdateProtocolFee(slice: Slice): {
+    $$type: "UpdateProtocolFee";
+    new_fee: bigint;
+};
 export declare class Bridge implements Contract {
-    static init(chain_nonce: bigint, native_coin: bigint, burner: Address): Promise<{
+    static init(chain_nonce: bigint, native_coin: bigint, burner: Address, base_uri: string, transfer_fee: bigint, protocol_fee: bigint): Promise<{
         code: Cell;
         data: Cell;
     }>;
-    static fromInit(chain_nonce: bigint, native_coin: bigint, burner: Address): Promise<Bridge>;
+    static fromInit(chain_nonce: bigint, native_coin: bigint, burner: Address, base_uri: string, transfer_fee: bigint, protocol_fee: bigint): Promise<Bridge>;
     static fromAddress(address: Address): Bridge;
     readonly address: Address;
     readonly init?: {
@@ -468,13 +594,15 @@ export declare class Bridge implements Contract {
     send(provider: ContractProvider, via: Sender, args: {
         value: bigint;
         bounce?: boolean | null | undefined;
-    }, message: JettonTransferNotification | JettonBurnNotification | FreezeTon | MapNativeContract | MapWrappedContract | AddChain | UpdateChain | "WithdrawFees" | ReceiveInstallment | SetChainFee | JettonExcesses | null | Deploy | AddValidator | RemoveValidator | "Pause" | "Unpause"): Promise<void>;
+    }, message: JettonTransferNotification | JettonBurnNotification | FreezeTon | MapNativeContract | MapWrappedContract | AddChain | RemoveNativeMappedContract | RemoveWrappedMappedContract | UpdateChain | "WithdrawFees" | ReceiveInstallment | SetChainFee | JettonExcesses | UpdateProtocolFee | UpdateBaseUri | UpdateTransferFee | null | Deploy | "Pause" | "Unpause" | UpdateBridgeAdmin | RevokeBridgeValidatorRole | RevokeMappingAdminRole | RevokePauserRole | RevokeWithdrawerRole | GrantBridgeValidatorRole | GrantMappingAdminRole | GrantPauserRole | GrantWithdrawerRole): Promise<void>;
     getIsPaused(provider: ContractProvider): Promise<boolean>;
     getBridgeValidatorRole(provider: ContractProvider): Promise<Dictionary<Address, boolean>>;
     getMappingAdminRole(provider: ContractProvider): Promise<Dictionary<Address, boolean>>;
     getPauserRole(provider: ContractProvider): Promise<Dictionary<Address, boolean>>;
     getWithdrawerRole(provider: ContractProvider): Promise<Dictionary<Address, boolean>>;
-    getDefaultAdminRole(provider: ContractProvider): Promise<Dictionary<Address, boolean>>;
+    getDefaultAdminRole(provider: ContractProvider): Promise<Address>;
+    getBaseUri(provider: ContractProvider): Promise<string>;
+    getProtocolFee(provider: ContractProvider): Promise<bigint>;
     getNonce(provider: ContractProvider): Promise<bigint>;
     getNativeCoin(provider: ContractProvider): Promise<bigint>;
     getFees(provider: ContractProvider): Promise<bigint>;
