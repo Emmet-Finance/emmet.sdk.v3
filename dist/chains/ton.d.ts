@@ -4,7 +4,7 @@ export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
 };
-export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, undefined, TonGasArgs> & ValidateAddress & GetTokenBalance & CalculateCoinFees & CalculateDestinationTransactionFees & GetCoinPrice & ChainName & NativeCoinName;
+export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, string, TonGasArgs> & ValidateAddress & GetTokenBalance & CalculateCoinFees & CalculateDestinationTransactionFees & GetCoinPrice & ChainName & NativeCoinName;
 export interface TonParams {
     client: TonClient;
     bridge: Address;
