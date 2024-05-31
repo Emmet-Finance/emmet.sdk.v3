@@ -33,7 +33,7 @@ export interface ChainData<T extends ChainNonce> {
     name: string;
     nonce: number;
     decimals: number;
-    constructor: (p: InferChainParam<T>) => InferChainH<T>;
+    constructor: (p: InferChainParam<T>) => Promise<InferChainH<T>>;
 }
 export type ChainInfo = {
     set<T extends ChainNonce>(k: T, v: ChainData<T> | undefined): void;

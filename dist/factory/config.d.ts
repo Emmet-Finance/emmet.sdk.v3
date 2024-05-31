@@ -11,10 +11,15 @@ export declare namespace ChainFactoryConfigs {
             burner: Address;
             chainName: string;
         };
-        polygonParams: {
-            contract: string;
+        bscParams: {
+            chainName: string;
+            addressBook: string;
+            nativeCoin: string;
             provider: ethers.JsonRpcProvider;
-            oracle: string;
+        };
+        polygonParams: {
+            addressBook: string;
+            provider: ethers.JsonRpcProvider;
             chainName: string;
             nativeCoin: string;
         };
