@@ -10,7 +10,7 @@ export namespace ChainFactoryConfigs {
     return {
       tonParams: {
         bridge: Address.parse(
-          "EQDBRFjItjqx_I-VGeVPRMvsRmCZ11Q--AlTaGWMwP21YEGI"
+          "EQDBRFjItjqx_I-VGeVPRMvsRmCZ11Q--AlTaGWMwP21YEGI",
         ),
         client: new TonClient({
           endpoint:
@@ -20,19 +20,27 @@ export namespace ChainFactoryConfigs {
         }),
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
         oracle: Address.parse(
-          "EQAx41_27fvdX4C30RxQmzbiLeHyO090XzGHBadgGfdp5Uqd"
+          "EQAx41_27fvdX4C30RxQmzbiLeHyO090XzGHBadgGfdp5Uqd",
         ),
         burner: Address.parse(
-          "EQBtE7sxSqbDZwuWhxxQRzSZZ3UAm8j4mhR25iWS2xfEmZ6D"
+          "EQBtE7sxSqbDZwuWhxxQRzSZZ3UAm8j4mhR25iWS2xfEmZ6D",
         ),
         chainName: "tonTestnet",
       },
+      bscParams: {
+        chainName: "bscTestnet",
+        addressBook: ethers.getAddress(
+          "0x3564336Ad556295A368EEa2b2CA1a7D3f43B4029",
+        ),
+        nativeCoin: "BNB",
+        provider: new JsonRpcProvider(TestNetRpcUri.BSC)
+      },
       polygonParams: {
-        contract: ethers.getAddress(
-          "0x6b30f76cece9f92d27f0e9ad78312e77709e74a5"
+        addressBook: ethers.getAddress(
+          "0x6b30f76cece9f92d27f0e9ad78312e77709e74a5",
         ),
         provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
-        oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
+        // oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
         chainName: "polygon",
         nativeCoin: "MATIC",
       },

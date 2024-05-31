@@ -5,17 +5,16 @@ import {
   type Signer,
 } from "ethers";
 import type {
-  CalculateCoinFees,
-  CalculateDestinationTransactionFees,
+  AddressBook,
   ChainName,
   GetApprovedTokenAmount,
   GetBalance,
-  GetCoinPrice,
   GetProvider,
   GetTokenBalance,
   NativeCoinName,
   PreTransfer,
   SendInstallment,
+  TokenInfo,
   ValidateAddress,
 } from ".";
 import {
@@ -23,7 +22,7 @@ import {
   WrappedERC20__factory,
 } from "../contracts/evm/typechain-types";
 import type { PayableOverrides } from "../contracts/evm/typechain-types/common";
-import { IEmmetFeeOracle__factory } from "../contracts/evm/typechain-types/factories/contracts/PriceOracle";
+import { EmmetAddressBook__factory, EmmetData__factory } from "@emmet-contracts/web3";
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -32,41 +31,54 @@ export type Web3Helper = GetBalance &
   GetTokenBalance &
   GetApprovedTokenAmount &
   PreTransfer<Signer, PayableOverrides> &
-  CalculateCoinFees &
-  CalculateDestinationTransactionFees  & GetCoinPrice &
-ChainName & NativeCoinName;
+  ChainName &
+  NativeCoinName &
+  AddressBook & TokenInfo;
 
 export interface Web3Params {
   provider: Provider;
-  contract: string;
-  oracle: string;
+  addressBook: string;
   chainName: string;
   nativeCoin: string;
 }
 
-export function web3Helper({
+export async function web3Helper({
   provider,
-  contract,
-  oracle,
-  chainName,nativeCoin
-}: Web3Params): Web3Helper {
-  const bridge = FTBridge__factory.connect(contract, provider);
-  const orac = IEmmetFeeOracle__factory.connect(oracle, provider);
+  addressBook,
+  chainName,
+  nativeCoin,
+}: Web3Params): Promise<Web3Helper> {
+  const addrBook = EmmetAddressBook__factory.connect(addressBook, provider);
+  const bridgeAddr = await addrBook.get("EmmetBridge");
+  const emmetData = await addrBook.get("EmmetData");
+  const bridge = FTBridge__factory.connect(bridgeAddr, provider);
+  const data = EmmetData__factory.connect(emmetData, provider);
   return {
+    async address(contr) {
+      return await addrBook.get(contr);
+    },
+    async token(symbol) {
+      const token = await data.getToken(symbol)
+      return {
+        address: token.addr,
+        swap: token.swap,
+        decimals: token.decimals,
+        fee: token.fee,
+        feeDecimals: token.feeDecimals,
+        symbol: token.symbol
+      }
+    },
     nativeCoin: () => nativeCoin,
     chainName: () => chainName,
-    getCoinPrice: (c) => orac.getCoinPrice(c),
-    calculateCoinFees: (coinName, amt) => orac.calculateCoinFees(coinName, amt),
-    calculateTransactionFees: async (destChain) =>
-      orac.calculateTransactionFee(destChain),
     preTransfer: async (signer, tid, amt, gasArgs) => {
       const approved = await WrappedERC20__factory.connect(tid, signer).approve(
-        contract,
+        bridge,
         amt,
         gasArgs,
       );
       return approved.hash;
     },
+
     getApprovedAmount: async (tid, owner) =>
       await WrappedERC20__factory.connect(tid, provider).allowance(
         owner,
@@ -84,6 +96,7 @@ export function web3Helper({
           amount: amt,
           destinationAddress: da,
           tokenSymbol: ts,
+
         },
         { ...gasArgs },
       );

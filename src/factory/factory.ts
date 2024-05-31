@@ -30,7 +30,7 @@ CHAIN_INFO.set(Chain.TON, {
   decimals: 18,
   name: "Ton",
   nonce: Chain.TON,
-  constructor: tonHandler,
+  constructor: async (...args) => tonHandler(...args),
 });
 
 export function ChainFactoryBuilder(
@@ -43,7 +43,7 @@ export function ChainFactoryBuilder(
   const inner = async <T extends ChainNonce>(chain: T) => {
     let helper = helpers.get(chain);
     if (helper === undefined) {
-      helper = CHAIN_INFO.get(chain)!.constructor(cToP.get(chain)!);
+      helper = await CHAIN_INFO.get(chain)!.constructor(cToP.get(chain)!);
       helpers.set(chain, helper);
     }
     return helper!;

@@ -65,6 +65,31 @@ export interface GetTokenBalance {
   tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
 
+export type AddressBookKeys =
+  | "GasFees"
+  | "EmmetTokenVault"
+  | "EmmetData"
+  | "CCTPHelper"
+  | "HashHelper"
+  | "SignatureVerifier"
+  | "LiquidityPoolHelper"
+  | "EmmetBridge"
+  | "AddressStorageHelper"
+  | "WTON" // Wrapped Token
+  | "EMMET" // Token
+  | "TON/USD" // price feed
+  | "BNB/USD" // price feed
+  | "MATIC/USD" // Price Feed
+  | "EmmetMultisig";
+
+export interface AddressBook {
+  address: (contr: AddressBookKeys) => Promise<string>;
+}
+
+export interface TokenInfo {
+  token: (symbol: string) => Promise<{address: string, swap?: string, decimals: bigint; symbol: string; fee: bigint; feeDecimals: bigint}>;
+}
+
 /**
  * Represents an interface for validating addresses.
  */
