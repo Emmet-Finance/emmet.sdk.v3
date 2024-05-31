@@ -44,7 +44,7 @@ export type ChainInfo = {
 export type HelperMap<K extends ChainNonce> = Map<K, InferChainH<K> | undefined>;
 export interface ChainFactory {
     inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
-    sendInstallment: <Signer, RetTx, GasArgs>(chain: SendInstallment<Signer, RetTx, GasArgs>, signer: Signer, amount: bigint, chainId: number, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
+    sendInstallment: <Signer, RetTx, GasArgs>(chain: SendInstallment<Signer, RetTx, GasArgs>, signer: Signer, amount: bigint, chainId: number, fromSymbol: string, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
         hash: string;
         tx: RetTx;
     }>;

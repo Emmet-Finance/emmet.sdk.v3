@@ -37,7 +37,7 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
      * @param destAddress The destination address.
      * @returns A promise that resolves to an object containing the hash and transaction of the installment.
      */
-    sendInstallment: (signer: Signer, amount: bigint, chainId: number, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
+    sendInstallment: (signer: Signer, amount: bigint, chainId: number, fromSymbol: string, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
         hash: string;
         tx: Ret;
     }>;

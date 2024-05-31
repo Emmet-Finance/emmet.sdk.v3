@@ -1,6 +1,6 @@
 import { type ContractTransactionResponse, type Provider, type Signer } from "ethers";
 import type { AddressBook, ChainName, GetApprovedTokenAmount, GetBalance, GetProvider, GetTokenBalance, NativeCoinName, PreTransfer, SendInstallment, TokenInfo, ValidateAddress } from ".";
-import type { PayableOverrides } from "../contracts/evm/typechain-types/common";
+import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
 export type Web3Helper = GetBalance & GetProvider<Provider> & SendInstallment<Signer, ContractTransactionResponse, PayableOverrides> & ValidateAddress & GetTokenBalance & GetApprovedTokenAmount & PreTransfer<Signer, PayableOverrides> & ChainName & NativeCoinName & AddressBook & TokenInfo;
 export interface Web3Params {
     provider: Provider;
