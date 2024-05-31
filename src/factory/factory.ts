@@ -14,6 +14,7 @@ function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   const cToP: ParamMap = new Map();
   cToP.set(Chain.TON, chainParams.tonParams);
   cToP.set(Chain.POLYGON, chainParams.polygonParams);
+  cToP.set(Chain.BSC, chainParams.bscParams);
   return cToP;
 }
 
@@ -24,6 +25,13 @@ CHAIN_INFO.set(Chain.POLYGON, {
   decimals: 18,
   name: "Polygon",
   nonce: Chain.POLYGON,
+});
+
+CHAIN_INFO.set(Chain.BSC, {
+  constructor: web3Helper,
+  decimals: 18,
+  name: "BSC",
+  nonce: Chain.BSC
 });
 
 CHAIN_INFO.set(Chain.TON, {
