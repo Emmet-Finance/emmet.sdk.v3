@@ -72,6 +72,7 @@ export interface ChainFactory {
     signer: Signer,
     amount: bigint,
     chainId: number,
+    fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,
     gasArgs?: GasArgs

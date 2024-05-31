@@ -68,6 +68,7 @@ export function ChainFactoryBuilder(
       signer,
       amount,
       chainId,
+      fromSymbol,
       tokenSymbol,
       destAddress,
       gasArgs
@@ -86,6 +87,7 @@ export function ChainFactoryBuilder(
         signer,
         amount,
         chainId,
+        fromSymbol,
         tokenSymbol,
         destAddress,
         gasArgs

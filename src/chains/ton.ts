@@ -233,6 +233,7 @@ export function tonHandler({
       signer,
       amt,
       cid,
+    _,
       tokenSymbol,
       destAddress,
       gasArgs,

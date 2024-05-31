@@ -43,6 +43,7 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
     signer: Signer,
     amount: bigint,
     chainId: number,
+    fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,
     gasArgs?: GasArgs
