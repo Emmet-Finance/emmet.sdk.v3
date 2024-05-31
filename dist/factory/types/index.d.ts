@@ -8,10 +8,12 @@ type MetaMapAssert = {
 };
 export type MetaMap = {
     7: EvmMeta;
+    4: EvmMeta;
     65535: TonMeta;
 } & MetaMapAssert;
 export declare namespace Chain {
     const POLYGON = 7;
+    const BSC = 4;
     const TON = 65535;
 }
 export type ChainNonce = keyof MetaMap;
