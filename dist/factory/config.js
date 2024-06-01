@@ -25,10 +25,10 @@ var ChainFactoryConfigs;
                 chainName: "bscTestnet",
                 addressBook: ethers_1.ethers.getAddress("0x3564336Ad556295A368EEa2b2CA1a7D3f43B4029"),
                 nativeCoin: "BNB",
-                provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.BSC)
+                provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.BSC),
             },
             polygonParams: {
-                addressBook: ethers_1.ethers.getAddress("0x6b30f76cece9f92d27f0e9ad78312e77709e74a5"),
+                addressBook: ethers_1.ethers.getAddress("0x825614461b92baf13aDE3124793579f6e10EcC55"),
                 provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.POLYGON),
                 // oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
                 chainName: "polygon",
