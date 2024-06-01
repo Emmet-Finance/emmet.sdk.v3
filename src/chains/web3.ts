@@ -25,6 +25,7 @@ import {
   WrappedERC20__factory,
 } from "@emmet-contracts/web3";
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
+import { ErrorDecoder } from "ethers-decode-error";
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -95,13 +96,20 @@ export async function web3Helper({
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, provider).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, gasArgs) => {
-      const tx = await bridge
-        .connect(signer)
-        .sendInstallment(cid, amt, fs, ts, da, { ...gasArgs });
-      return {
-        tx: tx,
-        hash: tx.hash,
-      };
+      const ed = ErrorDecoder.create([bridge.interface])
+      try {
+        const tx = await bridge
+          .connect(signer)
+          .sendInstallment(cid, amt, fs, ts, da, { ...gasArgs });
+        return {
+          tx: tx,
+          hash: tx.hash,
+        };
+      } catch (e) {
+        throw await ed.decode(e)
+      }
+
+
     },
   };
 }
