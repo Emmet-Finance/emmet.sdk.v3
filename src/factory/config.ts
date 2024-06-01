@@ -33,7 +33,7 @@ export namespace ChainFactoryConfigs {
           "0x3564336Ad556295A368EEa2b2CA1a7D3f43B4029",
         ),
         nativeCoin: "BNB",
-        provider: new JsonRpcProvider(TestNetRpcUri.BSC)
+        provider: new JsonRpcProvider(TestNetRpcUri.BSC),
       },
       polygonParams: {
         addressBook: ethers.getAddress(

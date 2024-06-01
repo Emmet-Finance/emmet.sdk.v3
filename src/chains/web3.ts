@@ -17,7 +17,12 @@ import type {
   TokenInfo,
   ValidateAddress,
 } from ".";
-import { EmmetAddressBook__factory, EmmetBridge__factory, EmmetData__factory, WrappedERC20__factory } from "@emmet-contracts/web3";
+import {
+  EmmetAddressBook__factory,
+  EmmetBridge__factory,
+  EmmetData__factory,
+  WrappedERC20__factory,
+} from "@emmet-contracts/web3";
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
 
 export type Web3Helper = GetBalance &
@@ -29,7 +34,8 @@ export type Web3Helper = GetBalance &
   PreTransfer<Signer, PayableOverrides> &
   ChainName &
   NativeCoinName &
-  AddressBook & TokenInfo;
+  AddressBook &
+  TokenInfo;
 
 export interface Web3Params {
   provider: Provider;
@@ -54,15 +60,15 @@ export async function web3Helper({
       return await addrBook.get(contr);
     },
     async token(symbol) {
-      const token = await data.getToken(symbol)
+      const token = await data.getToken(symbol);
       return {
         address: token.addr,
         swap: token.swap,
         decimals: token.decimals,
         fee: token.fee,
         feeDecimals: token.feeDecimals,
-        symbol: token.symbol
-      }
+        symbol: token.symbol,
+      };
     },
     nativeCoin: () => nativeCoin,
     chainName: () => chainName,
@@ -86,9 +92,9 @@ export async function web3Helper({
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, provider).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, gasArgs) => {
-      const tx = await bridge.connect(signer).sendInstallment(cid, amt, fs, ts, da,
-        { ...gasArgs },
-      );
+      const tx = await bridge
+        .connect(signer)
+        .sendInstallment(cid, amt, fs, ts, da, { ...gasArgs });
       return {
         tx: tx,
         hash: tx.hash,

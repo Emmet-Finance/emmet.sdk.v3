@@ -9,7 +9,7 @@ type MetaMapAssert = { [idx in (typeof Chain)[keyof typeof Chain]]: unknown };
 
 export type MetaMap = {
   7: EvmMeta;
-  4: EvmMeta
+  4: EvmMeta;
   65535: TonMeta;
 } & MetaMapAssert;
 
@@ -36,10 +36,9 @@ export type InferSigner<K> = K extends SendInstallment<
   ? S
   : never;
 
-  export type InferRet<K> = K extends SendInstallment<unknown, infer R, unknown>
-    ? R
-    : never;
-
+export type InferRet<K> = K extends SendInstallment<unknown, infer R, unknown>
+  ? R
+  : never;
 
 export interface ChainParams {
   bscParams: Web3Params;
@@ -75,13 +74,13 @@ export interface ChainFactory {
     fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,
-    gasArgs?: GasArgs
+    gasArgs?: GasArgs,
   ) => Promise<{ hash: string; tx: RetTx }>;
   preTransfer: <Signer, GasArgs>(
     chain: PreTransfer<Signer, GasArgs>,
     signer: Signer,
     tid: string,
     amount: bigint,
-    gasArgs: GasArgs
+    gasArgs: GasArgs,
   ) => Promise<string>;
 }

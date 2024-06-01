@@ -46,7 +46,7 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
     fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,
-    gasArgs?: GasArgs
+    gasArgs?: GasArgs,
   ) => Promise<{ hash: string; tx: Ret }>;
 }
 
@@ -88,7 +88,14 @@ export interface AddressBook {
 }
 
 export interface TokenInfo {
-  token: (symbol: string) => Promise<{address: string, swap?: string, decimals: bigint; symbol: string; fee: bigint; feeDecimals: bigint}>;
+  token: (symbol: string) => Promise<{
+    address: string;
+    swap?: string;
+    decimals: bigint;
+    symbol: string;
+    fee: bigint;
+    feeDecimals: bigint;
+  }>;
 }
 
 /**
@@ -115,7 +122,12 @@ export interface PreTransfer<Signer, GasArgs> {
    * @param amount The amount of tokens to be transferred.
    * @returns A promise that resolves to a string which is the hash of the transaction.
    */
-  preTransfer: (signer: Signer, token: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
+  preTransfer: (
+    signer: Signer,
+    token: string,
+    amount: bigint,
+    gasArgs: GasArgs,
+  ) => Promise<string>;
 }
 
 /**
@@ -139,7 +151,7 @@ export interface CalculateDestinationTransactionFees {
 }
 
 export interface GetCoinPrice {
-  getCoinPrice: (coin_name: string) => Promise<bigint>
+  getCoinPrice: (coin_name: string) => Promise<bigint>;
 }
 
 export interface ChainName {

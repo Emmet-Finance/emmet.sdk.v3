@@ -67,7 +67,7 @@ export function tonHandler({
     amount: bigint,
     gasArgs?: TonGasArgs,
   ): Promise<string> {
-    return await bridge.send(
+    return (await bridge.send(
       sender,
       {
         //@ts-ignore
@@ -81,7 +81,7 @@ export function tonHandler({
         to: beginCell().storeStringRefTail(to).endCell(),
         token_id: tokenId, // Should map to some token in the tokens table
       },
-    ) as unknown as Promise<string>;
+    )) as unknown as Promise<string>;
   }
 
   const transferJettonToBurner = async (
@@ -118,7 +118,7 @@ export function tonHandler({
           .endCell(),
         forward_ton_amount: toNano("0.40"),
         response_destination: bridge,
-      }
+      },
     )) as unknown as Promise<string>;
   };
   const transferJettonToBridge = async (
@@ -233,7 +233,7 @@ export function tonHandler({
       signer,
       amt,
       cid,
-    _,
+      _,
       tokenSymbol,
       destAddress,
       gasArgs,
