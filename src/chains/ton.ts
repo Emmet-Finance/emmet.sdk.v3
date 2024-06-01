@@ -11,6 +11,7 @@ import {
 import type {
   CalculateCoinFees,
   CalculateDestinationTransactionFees,
+  ChainID,
   ChainName,
   GetBalance,
   GetCoinPrice,
@@ -37,7 +38,8 @@ export type TonHelper = GetBalance &
   CalculateDestinationTransactionFees &
   GetCoinPrice &
   ChainName &
-  NativeCoinName;
+  NativeCoinName &
+  ChainID;
 
 export interface TonParams {
   client: TonClient;
@@ -46,6 +48,7 @@ export interface TonParams {
   oracle: Address;
   burner: Address;
   chainName: string;
+  chainId: bigint;
 }
 
 export function tonHandler({
@@ -55,6 +58,7 @@ export function tonHandler({
   oracle,
   burner,
   chainName,
+  chainId,
 }: TonParams): TonHelper {
   const oracleContract = client.open(Oracle.fromAddress(oracle));
   const bridgeReader = client.open(Bridge.fromAddress(bridge));
@@ -63,7 +67,7 @@ export function tonHandler({
     sender: Sender,
     to: string,
     tokenId: bigint,
-    chainId: number,
+    chainId: bigint,
     amount: bigint,
     gasArgs?: TonGasArgs,
   ): Promise<string> {
@@ -89,7 +93,7 @@ export function tonHandler({
     signer: Sender,
     amt: bigint,
     destAddress: string,
-    cid: number,
+    cid: bigint,
     gasArgs?: TonGasArgs,
   ): Promise<string> => {
     const wtd = await bridgeReader.getWrappedTokens();
@@ -124,7 +128,7 @@ export function tonHandler({
   const transferJettonToBridge = async (
     tid: bigint,
     signer: Sender,
-    target_chain: number,
+    target_chain: bigint,
     destAddress: string,
     amt: bigint,
     gasArgs?: TonGasArgs,
@@ -161,7 +165,7 @@ export function tonHandler({
     to: Address,
     sender: Sender,
     tokenId: bigint,
-    chainId: number,
+    chainId: bigint,
     amount: bigint,
     destAddress: string,
     gasArgs?: TonGasArgs,
@@ -198,6 +202,7 @@ export function tonHandler({
   }
 
   return {
+    id: () => Promise.resolve(chainId),
     nativeCoin: () => "TON",
     chainName: () => chainName,
     getCoinPrice: async (coin) => {

@@ -6,6 +6,7 @@ import {
 } from "ethers";
 import type {
   AddressBook,
+  ChainID,
   ChainName,
   GetApprovedTokenAmount,
   GetBalance,
@@ -35,7 +36,8 @@ export type Web3Helper = GetBalance &
   ChainName &
   NativeCoinName &
   AddressBook &
-  TokenInfo;
+  TokenInfo &
+  ChainID;
 
 export interface Web3Params {
   provider: Provider;
@@ -56,6 +58,7 @@ export async function web3Helper({
   const bridge = EmmetBridge__factory.connect(bridgeAddr, provider);
   const data = EmmetData__factory.connect(emmetData, provider);
   return {
+    id: async () => (await provider.getNetwork()).chainId,
     async address(contr) {
       return await addrBook.get(contr);
     },

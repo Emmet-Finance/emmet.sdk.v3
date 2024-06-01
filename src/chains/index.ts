@@ -24,6 +24,10 @@ export interface GetProvider<T> {
   provider: () => T;
 }
 
+export interface ChainID {
+  id: () => Promise<bigint>;
+}
+
 /**
  * Represents a function that sends an installment.
  * @template Signer The type of the signer.
@@ -42,7 +46,7 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
   sendInstallment: (
     signer: Signer,
     amount: bigint,
-    chainId: number,
+    chainId: bigint,
     fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,

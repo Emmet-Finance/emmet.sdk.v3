@@ -22,6 +22,7 @@ export namespace ChainFactoryConfigs {
         oracle: Address.parse(
           "EQAx41_27fvdX4C30RxQmzbiLeHyO090XzGHBadgGfdp5Uqd",
         ),
+        chainId: 65535n, // TON Testnet
         burner: Address.parse(
           "EQBtE7sxSqbDZwuWhxxQRzSZZ3UAm8j4mhR25iWS2xfEmZ6D",
         ),

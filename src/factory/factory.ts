@@ -74,6 +74,7 @@ export function ChainFactoryBuilder(
       gasArgs,
     ) => {
       const dc = await inner(chainId as ChainNonce);
+      const targetChainId = await dc.id();
       if (!dc) {
         throw new Error(`Unsupported destination chain id: ${chainId}`);
       }
@@ -86,7 +87,7 @@ export function ChainFactoryBuilder(
       return await chain.sendInstallment(
         signer,
         amount,
-        chainId,
+        targetChainId,
         fromSymbol,
         tokenSymbol,
         destAddress,
