@@ -1,10 +1,10 @@
 import { Address, type Sender, type TonClient } from "@ton/ton";
-import type { CalculateCoinFees, CalculateDestinationTransactionFees, ChainName, GetBalance, GetCoinPrice, GetProvider, GetTokenBalance, NativeCoinName, SendInstallment, ValidateAddress } from ".";
+import type { CalculateCoinFees, CalculateDestinationTransactionFees, ChainID, ChainName, GetBalance, GetCoinPrice, GetProvider, GetTokenBalance, NativeCoinName, SendInstallment, ValidateAddress } from ".";
 export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
 };
-export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, string, TonGasArgs> & ValidateAddress & GetTokenBalance & CalculateCoinFees & CalculateDestinationTransactionFees & GetCoinPrice & ChainName & NativeCoinName;
+export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, string, TonGasArgs> & ValidateAddress & GetTokenBalance & CalculateCoinFees & CalculateDestinationTransactionFees & GetCoinPrice & ChainName & NativeCoinName & ChainID;
 export interface TonParams {
     client: TonClient;
     bridge: Address;
@@ -12,6 +12,7 @@ export interface TonParams {
     oracle: Address;
     burner: Address;
     chainName: string;
+    chainId: bigint;
 }
-export declare function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, }: TonParams): TonHelper;
+export declare function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, chainId, }: TonParams): TonHelper;
 //# sourceMappingURL=ton.d.ts.map

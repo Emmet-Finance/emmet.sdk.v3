@@ -8,6 +8,7 @@ export declare namespace ChainFactoryConfigs {
             client: TonClient;
             nativeTokenId: bigint;
             oracle: Address;
+            chainId: bigint;
             burner: Address;
             chainName: string;
         };
