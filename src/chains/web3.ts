@@ -12,6 +12,7 @@ import type {
   GetBalance,
   GetProvider,
   GetTokenBalance,
+  GetTxFee,
   NativeCoinName,
   PreTransfer,
   SendInstallment,
@@ -38,7 +39,7 @@ export type Web3Helper = GetBalance &
   NativeCoinName &
   AddressBook &
   TokenInfo &
-  ChainID;
+  ChainID & GetTxFee;
 
 export interface Web3Params {
   provider: Provider;
@@ -62,6 +63,11 @@ export async function web3Helper({
     id: async () => (await provider.getNetwork()).chainId,
     async address(contr) {
       return await addrBook.get(contr);
+    },
+    async txFee(targetChainId, fromToken, targetToken) {
+      const protocolFee = await data.protocolFee()
+      const ffc = await data.getForeignFeeCompensation(targetChainId, fromToken, targetToken)
+      return protocolFee.usdEquivalent + ffc
     },
     async token(symbol) {
       const token = await data.getToken(symbol);

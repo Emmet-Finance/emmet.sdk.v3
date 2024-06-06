@@ -9,14 +9,12 @@ import {
   type TonClient,
 } from "@ton/ton";
 import type {
-  CalculateCoinFees,
-  CalculateDestinationTransactionFees,
   ChainID,
   ChainName,
   GetBalance,
-  GetCoinPrice,
   GetProvider,
   GetTokenBalance,
+  GetTxFee,
   NativeCoinName,
   SendInstallment,
   ValidateAddress,
@@ -34,9 +32,7 @@ export type TonHelper = GetBalance &
   SendInstallment<Sender, string, TonGasArgs> &
   ValidateAddress &
   GetTokenBalance &
-  CalculateCoinFees &
-  CalculateDestinationTransactionFees &
-  GetCoinPrice &
+  GetTxFee &
   ChainName &
   NativeCoinName &
   ChainID;
@@ -60,6 +56,7 @@ export function tonHandler({
   chainName,
   chainId,
 }: TonParams): TonHelper {
+  //@ts-ignore TODO: Use it.
   const oracleContract = client.open(Oracle.fromAddress(oracle));
   const bridgeReader = client.open(Bridge.fromAddress(bridge));
   async function transferTon(
@@ -205,19 +202,23 @@ export function tonHandler({
     id: () => Promise.resolve(chainId),
     nativeCoin: () => "TON",
     chainName: () => chainName,
-    getCoinPrice: async (coin) => {
-      const pf = await oracleContract.getPriceFeed();
-      const cid = BigInt(`0x${sha256_sync(coin).toString("hex")}`);
-      const data = pf.get(cid);
-      if (!data) {
-        throw new Error(`No price info found for symbol ${coin}, id ${cid}`);
-      }
-      return data.price;
+    txFee(coin_name) {
+      throw new Error(`Unimplemented ${coin_name}`)
     },
-    calculateTransactionFees: async (chain_name) =>
-      oracleContract.getCalculateTransactionFees(chain_name),
-    calculateCoinFees: async (coin_name, amt) =>
-      oracleContract.getCalculateCoinFees(coin_name, amt),
+    // getCoinPrice: async (coin) => {
+    //   const pf = await oracleContract.getPriceFeed();
+    //   const cid = BigInt(`0x${sha256_sync(coin).toString("hex")}`);
+    //   const data = pf.get(cid);
+    //   if (!data) {
+    //     throw new Error(`No price info found for symbol ${coin}, id ${cid}`);
+    //   }
+    //   return data.price;
+    // },
+    
+    // calculateTransactionFees: async (chain_name) =>
+    //   oracleContract.getCalculateTransactionFees(chain_name),
+    // calculateCoinFees: async (coin_name, amt) =>
+    //   oracleContract.getCalculateCoinFees(coin_name, amt),
     balance: (addr) => client.getBalance(Address.parse(addr)),
     provider: () => client,
     validateAddress: (addr) => {
