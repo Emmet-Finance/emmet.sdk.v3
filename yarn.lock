@@ -63,9 +63,9 @@
 
 "@emmet-contracts/web3@git+https://github.com/Emmet-Finance/emmet-types#web3":
   version "0.1.0"
-  resolved "git+https://github.com/Emmet-Finance/emmet-types#de1603360ae3848b9becce6088d09a0d75115643"
+  resolved "git+https://github.com/Emmet-Finance/emmet-types#5f450650af5fbfb4bf29f28d16c0a1d515e36bf6"
   dependencies:
-    ethers "^6.12.1"
+    ethers "=6.13.0"
 
 "@noble/curves@1.2.0":
   version "1.2.0"
@@ -179,10 +179,10 @@ ethers-decode-error@^2.1.3:
   resolved "https://registry.yarnpkg.com/ethers-decode-error/-/ethers-decode-error-2.1.3.tgz#ed0c81a400e9b66bba8c3ce356a4e52eab878e3f"
   integrity sha512-x27u04XC/s8MRpuqiylIXbj4KMrt/5clYS2nle1b0bgbWFuoUZocDzjfXEfc5KzVmCQuITD9elqyO2VyxTGwdw==
 
-ethers@^6.12.1:
-  version "6.12.1"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.12.1.tgz#517ff6d66d4fd5433e38e903051da3e57c87ff37"
-  integrity sha512-j6wcVoZf06nqEcBbDWkKg8Fp895SS96dSnTCjiXT+8vt2o02raTn4Lo9ERUuIVU5bAjoPYeA+7ytQFexFmLuVw==
+ethers@=6.13.0, ethers@^6.13:
+  version "6.13.0"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.13.0.tgz#f342958d0f622cf06559f59fbccdc1d30fa64f50"
+  integrity sha512-+yyQQQWEntY5UVbCv++guA14RRVFm1rSnO1GoLFdrK7/XRWMoktNgyG9UjwxrQqGBfGyFKknNZ81YpUS2emCgg==
   dependencies:
     "@adraffy/ens-normalize" "1.10.1"
     "@noble/curves" "1.2.0"

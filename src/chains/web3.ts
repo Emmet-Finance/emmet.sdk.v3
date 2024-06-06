@@ -96,7 +96,7 @@ export async function web3Helper({
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, provider).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, gasArgs) => {
-      const ed = ErrorDecoder.create([bridge.interface])
+      const ed = ErrorDecoder.create([bridge.interface]);
       try {
         const tx = await bridge
           .connect(signer)
@@ -106,10 +106,8 @@ export async function web3Helper({
           hash: tx.hash,
         };
       } catch (e) {
-        throw await ed.decode(e)
+        throw await ed.decode(e);
       }
-
-
     },
   };
 }
