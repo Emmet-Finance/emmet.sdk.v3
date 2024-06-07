@@ -38,13 +38,19 @@ export namespace ChainFactoryConfigs {
       },
       polygonParams: {
         addressBook: ethers.getAddress(
-          "0x825614461b92baf13aDE3124793579f6e10EcC55",
+          "0xEA844fAF9a240Ac9911c1bd2204cd1536f7859b6",
         ),
         provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
         // oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
         chainName: "polygon",
         nativeCoin: "MATIC",
       },
+      ethParams: {
+        addressBook: ethers.getAddress('0x0F416Ea0661BfD7Ffb5b79259Bd98Bd4496a5558'),
+        chainName: 'sepolia',
+        nativeCoin: "ETH",
+        provider: new JsonRpcProvider(TestNetRpcUri.ETH)
+      }
     } satisfies Partial<ChainParams>;
   }
 }
