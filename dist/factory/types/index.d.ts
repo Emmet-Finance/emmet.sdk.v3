@@ -7,7 +7,7 @@ type MetaMapAssert = {
     [idx in (typeof Chain)[keyof typeof Chain]]: unknown;
 };
 export type MetaMap = {
-    1: EvmMeta;
+    0: EvmMeta;
     7: EvmMeta;
     4: EvmMeta;
     65535: TonMeta;
@@ -15,7 +15,7 @@ export type MetaMap = {
 export declare namespace Chain {
     const POLYGON = 7;
     const BSC = 4;
-    const ETHEREUM = 1;
+    const ETHEREUM = 0;
     const TON = 65535;
 }
 export type ChainNonce = keyof MetaMap;
