@@ -15,6 +15,7 @@ function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   cToP.set(Chain.TON, chainParams.tonParams);
   cToP.set(Chain.POLYGON, chainParams.polygonParams);
   cToP.set(Chain.BSC, chainParams.bscParams);
+  cToP.set(Chain.ETHEREUM, chainParams.ethParams);
   return cToP;
 }
 
@@ -33,6 +34,13 @@ CHAIN_INFO.set(Chain.BSC, {
   name: "BSC",
   nonce: Chain.BSC,
 });
+
+CHAIN_INFO.set(Chain.ETHEREUM, {
+  constructor: web3Helper,
+  decimals: 18,
+  name: "Ethereum",
+  nonce: Chain.ETHEREUM
+})
 
 CHAIN_INFO.set(Chain.TON, {
   decimals: 18,

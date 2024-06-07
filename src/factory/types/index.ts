@@ -8,6 +8,7 @@ export type TonMeta = [TonHelper, TonParams];
 type MetaMapAssert = { [idx in (typeof Chain)[keyof typeof Chain]]: unknown };
 
 export type MetaMap = {
+  1: EvmMeta;
   7: EvmMeta;
   4: EvmMeta;
   65535: TonMeta;
@@ -16,6 +17,7 @@ export type MetaMap = {
 export namespace Chain {
   export const POLYGON = 7;
   export const BSC = 4;
+  export const ETHEREUM = 1;
   export const TON = 65535;
 }
 
