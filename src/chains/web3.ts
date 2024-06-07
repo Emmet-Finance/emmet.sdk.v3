@@ -26,7 +26,6 @@ import {
   WrappedERC20__factory,
 } from "@emmet-contracts/web3";
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
-import { ErrorDecoder } from "ethers-decode-error";
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -39,7 +38,8 @@ export type Web3Helper = GetBalance &
   NativeCoinName &
   AddressBook &
   TokenInfo &
-  ChainID & GetTxFee;
+  ChainID &
+  GetTxFee;
 
 export interface Web3Params {
   provider: Provider;
@@ -65,9 +65,13 @@ export async function web3Helper({
       return await addrBook.get(contr);
     },
     async txFee(targetChainId, fromToken, targetToken) {
-      const protocolFee = await data.protocolFee()
-      const ffc = await data.getForeignFeeCompensation(targetChainId, fromToken, targetToken)
-      return protocolFee.usdEquivalent + ffc
+      const protocolFee = await data.protocolFee();
+      const ffc = await data.getForeignFeeCompensation(
+        targetChainId,
+        fromToken,
+        targetToken,
+      );
+      return protocolFee.usdEquivalent + ffc;
     },
     async token(symbol) {
       const token = await data.getToken(symbol);
@@ -102,18 +106,13 @@ export async function web3Helper({
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, provider).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, gasArgs) => {
-      const ed = ErrorDecoder.create([bridge.interface]);
-      try {
-        const tx = await bridge
-          .connect(signer)
-          .sendInstallment(cid, amt, fs, ts, da, { ...gasArgs });
+      const tx = await bridge
+        .connect(signer)
+        .sendInstallment(cid, amt, fs, ts, da, { ...gasArgs });
         return {
-          tx: tx,
           hash: tx.hash,
-        };
-      } catch (e) {
-        throw await ed.decode(e);
-      }
+          tx: tx
+        }
     },
   };
 }
