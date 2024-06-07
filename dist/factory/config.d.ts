@@ -24,6 +24,12 @@ export declare namespace ChainFactoryConfigs {
             chainName: string;
             nativeCoin: string;
         };
+        ethParams: {
+            addressBook: string;
+            chainName: string;
+            nativeCoin: string;
+            provider: ethers.JsonRpcProvider;
+        };
     };
 }
 //# sourceMappingURL=config.d.ts.map
