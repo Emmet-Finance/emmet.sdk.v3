@@ -11,11 +11,13 @@ import {
 import type {
   ChainID,
   ChainName,
+  FetchTxInfo,
   GetBalance,
   GetProvider,
   GetTokenBalance,
   GetTxFee,
   NativeCoinName,
+  ProtocolFee,
   SendInstallment,
   ValidateAddress,
 } from ".";
@@ -35,7 +37,8 @@ export type TonHelper = GetBalance &
   GetTxFee &
   ChainName &
   NativeCoinName &
-  ChainID;
+  ChainID &
+  FetchTxInfo & ProtocolFee;
 
 export interface TonParams {
   client: TonClient;
@@ -203,22 +206,8 @@ export function tonHandler({
     nativeCoin: () => "TON",
     chainName: () => chainName,
     txFee(coin_name) {
-      throw new Error(`Unimplemented ${coin_name}`)
+      throw new Error(`Unimplemented ${coin_name}`);
     },
-    // getCoinPrice: async (coin) => {
-    //   const pf = await oracleContract.getPriceFeed();
-    //   const cid = BigInt(`0x${sha256_sync(coin).toString("hex")}`);
-    //   const data = pf.get(cid);
-    //   if (!data) {
-    //     throw new Error(`No price info found for symbol ${coin}, id ${cid}`);
-    //   }
-    //   return data.price;
-    // },
-    
-    // calculateTransactionFees: async (chain_name) =>
-    //   oracleContract.getCalculateTransactionFees(chain_name),
-    // calculateCoinFees: async (coin_name, amt) =>
-    //   oracleContract.getCalculateCoinFees(coin_name, amt),
     balance: (addr) => client.getBalance(Address.parse(addr)),
     provider: () => client,
     validateAddress: (addr) => {
@@ -227,6 +216,26 @@ export function tonHandler({
         return Promise.resolve(true);
       } catch (e) {
         return Promise.resolve(false);
+      }
+    },
+    protocolFee() {
+      return bridgeReader.getProtocolFee()
+    },
+    async txInfo(hash) {
+      try {
+        const tx = await client.getTransactions(bridge, {
+          limit: 1,
+          hash: hash,
+        });
+        return {
+          timestamp: BigInt(tx[0].now),
+          value: tx[0].totalFees.coins,
+        };
+      } catch (_) {
+        return {
+          timestamp: 0n,
+          value: 0n,
+        };
       }
     },
     tokenBalance: async (token, addr) => {

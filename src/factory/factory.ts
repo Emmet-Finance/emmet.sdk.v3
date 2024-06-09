@@ -10,6 +10,7 @@ import type {
   HelperMap,
   ParamMap,
 } from "./types";
+import { ChainIDToDomain, type SupportedChainID } from "../explorer-utils";
 
 function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   const cToP: ParamMap = new Map();
@@ -91,6 +92,25 @@ export function ChainFactoryBuilder(
           destinationHash: e.destinationHash,
         };
       });
+    },
+    async getTransaction(nonce) {
+      const emmetTx = await multisig.hashes(nonce)
+      const tx = await multisig.getTransaction(emmetTx);
+      const fcNonce: ChainNonce = ChainIDToDomain[Number(tx.fromChainId) as SupportedChainID];
+      const tcNonce: ChainNonce =
+        ChainIDToDomain[Number(tx.fromChainId) as SupportedChainID];
+      const fcHandler = await inner(fcNonce);
+      const fcInfo = await fcHandler.txInfo(tx.originalHash);
+      const tcHandler = await inner(tcNonce)
+      const tcInfo = await tcHandler.txInfo(tx.destinationHash);
+      return {
+        ...tx,
+        fromChainFees: fcInfo.value,
+        fromChainTimestamp: fcInfo.timestamp,
+        targetChainFees: tcInfo.value,
+        targetChainTimestamp: tcInfo.timestamp,
+        protocolFee: await fcHandler.protocolFee()
+      }
     },
     sendInstallment: async (
       chain,

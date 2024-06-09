@@ -8,6 +8,7 @@ import type {
   AddressBook,
   ChainID,
   ChainName,
+  FetchTxInfo,
   GetApprovedTokenAmount,
   GetBalance,
   GetProvider,
@@ -15,6 +16,7 @@ import type {
   GetTxFee,
   NativeCoinName,
   PreTransfer,
+  ProtocolFee,
   SendInstallment,
   TokenInfo,
   ValidateAddress,
@@ -39,7 +41,8 @@ export type Web3Helper = GetBalance &
   AddressBook &
   TokenInfo &
   ChainID &
-  GetTxFee;
+  GetTxFee &
+  FetchTxInfo & ProtocolFee;
 
 export interface Web3Params {
   provider: Provider;
@@ -72,6 +75,26 @@ export async function web3Helper({
         targetToken,
       );
       return protocolFee.usdEquivalent + ffc;
+    },
+    async txInfo(hash) {
+      try {
+        const receipt = await provider.waitForTransaction(hash);
+        if (!receipt)
+          throw new Error(`No such transaction found with hash: ${hash}`);
+        const block = await provider.getBlock(receipt.blockNumber);
+        return {
+          timestamp: BigInt(block?.timestamp ?? 0),
+          value: receipt.fee,
+        };
+      } catch (_) {
+        return {
+          timestamp: 0n,
+          value: 0n,
+        };
+      }
+    },
+    protocolFee() {
+      return data.getProtocolFee()
     },
     async token(symbol) {
       const token = await data.getToken(symbol);
@@ -109,10 +132,10 @@ export async function web3Helper({
       const tx = await bridge
         .connect(signer)
         .sendInstallment(cid, amt, fs, ts, da, { ...gasArgs });
-        return {
-          hash: tx.hash,
-          tx: tx
-        }
+      return {
+        hash: tx.hash,
+        tx: tx,
+      };
     },
   };
 }

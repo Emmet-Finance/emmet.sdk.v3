@@ -94,6 +94,7 @@ export interface ChainFactory {
     batch: bigint | number,
     offset: bigint | number,
   ) => Promise<Transaction[]>;
+  getTransaction: (nonce: string) => Promise<DetailedTx>
   getTxCount: () => Promise<bigint>;
 }
 
@@ -108,3 +109,9 @@ export interface Transaction {
   originalHash: string;
   destinationHash: string;
 }
+export type DetailedTx = Transaction & {
+  fromChainTimestamp: bigint;
+  targetChainTimestamp: bigint;
+  fromChainFees: bigint;
+  targetChainFees: bigint;
+};
