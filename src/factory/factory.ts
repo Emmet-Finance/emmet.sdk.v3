@@ -73,6 +73,9 @@ export function ChainFactoryBuilder(
       const pt = await chain.preTransfer(signer, tid, amt, ga);
       return pt;
     },
+    getTxCount() {
+      return multisig.nonce()
+    },
     async getTransactions(batch, offset) {
       const txs = await multisig.getTransactions(batch, offset);
       return txs.map((e) => {

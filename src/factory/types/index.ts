@@ -94,6 +94,7 @@ export interface ChainFactory {
     batch: bigint | number,
     offset: bigint | number,
   ) => Promise<Transaction[]>;
+  getTxCount: () => Promise<bigint>;
 }
 
 export interface Transaction {
