@@ -57,6 +57,7 @@ export interface ChainFactory {
     }>;
     preTransfer: <Signer, GasArgs>(chain: PreTransfer<Signer, GasArgs>, signer: Signer, tid: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
     getTransactions: (batch: bigint | number, offset: bigint | number) => Promise<Transaction[]>;
+    getTransaction: (nonce: string) => Promise<DetailedTx>;
     getTxCount: () => Promise<bigint>;
 }
 export interface Transaction {
@@ -70,5 +71,11 @@ export interface Transaction {
     originalHash: string;
     destinationHash: string;
 }
+export type DetailedTx = Transaction & {
+    fromChainTimestamp: bigint;
+    targetChainTimestamp: bigint;
+    fromChainFees: bigint;
+    targetChainFees: bigint;
+};
 export {};
 //# sourceMappingURL=index.d.ts.map

@@ -120,4 +120,14 @@ export interface ChainName {
 export interface NativeCoinName {
     nativeCoin: () => string;
 }
+export interface ProtocolFee {
+    protocolFee: () => Promise<bigint>;
+}
+export interface FetchTxInfo {
+    txInfo: (hash: string) => Promise<TxInfo>;
+}
+export interface TxInfo {
+    timestamp: bigint;
+    value: bigint;
+}
 //# sourceMappingURL=index.d.ts.map
