@@ -30,6 +30,10 @@ export declare namespace ChainFactoryConfigs {
             nativeCoin: string;
             provider: ethers.JsonRpcProvider;
         };
+        multisigParams: {
+            provider: ethers.JsonRpcProvider;
+            address: string;
+        };
     };
 }
 //# sourceMappingURL=config.d.ts.map
