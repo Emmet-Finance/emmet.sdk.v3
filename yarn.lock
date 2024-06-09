@@ -63,7 +63,7 @@
 
 "@emmet-contracts/web3@git+https://github.com/Emmet-Finance/emmet-types#web3":
   version "0.1.0"
-  resolved "git+https://github.com/Emmet-Finance/emmet-types#5f450650af5fbfb4bf29f28d16c0a1d515e36bf6"
+  resolved "git+https://github.com/Emmet-Finance/emmet-types#88b13e3342ae1fcb8c0d4c4962bbaf311325ea73"
   dependencies:
     ethers "=6.13.0"
 

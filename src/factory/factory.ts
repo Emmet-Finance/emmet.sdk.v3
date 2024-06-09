@@ -1,3 +1,4 @@
+import { EmmetMultisig__factory } from "@emmet-contracts/web3";
 import { tonHandler } from "../chains/ton";
 import { web3Helper } from "../chains/web3";
 import { Chain, type ChainFactory } from "./types";
@@ -39,8 +40,8 @@ CHAIN_INFO.set(Chain.ETHEREUM, {
   constructor: web3Helper,
   decimals: 18,
   name: "Ethereum",
-  nonce: Chain.ETHEREUM
-})
+  nonce: Chain.ETHEREUM,
+});
 
 CHAIN_INFO.set(Chain.TON, {
   decimals: 18,
@@ -55,6 +56,7 @@ export function ChainFactoryBuilder(
   const helpers: HelperMap<ChainNonce> = new Map();
 
   const cToP = mapNonceToParams(chainParams);
+  const multisig = EmmetMultisig__factory.connect(chainParams.multisigParams!.address, chainParams.multisigParams?.provider);
 
   const inner = async <T extends ChainNonce>(chain: T) => {
     let helper = helpers.get(chain);
@@ -70,6 +72,22 @@ export function ChainFactoryBuilder(
     preTransfer: async (chain, signer, tid, amt, ga) => {
       const pt = await chain.preTransfer(signer, tid, amt, ga);
       return pt;
+    },
+    async getTransactions(batch, offset) {
+      const txs = await multisig.getTransactions(batch, offset);
+      return txs.map((e) => {
+        return {
+          nonce: e.nonce,
+          amount: e.amount,
+          fromChainId: e.fromChainId,
+          toChainId: e.toChainId,
+          fromToken: e.fromToken,
+          toToken: e.toToken,
+          recipient: e.recipient,
+          originalHash: e.originalHash,
+          destinationHash: e.destinationHash,
+        };
+      });
     },
     sendInstallment: async (
       chain,

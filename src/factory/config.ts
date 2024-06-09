@@ -46,11 +46,19 @@ export namespace ChainFactoryConfigs {
         nativeCoin: "MATIC",
       },
       ethParams: {
-        addressBook: ethers.getAddress('0x0F416Ea0661BfD7Ffb5b79259Bd98Bd4496a5558'),
-        chainName: 'sepolia',
+        addressBook: ethers.getAddress(
+          "0x0F416Ea0661BfD7Ffb5b79259Bd98Bd4496a5558",
+        ),
+        chainName: "sepolia",
         nativeCoin: "ETH",
-        provider: new JsonRpcProvider(TestNetRpcUri.ETH)
-      }
+        provider: new JsonRpcProvider(TestNetRpcUri.ETH),
+      },
+      multisigParams: {
+        provider: new JsonRpcProvider(TestNetRpcUri.ETH),
+        address: ethers.getAddress(
+          "0x741a4c543ea54fc09b354f3259ac93a3a1dd3282",
+        ),
+      },
     } satisfies Partial<ChainParams>;
   }
 }

@@ -1,6 +1,7 @@
 import type { Web3Helper, Web3Params } from "../../chains/web3";
 import type { TonHelper, TonParams } from "../../chains/ton";
 import type { PreTransfer, SendInstallment } from "../../chains";
+import type { JsonRpcProvider } from "ethers";
 
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
@@ -47,6 +48,10 @@ export interface ChainParams {
   ethParams: Web3Params;
   polygonParams: Web3Params;
   tonParams: TonParams;
+  multisigParams: {
+    provider: JsonRpcProvider;
+    address: string;
+  }
 }
 
 export interface ChainData<T extends ChainNonce> {
@@ -85,4 +90,20 @@ export interface ChainFactory {
     amount: bigint,
     gasArgs: GasArgs,
   ) => Promise<string>;
+  getTransactions: (
+    batch: bigint | number,
+    offset: bigint | number,
+  ) => Promise<Transaction[]>;
+}
+
+export interface Transaction {
+  nonce: bigint;
+  amount: bigint;
+  fromChainId: bigint;
+  toChainId: bigint;
+  fromToken: string;
+  toToken: string;
+  recipient: string;
+  originalHash: string;
+  destinationHash: string;
 }
