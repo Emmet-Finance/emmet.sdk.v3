@@ -57,7 +57,10 @@ export function ChainFactoryBuilder(
   const helpers: HelperMap<ChainNonce> = new Map();
 
   const cToP = mapNonceToParams(chainParams);
-  const multisig = EmmetMultisig__factory.connect(chainParams.multisigParams!.address, chainParams.multisigParams?.provider);
+  const multisig = EmmetMultisig__factory.connect(
+    chainParams.multisigParams!.address,
+    chainParams.multisigParams?.provider,
+  );
 
   const inner = async <T extends ChainNonce>(chain: T) => {
     let helper = helpers.get(chain);
@@ -75,7 +78,7 @@ export function ChainFactoryBuilder(
       return pt;
     },
     getTxCount() {
-      return multisig.nonce()
+      return multisig.nonce();
     },
     async getTransactions(batch, offset) {
       const txs = await multisig.getTransactions(batch, offset);
@@ -92,18 +95,19 @@ export function ChainFactoryBuilder(
           destinationHash: e.destinationHash,
           started: e.started,
           finished: e.finished,
-          txHash: e.txHash
+          txHash: e.txHash,
         };
       });
     },
     async getTransaction(hash) {
       const tx = await multisig.getTransaction(hash);
-      const fcNonce: ChainNonce = ChainIDToDomain[Number(tx.fromChainId) as SupportedChainID];
+      const fcNonce: ChainNonce =
+        ChainIDToDomain[Number(tx.fromChainId) as SupportedChainID];
       const tcNonce: ChainNonce =
         ChainIDToDomain[Number(tx.toChainId) as SupportedChainID];
       const fcHandler = await inner(fcNonce);
       const fcInfo = await fcHandler.txInfo(tx.originalHash);
-      const tcHandler = await inner(tcNonce)
+      const tcHandler = await inner(tcNonce);
       const tcInfo = await tcHandler.txInfo(tx.destinationHash);
       return {
         fromChainFees: fcInfo.value,

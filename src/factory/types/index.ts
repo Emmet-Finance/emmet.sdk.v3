@@ -51,7 +51,7 @@ export interface ChainParams {
   multisigParams: {
     provider: JsonRpcProvider;
     address: string;
-  }
+  };
 }
 
 export interface ChainData<T extends ChainNonce> {
@@ -94,7 +94,7 @@ export interface ChainFactory {
     batch: bigint | number,
     offset: bigint | number,
   ) => Promise<Transaction[]>;
-  getTransaction: (hash: string) => Promise<DetailedTx>
+  getTransaction: (hash: string) => Promise<DetailedTx>;
   getTxCount: () => Promise<bigint>;
 }
 

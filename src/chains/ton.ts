@@ -38,7 +38,8 @@ export type TonHelper = GetBalance &
   ChainName &
   NativeCoinName &
   ChainID &
-  FetchTxInfo & ProtocolFee;
+  FetchTxInfo &
+  ProtocolFee;
 
 export interface TonParams {
   client: TonClient;
@@ -219,7 +220,7 @@ export function tonHandler({
       }
     },
     protocolFee() {
-      return bridgeReader.getProtocolFee()
+      return bridgeReader.getProtocolFee();
     },
     async txInfo(hash) {
       try {

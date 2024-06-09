@@ -148,7 +148,11 @@ export interface GetApprovedTokenAmount {
 }
 
 export interface GetTxFee {
-  txFee: (targetChain: bigint, fromToken: string, targetToken: string) => Promise<bigint>;
+  txFee: (
+    targetChain: bigint,
+    fromToken: string,
+    targetToken: string,
+  ) => Promise<bigint>;
 }
 
 export interface ChainName {
@@ -160,14 +164,14 @@ export interface NativeCoinName {
 }
 
 export interface ProtocolFee {
-  protocolFee: () => Promise<bigint>
+  protocolFee: () => Promise<bigint>;
 }
 
 export interface FetchTxInfo {
-  txInfo: (hash: string) => Promise<TxInfo>
+  txInfo: (hash: string) => Promise<TxInfo>;
 }
 
 export interface TxInfo {
   timestamp: bigint;
-  value: bigint
+  value: bigint;
 }

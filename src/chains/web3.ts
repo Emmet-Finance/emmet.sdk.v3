@@ -42,7 +42,8 @@ export type Web3Helper = GetBalance &
   TokenInfo &
   ChainID &
   GetTxFee &
-  FetchTxInfo & ProtocolFee;
+  FetchTxInfo &
+  ProtocolFee;
 
 export interface Web3Params {
   provider: Provider;
@@ -77,7 +78,7 @@ export async function web3Helper({
       return protocolFee.usdEquivalent + ffc;
     },
     async txInfo(hash) {
-      if (!hash.startsWith('0x')) {
+      if (!hash.startsWith("0x")) {
         //biome-ignore lint/style/noParameterAssign: ignore
         hash = `0x${hash}`;
       }
@@ -98,7 +99,7 @@ export async function web3Helper({
       }
     },
     protocolFee() {
-      return data.getProtocolFee()
+      return data.getProtocolFee();
     },
     async token(symbol) {
       const token = await data.getToken(symbol);
