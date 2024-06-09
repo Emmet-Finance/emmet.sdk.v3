@@ -43,7 +43,7 @@ var ChainFactoryConfigs;
             },
             multisigParams: {
                 provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.ETH),
-                address: ethers_1.ethers.getAddress("0x741a4c543ea54fc09b354f3259ac93a3a1dd3282"),
+                address: ethers_1.ethers.getAddress("0xcc102b74015F765B619D574283023739153f4cc5"),
             },
         };
     }
