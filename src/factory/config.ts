@@ -56,7 +56,7 @@ export namespace ChainFactoryConfigs {
       multisigParams: {
         provider: new JsonRpcProvider(TestNetRpcUri.ETH),
         address: ethers.getAddress(
-          "0x741a4c543ea54fc09b354f3259ac93a3a1dd3282",
+          "0xcc102b74015F765B619D574283023739153f4cc5",
         ),
       },
     } satisfies Partial<ChainParams>;

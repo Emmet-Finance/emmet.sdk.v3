@@ -77,6 +77,10 @@ export async function web3Helper({
       return protocolFee.usdEquivalent + ffc;
     },
     async txInfo(hash) {
+      if (!hash.startsWith('0x')) {
+        //biome-ignore lint/style/noParameterAssign: ignore
+        hash = `0x${hash}`;
+      }
       try {
         const receipt = await provider.waitForTransaction(hash);
         if (!receipt)

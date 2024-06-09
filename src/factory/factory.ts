@@ -90,27 +90,40 @@ export function ChainFactoryBuilder(
           recipient: e.recipient,
           originalHash: e.originalHash,
           destinationHash: e.destinationHash,
+          started: e.started,
+          finished: e.finished,
+          txHash: e.txHash
         };
       });
     },
-    async getTransaction(nonce) {
-      const emmetTx = await multisig.hashes(nonce)
-      const tx = await multisig.getTransaction(emmetTx);
+    async getTransaction(hash) {
+      const tx = await multisig.getTransaction(hash);
       const fcNonce: ChainNonce = ChainIDToDomain[Number(tx.fromChainId) as SupportedChainID];
       const tcNonce: ChainNonce =
-        ChainIDToDomain[Number(tx.fromChainId) as SupportedChainID];
+        ChainIDToDomain[Number(tx.toChainId) as SupportedChainID];
       const fcHandler = await inner(fcNonce);
       const fcInfo = await fcHandler.txInfo(tx.originalHash);
       const tcHandler = await inner(tcNonce)
       const tcInfo = await tcHandler.txInfo(tx.destinationHash);
       return {
-        ...tx,
         fromChainFees: fcInfo.value,
         fromChainTimestamp: fcInfo.timestamp,
         targetChainFees: tcInfo.value,
         targetChainTimestamp: tcInfo.timestamp,
-        protocolFee: await fcHandler.protocolFee()
-      }
+        protocolFee: await fcHandler.protocolFee(),
+        nonce: tx.nonce,
+        amount: tx.amount,
+        fromChainId: tx.fromChainId,
+        toChainId: tx.toChainId,
+        fromToken: tx.fromToken,
+        toToken: tx.toToken,
+        recipient: tx.recipient,
+        originalHash: tx.originalHash,
+        destinationHash: tx.destinationHash,
+        started: tx.started,
+        finished: tx.finished,
+        txHash: tx.txHash,
+      };
     },
     sendInstallment: async (
       chain,
