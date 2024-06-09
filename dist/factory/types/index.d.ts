@@ -57,6 +57,7 @@ export interface ChainFactory {
     }>;
     preTransfer: <Signer, GasArgs>(chain: PreTransfer<Signer, GasArgs>, signer: Signer, tid: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
     getTransactions: (batch: bigint | number, offset: bigint | number) => Promise<Transaction[]>;
+    getTxCount: () => Promise<bigint>;
 }
 export interface Transaction {
     nonce: bigint;
