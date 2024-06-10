@@ -117,4 +117,5 @@ export type DetailedTx = Transaction & {
   targetChainTimestamp: bigint;
   fromChainFees: bigint;
   targetChainFees: bigint;
+  protocolFee: bigint;
 };
