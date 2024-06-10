@@ -175,3 +175,7 @@ export interface TxInfo {
   timestamp: bigint;
   value: bigint;
 }
+
+export interface GetEmmetHashFromTx {
+  emmetHashFromtx: (hash: string) => Promise<string>;
+}

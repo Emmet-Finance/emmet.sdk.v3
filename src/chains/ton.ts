@@ -13,6 +13,7 @@ import type {
   ChainName,
   FetchTxInfo,
   GetBalance,
+  GetEmmetHashFromTx,
   GetProvider,
   GetTokenBalance,
   GetTxFee,
@@ -21,7 +22,7 @@ import type {
   SendInstallment,
   ValidateAddress,
 } from ".";
-import { Bridge } from "../contracts/ton";
+import { Bridge, loadSendInstallment } from "../contracts/ton";
 import { sha256_sync } from "@ton/crypto";
 import { Oracle } from "../contracts/ton/oracle";
 import { WrappedJetton } from "../contracts/ton/jetton-master";
@@ -39,7 +40,8 @@ export type TonHelper = GetBalance &
   NativeCoinName &
   ChainID &
   FetchTxInfo &
-  ProtocolFee;
+  ProtocolFee &
+  GetEmmetHashFromTx;
 
 export interface TonParams {
   client: TonClient;
@@ -203,6 +205,23 @@ export function tonHandler({
   }
 
   return {
+    async emmetHashFromtx(hash) {
+      const txs = await client.getTransactions(bridge, {
+        hash,
+        limit: 10,
+      });
+      for (const tx of txs) {
+        for (let i = 0; i < tx.outMessagesCount; i++) {
+          const om = tx.outMessages.get(i)!;
+          const code = om.body.asSlice().loadUint(32);
+          if (code === 3788443406) {
+            const instmt = loadSendInstallment(om.body.asSlice());
+            return `0x${instmt.tx_id.toString(16)}`;
+          }
+        }
+      }
+      throw new Error("No send installment found");
+    },
     id: () => Promise.resolve(chainId),
     nativeCoin: () => "TON",
     chainName: () => chainName,

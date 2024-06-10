@@ -11,6 +11,7 @@ import type {
   FetchTxInfo,
   GetApprovedTokenAmount,
   GetBalance,
+  GetEmmetHashFromTx,
   GetProvider,
   GetTokenBalance,
   GetTxFee,
@@ -43,7 +44,8 @@ export type Web3Helper = GetBalance &
   ChainID &
   GetTxFee &
   FetchTxInfo &
-  ProtocolFee;
+  ProtocolFee &
+  GetEmmetHashFromTx;
 
 export interface Web3Params {
   provider: Provider;
@@ -103,6 +105,19 @@ export async function web3Helper({
           value: 0n,
         };
       }
+    },
+    async emmetHashFromtx(hash) {
+      const receipt = await provider.waitForTransaction(hash);
+      if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
+      const log = receipt.logs.find((e) =>
+        e.topics.includes(
+          bridge.interface.getEvent("SendInstallment").topicHash,
+        ),
+      );
+      if (!log)
+        throw new Error(`No send installment log found for tx hash: ${hash}`);
+      const decode = bridge.interface.parseLog(log);
+      return decode?.args.txHash;
     },
     protocolFee() {
       return data.getProtocolFee();
