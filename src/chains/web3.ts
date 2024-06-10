@@ -78,6 +78,12 @@ export async function web3Helper({
       return protocolFee.usdEquivalent + ffc;
     },
     async txInfo(hash) {
+      if (hash === "") {
+        return {
+          timestamp: 0n,
+          value: 0n,
+        };
+      }
       if (!hash.startsWith("0x")) {
         //biome-ignore lint/style/noParameterAssign: ignore
         hash = `0x${hash}`;
@@ -91,7 +97,7 @@ export async function web3Helper({
           timestamp: BigInt(block?.timestamp ?? 0),
           value: receipt.fee,
         };
-      } catch (_) {
+      } catch (e) {
         return {
           timestamp: 0n,
           value: 0n,
