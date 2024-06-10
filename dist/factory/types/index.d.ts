@@ -79,6 +79,7 @@ export type DetailedTx = Transaction & {
     targetChainTimestamp: bigint;
     fromChainFees: bigint;
     targetChainFees: bigint;
+    protocolFee: bigint;
 };
 export {};
 //# sourceMappingURL=index.d.ts.map
