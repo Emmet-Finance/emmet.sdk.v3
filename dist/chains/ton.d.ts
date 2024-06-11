@@ -1,10 +1,10 @@
 import { Address, type Sender, type TonClient } from "@ton/ton";
-import type { ChainID, ChainName, FetchTxInfo, GetBalance, GetEmmetHashFromTx, GetProvider, GetTokenBalance, GetTxFee, NativeCoinName, ProtocolFee, SendInstallment, ValidateAddress } from ".";
+import type { ChainID, ChainName, FetchTxInfo, GetBalance, GetEmmetHashFromTx, GetProvider, GetTokenBalance, GetTxFee, NativeCoinName, ProtocolFee, SendInstallment, TokenInfo, ValidateAddress } from ".";
 export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
 };
-export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, string, TonGasArgs> & ValidateAddress & GetTokenBalance & GetTxFee & ChainName & NativeCoinName & ChainID & FetchTxInfo & ProtocolFee & GetEmmetHashFromTx;
+export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, string, TonGasArgs> & ValidateAddress & GetTokenBalance & GetTxFee & ChainName & NativeCoinName & ChainID & FetchTxInfo & ProtocolFee & GetEmmetHashFromTx & TokenInfo;
 export interface TonParams {
     client: TonClient;
     bridge: Address;
