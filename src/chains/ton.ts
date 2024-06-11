@@ -14,6 +14,7 @@ import type {
   FetchTxInfo,
   GetBalance,
   GetEmmetHashFromTx,
+  GetEstimatedTime,
   GetProvider,
   GetTokenBalance,
   GetTxFee,
@@ -43,7 +44,8 @@ export type TonHelper = GetBalance &
   FetchTxInfo &
   ProtocolFee &
   GetEmmetHashFromTx &
-  TokenInfo;
+  TokenInfo &
+  GetEstimatedTime;
 
 export interface TonParams {
   client: TonClient;
@@ -236,6 +238,7 @@ export function tonHandler({
   }
 
   return {
+    estimateTime: () => Promise.resolve(undefined),
     async emmetHashFromtx(hash) {
       const txs = await client.getTransactions(bridge, {
         hash,

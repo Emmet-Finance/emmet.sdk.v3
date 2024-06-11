@@ -12,6 +12,7 @@ import type {
   GetApprovedTokenAmount,
   GetBalance,
   GetEmmetHashFromTx,
+  GetEstimatedTime,
   GetProvider,
   GetTokenBalance,
   GetTxFee,
@@ -45,7 +46,8 @@ export type Web3Helper = GetBalance &
   GetTxFee &
   FetchTxInfo &
   ProtocolFee &
-  GetEmmetHashFromTx;
+  GetEmmetHashFromTx &
+  GetEstimatedTime;
 
 export interface Web3Params {
   provider: Provider;
@@ -152,6 +154,26 @@ export async function web3Helper({
       ),
     balance: (addr) => provider.getBalance(addr),
     provider: () => provider,
+    async estimateTime(targetChain, fromToken, targetToken) {
+      const ts = await data.getCrossChainTokenStrategy(
+        targetChain,
+        fromToken,
+        targetToken,
+      );
+      const localSteps = ts[0];
+      const foreignSteps = ts[1];
+      const isCCTP =
+        foreignSteps.includes(1n) ||
+        foreignSteps.includes(2n) ||
+        localSteps.includes(1n) ||
+        localSteps.includes(2n);
+      if (isCCTP) {
+        const time = await data.getCCTPChain(targetChain);
+        const timeInMs = (time.awaitMinutes * 60n + time.awaitSeconds) * 1000n;
+        return timeInMs;
+      }
+      return undefined;
+    },
     validateAddress: (addr) => Promise.resolve(isAddress(addr)),
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, provider).balanceOf(addr),

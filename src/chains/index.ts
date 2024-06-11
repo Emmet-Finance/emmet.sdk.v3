@@ -179,3 +179,11 @@ export interface TxInfo {
 export interface GetEmmetHashFromTx {
   emmetHashFromtx: (hash: string) => Promise<string>;
 }
+
+export interface GetEstimatedTime {
+  estimateTime(
+    targetChain: bigint,
+    fromToken: string,
+    targetToken: string,
+  ): Promise<bigint | undefined>;
+}
