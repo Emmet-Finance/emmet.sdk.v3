@@ -136,11 +136,12 @@ export async function web3Helper({
     nativeCoin: () => nativeCoin,
     chainName: () => chainName,
     preTransfer: async (signer, tid, amt, gasArgs) => {
-      const approved = await WrappedERC20__factory.connect(tid, signer).approve(
-        bridge,
-        amt,
-        gasArgs,
-      );
+      const erc = WrappedERC20__factory.connect(tid, signer);
+      const preTransferGas = await erc.approve.estimateGas(bridge, amt);
+      const approved = await erc.approve(bridge, amt, {
+        ...gasArgs,
+        gasLimit: preTransferGas,
+      });
       return approved.hash;
     },
 
@@ -155,9 +156,15 @@ export async function web3Helper({
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, provider).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, gasArgs) => {
+      const sendGas = await bridge
+        .connect(signer)
+        .sendInstallment.estimateGas(cid, amt, fs, ts, da);
       const tx = await bridge
         .connect(signer)
-        .sendInstallment(cid, amt, fs, ts, da, { ...gasArgs });
+        .sendInstallment(cid, amt, fs, ts, da, {
+          ...gasArgs,
+          gasLimit: sendGas,
+        });
       return {
         hash: tx.hash,
         tx: tx,
