@@ -131,7 +131,7 @@ export function tonHandler({
         query_id: 0n,
         destination: burner,
         forward_payload: beginCell()
-          .storeUint(cid, 16) // Target Chain
+          .storeUint(cid, 64) // Target Chain
           .storeRef(
             beginCell()
               .storeUint(toKey(fromToken), 256)
@@ -178,7 +178,7 @@ export function tonHandler({
         custom_payload: null,
         destination: bridge,
         forward_payload: beginCell()
-          .storeUint(target_chain, 16) // Target Chain
+          .storeUint(target_chain, 64) // Target Chain
           .storeRef(
             beginCell()
               .storeUint(toKey(fromToken), 256)
