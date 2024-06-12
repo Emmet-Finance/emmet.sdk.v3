@@ -427,28 +427,6 @@ export declare function loadMapContract(slice: Slice): {
     swap_address: Address;
     token_bridge_wallet_address: Address;
 };
-export type AddChain = {
-    $$type: 'AddChain';
-    chain_id: bigint;
-    chain_name: string;
-};
-export declare function storeAddChain(src: AddChain): (builder: Builder) => void;
-export declare function loadAddChain(slice: Slice): {
-    $$type: "AddChain";
-    chain_id: bigint;
-    chain_name: string;
-};
-export type UpdateChain = {
-    $$type: 'UpdateChain';
-    chain_id: bigint;
-    chain_name: string;
-};
-export declare function storeUpdateChain(src: UpdateChain): (builder: Builder) => void;
-export declare function loadUpdateChain(slice: Slice): {
-    $$type: "UpdateChain";
-    chain_id: bigint;
-    chain_name: string;
-};
 export type SetChainFee = {
     $$type: 'SetChainFee';
     chain_id: bigint;
@@ -533,15 +511,6 @@ export declare function loadToken(slice: Slice): {
     fee: bigint;
     fee_decimals: bigint;
     token_bridge_wallet_address: Address;
-};
-export type ChainName = {
-    $$type: 'ChainName';
-    name: string;
-};
-export declare function storeChainName(src: ChainName): (builder: Builder) => void;
-export declare function loadChainName(slice: Slice): {
-    $$type: "ChainName";
-    name: string;
 };
 export type UpdateBaseUri = {
     $$type: 'UpdateBaseUri';
@@ -766,7 +735,7 @@ export declare class Bridge implements Contract {
     send(provider: ContractProvider, via: Sender, args: {
         value: bigint;
         bounce?: boolean | null | undefined;
-    }, message: JettonTransferNotification | JettonBurnNotification | FreezeTon | MapContract | AddChain | RemoveMappedContract | UpdateChain | 'WithdrawFees' | ReceiveInstallment | SetChainFee | JettonExcesses | UpdateProtocolFee | UpdateBaseUri | UpdateTransferFee | AddValidator | RemoveValidator | SetIncomingStrategy | SetCrossChainStrategy | RemoveCrossChainStrategy | RemoveInternalStrategy | null | 'Pause' | 'Unpause' | Deploy | GrantRole | RevokeRole | RenounceRole | UpdateRoleAdmin): Promise<void>;
+    }, message: JettonTransferNotification | JettonBurnNotification | FreezeTon | MapContract | RemoveMappedContract | 'WithdrawFees' | ReceiveInstallment | SetChainFee | JettonExcesses | UpdateProtocolFee | UpdateBaseUri | UpdateTransferFee | AddValidator | RemoveValidator | SetIncomingStrategy | SetCrossChainStrategy | RemoveCrossChainStrategy | RemoveInternalStrategy | null | 'Pause' | 'Unpause' | Deploy | GrantRole | RevokeRole | RenounceRole | UpdateRoleAdmin): Promise<void>;
     getWithdrawerRoleId(provider: ContractProvider): Promise<bigint>;
     getPauserRoleId(provider: ContractProvider): Promise<bigint>;
     getMappingAdminRoleId(provider: ContractProvider): Promise<bigint>;
@@ -782,7 +751,6 @@ export declare class Bridge implements Contract {
     getIncoming(provider: ContractProvider): Promise<Dictionary<bigint, IncomingTransaction>>;
     getOutgoing(provider: ContractProvider): Promise<Dictionary<bigint, OutgoingTransaction>>;
     getTokens(provider: ContractProvider): Promise<Dictionary<bigint, Token>>;
-    getSupportedChains(provider: ContractProvider): Promise<Dictionary<bigint, ChainName>>;
     getChainFees(provider: ContractProvider): Promise<Dictionary<bigint, bigint>>;
     getIncomingStrategy(provider: ContractProvider): Promise<Dictionary<bigint, TargetTokenToSteps>>;
     getCrossChainStrategy(provider: ContractProvider): Promise<Dictionary<bigint, FromTokenToTargetTokenToCrossChainStrategy>>;

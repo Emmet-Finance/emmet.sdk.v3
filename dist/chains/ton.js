@@ -44,7 +44,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
             query_id: 0n,
             destination: burner,
             forward_payload: (0, ton_1.beginCell)()
-                .storeUint(cid, 16) // Target Chain
+                .storeUint(cid, 64) // Target Chain
                 .storeRef((0, ton_1.beginCell)()
                 .storeUint(toKey(fromToken), 256)
                 .storeStringRefTail(fromToken)
@@ -71,7 +71,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
             custom_payload: null,
             destination: bridge,
             forward_payload: (0, ton_1.beginCell)()
-                .storeUint(target_chain, 16) // Target Chain
+                .storeUint(target_chain, 64) // Target Chain
                 .storeRef((0, ton_1.beginCell)()
                 .storeUint(toKey(fromToken), 256)
                 .storeStringRefTail(fromToken)
