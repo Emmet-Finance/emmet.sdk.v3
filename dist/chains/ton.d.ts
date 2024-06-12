@@ -15,4 +15,5 @@ export interface TonParams {
     chainId: bigint;
 }
 export declare function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, chainId, }: TonParams): TonHelper;
+export declare function raise(msg: string): never;
 //# sourceMappingURL=ton.d.ts.map
