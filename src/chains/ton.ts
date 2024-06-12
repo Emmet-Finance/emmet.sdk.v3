@@ -69,6 +69,10 @@ export function tonHandler({
   //@ts-ignore TODO: Use it.
   const oracleContract = client.open(Oracle.fromAddress(oracle));
   const bridgeReader = client.open(Bridge.fromAddress(bridge));
+  async function getLastBridgeTxHashInBase64() {
+    const txns = await client.getTransactions(bridge, { limit: 1 });
+    return txns[0].hash().toString("base64");
+  }
   async function transferTon(
     bridge: OpenedContract<Bridge>,
     sender: Sender,
@@ -320,11 +324,11 @@ export function tonHandler({
       destAddress,
       gasArgs,
     ) => {
+      const lastBridgeTxHash = await getLastBridgeTxHashInBase64();
       const bc = client.open(Bridge.fromAddress(bridge));
       const tid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
-      let hash = "";
       if (tid === nativeTokenId) {
-        hash = await transferTon(
+        await transferTon(
           bc,
           signer,
           destAddress,
@@ -334,7 +338,7 @@ export function tonHandler({
           gasArgs,
         );
       } else if (await isWrappedToken(tid)) {
-        hash = await transferJetton(
+        await transferJetton(
           burner,
           signer,
           fromSymbol,
@@ -345,7 +349,7 @@ export function tonHandler({
           gasArgs,
         );
       } else {
-        hash = await transferJetton(
+        await transferJetton(
           bridge,
           signer,
           fromSymbol,
@@ -356,6 +360,44 @@ export function tonHandler({
           gasArgs,
         );
       }
+
+      let foundTx = false;
+      let hash = "";
+      let retries = 0;
+      while (!foundTx && retries < 10) {
+        await new Promise((e) => setTimeout(e, 2000));
+        const latestTx = (
+          await client.getTransactions(bridge, { limit: 1 })
+        )[0];
+        if (latestTx.hash().toString("base64") === lastBridgeTxHash) {
+          await new Promise((e) => setTimeout(e, 10000));
+          retries++;
+          continue;
+        }
+        const txs = await client.getTransactions(bridge, { limit: 2 });
+        for (const tx of txs) {
+          for (let i = 0; i < tx.outMessages.size; i++) {
+            const msg = tx.outMessages.get(i) ?? raise("Unreachable");
+            if (tx.hash().toString("base64") === lastBridgeTxHash) {
+              await new Promise((e) => setTimeout(e, 10000));
+              continue;
+            }
+            if (msg.body.asSlice().loadUint(32) !== 1717832165) {
+              continue;
+            }
+            const log = loadSentInstallment(msg.body.asSlice());
+            const emmethash = log.tx_hash;
+            const txn = (await bridgeReader.getOutgoing()).get(emmethash) ?? raise("Unreachable");
+
+            if (destAddress === txn.to.asSlice().loadStringRefTail() && amt === txn.amount && txn.from_token.asSlice().loadStringRefTail() === fromSymbol) {
+              foundTx = true;
+              hash = tx.hash().toString("hex");
+            }
+          }
+        }
+        retries++;
+      }
+
 
       return {
         hash: hash,
@@ -368,3 +410,6 @@ export function tonHandler({
 const toKey = (key: string) => {
   return BigInt(`0x${sha256_sync(key).toString("hex")}`);
 };
+export function raise(msg: string): never {
+  throw new Error(msg)
+}
