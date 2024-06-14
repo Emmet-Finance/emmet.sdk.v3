@@ -18,24 +18,24 @@ exports.CHAIN_INFO = new Map();
 exports.CHAIN_INFO.set(types_1.Chain.POLYGON, {
     constructor: web3_2.web3Helper,
     decimals: 18,
-    name: "Polygon",
+    name: 'Polygon',
     nonce: types_1.Chain.POLYGON,
 });
 exports.CHAIN_INFO.set(types_1.Chain.BSC, {
     constructor: web3_2.web3Helper,
     decimals: 18,
-    name: "BSC",
+    name: 'BSC',
     nonce: types_1.Chain.BSC,
 });
 exports.CHAIN_INFO.set(types_1.Chain.ETHEREUM, {
     constructor: web3_2.web3Helper,
     decimals: 18,
-    name: "Ethereum",
+    name: 'Ethereum',
     nonce: types_1.Chain.ETHEREUM,
 });
 exports.CHAIN_INFO.set(types_1.Chain.TON, {
     decimals: 18,
-    name: "Ton",
+    name: 'Ton',
     nonce: types_1.Chain.TON,
     constructor: async (...args) => (0, ton_1.tonHandler)(...args),
 });
@@ -116,7 +116,7 @@ function ChainFactoryBuilder(chainParams) {
                 total24HourTransactions: tx.total24HourTransactions,
                 totalFees: tx.totalFees,
                 totalVolume: tx.totalVolume,
-                uniqueUser: tx.totalVolume,
+                uniqueUser: tx.uniqueUsers,
             };
         },
         sendInstallment: async (chain, signer, amount, chainId, fromSymbol, tokenSymbol, destAddress, gasArgs) => {
