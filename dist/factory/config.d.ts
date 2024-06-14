@@ -1,6 +1,6 @@
-import { ethers } from "ethers";
-import { Address } from "@ton/core";
-import { TonClient } from "@ton/ton";
+import { ethers } from 'ethers';
+import { Address } from '@ton/core';
+import { TonClient } from '@ton/ton';
 export declare namespace ChainFactoryConfigs {
     function TestNet(): {
         tonParams: {
