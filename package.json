@@ -16,7 +16,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@emmet-contracts/web3": "git+https://github.com/Emmet-Finance/emmet-types#web3",
+    "@emmet-contracts/web3": "git+https://github.com/Emmet-Finance/emmet-types#8bbb157d69adec83443b916fd0c9a1f919b93e77",
     "@ton/core": "^0.56.3",
     "@ton/crypto": "^3.2.0",
     "@ton/ton": "^13.11.1",
