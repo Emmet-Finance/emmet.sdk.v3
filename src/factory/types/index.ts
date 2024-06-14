@@ -95,13 +95,15 @@ export interface ChainFactory {
     offset: bigint | number,
   ) => Promise<Transaction[]>;
   getTransaction: (hash: string) => Promise<DetailedTx>;
+  getExplorerStats: () => Promise<ExplorerMeta>;
   getTxCount: () => Promise<bigint>;
 }
 
 export interface Transaction {
   txHash: string;
   nonce: bigint;
-  amount: bigint;
+  sentAmount: bigint;
+  receivedAmount: bigint;
   fromChainId: bigint;
   toChainId: bigint;
   fromToken: string;
@@ -119,3 +121,11 @@ export type DetailedTx = Transaction & {
   targetChainFees: bigint;
   protocolFee: bigint;
 };
+
+export interface ExplorerMeta {
+  totalTransactions: bigint;
+  total24HourTransactions: bigint;
+  totalFees: bigint;
+  totalVolume: bigint;
+  uniqueUser: bigint;
+}

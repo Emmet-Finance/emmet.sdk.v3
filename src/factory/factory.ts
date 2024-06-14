@@ -85,7 +85,8 @@ export function ChainFactoryBuilder(
       return txs.map((e) => {
         return {
           nonce: e.nonce,
-          amount: e.amount,
+          sentAmount: e.sentAmount,
+          receivedAmount: e.receivedAmount,
           fromChainId: e.fromChainId,
           toChainId: e.toChainId,
           fromToken: e.fromToken,
@@ -116,7 +117,8 @@ export function ChainFactoryBuilder(
         targetChainTimestamp: tcInfo.timestamp,
         protocolFee: await fcHandler.protocolFee(),
         nonce: tx.nonce,
-        amount: tx.amount,
+        sentAmount: tx.sentAmount,
+        receivedAmount: tx.receivedAmount,
         fromChainId: tx.fromChainId,
         toChainId: tx.toChainId,
         fromToken: tx.fromToken,
@@ -127,6 +129,16 @@ export function ChainFactoryBuilder(
         started: tx.started,
         finished: tx.finished,
         txHash: tx.txHash,
+      };
+    },
+    async getExplorerStats() {
+      const tx = await multisig.getStats();
+      return {
+        totalTransactions: tx.totalTransactions,
+        total24HourTransactions: tx.total24HourTransactions,
+        totalFees: tx.totalFees,
+        totalVolume: tx.totalVolume,
+        uniqueUser: tx.totalVolume,
       };
     },
     sendInstallment: async (
