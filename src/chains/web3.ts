@@ -11,6 +11,7 @@ import type {
   FetchTxInfo,
   GetApprovedTokenAmount,
   GetBalance,
+  GetBridgeAddress,
   GetEmmetHashFromTx,
   GetEstimatedTime,
   GetProvider,
@@ -47,7 +48,7 @@ export type Web3Helper = GetBalance &
   FetchTxInfo &
   ProtocolFee &
   GetEmmetHashFromTx &
-  GetEstimatedTime;
+  GetEstimatedTime & GetBridgeAddress
 
 export interface Web3Params {
   provider: Provider;
@@ -71,6 +72,9 @@ export async function web3Helper({
     id: async () => (await provider.getNetwork()).chainId,
     async address(contr) {
       return await addrBook.get(contr);
+    },
+    async bridge() {
+        return await bridge.getAddress()
     },
     async txFee(targetChainId, fromToken, targetToken) {
       const protocolFee = await data.protocolFee();

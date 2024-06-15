@@ -188,3 +188,7 @@ export interface GetEstimatedTime {
     targetToken: string,
   ): Promise<bigint | undefined>;
 }
+
+export interface GetBridgeAddress {
+  bridge:() => Promise<string>
+}
