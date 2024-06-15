@@ -13,6 +13,7 @@ import type {
   ChainName,
   FetchTxInfo,
   GetBalance,
+  GetBridgeAddress,
   GetEmmetHashFromTx,
   GetEstimatedTime,
   GetProvider,
@@ -45,7 +46,8 @@ export type TonHelper = GetBalance &
   ProtocolFee &
   GetEmmetHashFromTx &
   TokenInfo &
-  GetEstimatedTime;
+  GetEstimatedTime &
+  GetBridgeAddress
 
 export interface TonParams {
   client: TonClient;
@@ -261,6 +263,9 @@ export function tonHandler({
       throw new Error("No send installment found");
     },
     id: () => Promise.resolve(chainId),
+    async bridge() {
+        return await bridge.toString()
+    },
     nativeCoin: () => "TON",
     chainName: () => chainName,
     txFee(coin_name) {
