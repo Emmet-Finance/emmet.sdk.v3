@@ -97,7 +97,7 @@ export interface PreTransfer<Signer, GasArgs> {
      * @param amount The amount of tokens to be transferred.
      * @returns A promise that resolves to a string which is the hash of the transaction.
      */
-    preTransfer: (signer: Signer, token: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
+    preTransfer: (signer: Signer, token: string, spender: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
 }
 /**
  * Represents an interface for getting the approved token amount for a particular user.
