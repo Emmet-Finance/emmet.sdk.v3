@@ -143,7 +143,7 @@ export async function web3Helper({
     chainName: () => chainName,
     preTransfer: async (signer, tid, spender, amt, gasArgs) => {
       const erc = WrappedERC20__factory.connect(tid, signer);
-      const preTransferGas = await erc.approve.estimateGas(bridge, amt);
+      const preTransferGas = await erc.approve.estimateGas(spender, amt);
       const approved = await erc.approve(spender, amt, {
         ...gasArgs,
         gasLimit: preTransferGas,
@@ -152,10 +152,10 @@ export async function web3Helper({
       return approved.hash;
     },
 
-    getApprovedAmount: async (tid, owner) =>
+    getApprovedAmount: async (tid, owner, spender) =>
       await WrappedERC20__factory.connect(tid, provider).allowance(
         owner,
-        bridge
+        spender
       ),
     balance: (addr) => provider.getBalance(addr),
     provider: () => provider,
