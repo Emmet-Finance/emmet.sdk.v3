@@ -129,6 +129,7 @@ export interface PreTransfer<Signer, GasArgs> {
   preTransfer: (
     signer: Signer,
     token: string,
+    spender: string,
     amount: bigint,
     gasArgs: GasArgs,
   ) => Promise<string>;

@@ -73,8 +73,8 @@ export function ChainFactoryBuilder(
 
   return {
     inner,
-    preTransfer: async (chain, signer, tid, amt, ga) => {
-      const pt = await chain.preTransfer(signer, tid, amt, ga);
+    preTransfer: async (chain, signer, tid, spender, amt, ga) => {
+      const pt = await chain.preTransfer(signer, tid, spender, amt, ga);
       return pt;
     },
     getTxCount() {
@@ -141,6 +141,8 @@ export function ChainFactoryBuilder(
         uniqueUser: tx.uniqueUsers,
       };
     },
+    // async stakeTokenForPool(chain, signer, tokenSymbol, amount) {},
+    // async withdrawTokenForPool(chain, signer, tokenSymbol, amount) {},
     sendInstallment: async (
       chain,
       signer,

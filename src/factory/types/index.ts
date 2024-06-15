@@ -87,6 +87,7 @@ export interface ChainFactory {
     chain: PreTransfer<Signer, GasArgs>,
     signer: Signer,
     tid: string,
+    spender: string,
     amount: bigint,
     gasArgs: GasArgs,
   ) => Promise<string>;
