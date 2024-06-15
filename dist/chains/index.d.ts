@@ -136,4 +136,7 @@ export interface GetEmmetHashFromTx {
 export interface GetEstimatedTime {
     estimateTime(targetChain: bigint, fromToken: string, targetToken: string): Promise<bigint | undefined>;
 }
+export interface GetBridgeAddress {
+    bridge: () => Promise<string>;
+}
 //# sourceMappingURL=index.d.ts.map
