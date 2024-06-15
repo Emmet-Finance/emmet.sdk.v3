@@ -164,6 +164,8 @@ export function ChainFactoryBuilder(
           `Invalid destination user address for chain id: ${chainId}`
         );
       }
+      const fee = await chain.txFee(targetChainId, fromSymbol, tokenSymbol)
+      console.log(fee)
       return await chain.sendInstallment(
         signer,
         amount,
@@ -171,6 +173,7 @@ export function ChainFactoryBuilder(
         fromSymbol,
         tokenSymbol,
         destAddress,
+        fee,
         gasArgs
       );
     },

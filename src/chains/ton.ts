@@ -327,6 +327,7 @@ export function tonHandler({
       fromSymbol,
       targetSymbol,
       destAddress,
+      fee,
       gasArgs,
     ) => {
       const lastBridgeTxHash = await getLastBridgeTxHashInBase64();
@@ -340,7 +341,7 @@ export function tonHandler({
           targetSymbol,
           cid,
           amt,
-          gasArgs,
+          fee ? {...gasArgs, value: fee}: gasArgs
         );
       } else if (await isWrappedToken(tid)) {
         await transferJetton(
@@ -351,7 +352,7 @@ export function tonHandler({
           cid,
           amt,
           destAddress,
-          gasArgs,
+          fee ? { ...gasArgs, value: fee } : gasArgs,
         );
       } else {
         await transferJetton(
@@ -362,7 +363,7 @@ export function tonHandler({
           cid,
           amt,
           destAddress,
-          gasArgs,
+          fee ? { ...gasArgs, value: fee } : gasArgs,
         );
       }
 

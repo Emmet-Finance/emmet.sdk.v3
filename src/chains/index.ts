@@ -50,6 +50,7 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
     fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,
+    fee?: bigint,
     gasArgs?: GasArgs,
   ) => Promise<{ hash: string; tx: Ret }>;
 }

@@ -182,16 +182,19 @@ export async function web3Helper({
     validateAddress: (addr) => Promise.resolve(isAddress(addr)),
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, provider).balanceOf(addr),
-    sendInstallment: async (signer, amt, cid, fs, ts, da, gasArgs) => {
+    sendInstallment: async (signer, amt, cid, fs, ts, da, fee, gasArgs) => {
       const sendGas = await bridge
         .connect(signer)
-        .sendInstallment.estimateGas(cid, amt, fs, ts, da);
+        .sendInstallment.estimateGas(cid, amt, fs, ts, da, {
+          value: fee
+        });
       const tx = await bridge
         .connect(signer)
         .sendInstallment(cid, amt, fs, ts, da, {
           ...gasArgs,
-          gasLimit: sendGas,
-        });
+          value: fee,
+          gasLimit: sendGas
+        })
       return {
         hash: tx.hash,
         tx: tx,
