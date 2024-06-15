@@ -47,7 +47,7 @@ export type TonHelper = GetBalance &
   GetEmmetHashFromTx &
   TokenInfo &
   GetEstimatedTime &
-  GetBridgeAddress
+  GetBridgeAddress;
 
 export interface TonParams {
   client: TonClient;
@@ -264,7 +264,7 @@ export function tonHandler({
     },
     id: () => Promise.resolve(chainId),
     async bridge() {
-        return await bridge.toString()
+      return await bridge.toString();
     },
     nativeCoin: () => "TON",
     chainName: () => chainName,
@@ -341,7 +341,7 @@ export function tonHandler({
           targetSymbol,
           cid,
           amt,
-          fee ? {...gasArgs, value: fee}: gasArgs
+          fee ? { ...gasArgs, value: fee } : gasArgs,
         );
       } else if (await isWrappedToken(tid)) {
         await transferJetton(
@@ -393,9 +393,15 @@ export function tonHandler({
             }
             const log = loadSentInstallment(msg.body.asSlice());
             const emmethash = log.tx_hash;
-            const txn = (await bridgeReader.getOutgoing()).get(emmethash) ?? raise("Unreachable");
+            const txn =
+              (await bridgeReader.getOutgoing()).get(emmethash) ??
+              raise("Unreachable");
 
-            if (destAddress === txn.to.asSlice().loadStringRefTail() && amt === txn.amount && txn.from_token.asSlice().loadStringRefTail() === fromSymbol) {
+            if (
+              destAddress === txn.to.asSlice().loadStringRefTail() &&
+              amt === txn.amount &&
+              txn.from_token.asSlice().loadStringRefTail() === fromSymbol
+            ) {
               foundTx = true;
               hash = tx.hash().toString("hex");
             }
@@ -403,7 +409,6 @@ export function tonHandler({
         }
         retries++;
       }
-
 
       return {
         hash: hash,
@@ -417,5 +422,5 @@ const toKey = (key: string) => {
   return BigInt(`0x${sha256_sync(key).toString("hex")}`);
 };
 export function raise(msg: string): never {
-  throw new Error(msg)
+  throw new Error(msg);
 }

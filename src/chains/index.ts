@@ -146,7 +146,11 @@ export interface GetApprovedTokenAmount {
    * @param owner - The owner of the token.
    * @returns A Promise that resolves to the approved amount as a bigint.
    */
-  getApprovedAmount: (token: string, owner: string, spender: string) => Promise<bigint>;
+  getApprovedAmount: (
+    token: string,
+    owner: string,
+    spender: string,
+  ) => Promise<bigint>;
 }
 
 export interface GetTxFee {
@@ -191,5 +195,5 @@ export interface GetEstimatedTime {
 }
 
 export interface GetBridgeAddress {
-  bridge:() => Promise<string>
+  bridge: () => Promise<string>;
 }
