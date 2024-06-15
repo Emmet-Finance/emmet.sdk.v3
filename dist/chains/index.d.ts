@@ -40,7 +40,7 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
      * @param destAddress The destination address.
      * @returns A promise that resolves to an object containing the hash and transaction of the installment.
      */
-    sendInstallment: (signer: Signer, amount: bigint, chainId: bigint, fromSymbol: string, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
+    sendInstallment: (signer: Signer, amount: bigint, chainId: bigint, fromSymbol: string, tokenSymbol: string, destAddress: string, fee?: bigint, gasArgs?: GasArgs) => Promise<{
         hash: string;
         tx: Ret;
     }>;
@@ -109,7 +109,7 @@ export interface GetApprovedTokenAmount {
      * @param owner - The owner of the token.
      * @returns A Promise that resolves to the approved amount as a bigint.
      */
-    getApprovedAmount: (token: string, owner: string) => Promise<bigint>;
+    getApprovedAmount: (token: string, owner: string, spender: string) => Promise<bigint>;
 }
 export interface GetTxFee {
     txFee: (targetChain: bigint, fromToken: string, targetToken: string) => Promise<bigint>;

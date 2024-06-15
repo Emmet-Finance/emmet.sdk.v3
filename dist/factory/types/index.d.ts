@@ -1,6 +1,6 @@
 import type { Web3Helper, Web3Params } from "../../chains/web3";
 import type { TonHelper, TonParams } from "../../chains/ton";
-import type { PreTransfer, SendInstallment } from "../../chains";
+import type { GetTxFee, PreTransfer, SendInstallment } from "../../chains";
 import type { JsonRpcProvider } from "ethers";
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
@@ -51,7 +51,7 @@ export type ChainInfo = {
 export type HelperMap<K extends ChainNonce> = Map<K, InferChainH<K> | undefined>;
 export interface ChainFactory {
     inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
-    sendInstallment: <Signer, RetTx, GasArgs>(chain: SendInstallment<Signer, RetTx, GasArgs>, signer: Signer, amount: bigint, chainId: number, fromSymbol: string, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
+    sendInstallment: <Signer, RetTx, GasArgs>(chain: SendInstallment<Signer, RetTx, GasArgs> & GetTxFee, signer: Signer, amount: bigint, chainId: number, fromSymbol: string, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
         hash: string;
         tx: RetTx;
     }>;
