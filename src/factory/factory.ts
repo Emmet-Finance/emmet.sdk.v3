@@ -165,7 +165,6 @@ export function ChainFactoryBuilder(
         );
       }
       const fee = await chain.txFee(targetChainId, fromSymbol, tokenSymbol);
-      console.log(fee);
       return await chain.sendInstallment(
         signer,
         amount,

@@ -78,13 +78,13 @@ export async function web3Helper({
       return await bridge.getAddress();
     },
     async txFee(targetChainId, fromToken, targetToken) {
-      const protocolFee = await data.protocolFee();
+      const protocolFee = await data.getProtocolFee();
       const ffc = await data.getForeignFeeCompensation(
         targetChainId,
         fromToken,
         targetToken,
       );
-      return protocolFee.usdEquivalent + ffc;
+      return protocolFee + ffc;
     },
     async txInfo(hash) {
       if (hash === "") {
