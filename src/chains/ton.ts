@@ -268,8 +268,8 @@ export function tonHandler({
     },
     nativeCoin: () => "TON",
     chainName: () => chainName,
-    txFee(coin_name) {
-      throw new Error(`Unimplemented ${coin_name}`);
+    async txFee() {
+      return 0n
     },
     async token(symbol) {
       const tokens = await bridgeReader.getTokens();
