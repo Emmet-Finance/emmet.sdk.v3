@@ -11,7 +11,7 @@ var ChainFactoryConfigs;
     function TestNet() {
         return {
             tonParams: {
-                bridge: core_1.Address.parse("kQDbnRkkvebKKLifzmMH-oT9ggd6EWGE7G17h9VmMCzjZWeL"),
+                bridge: core_1.Address.parse("kQBsCcFRNXzbxxLMU7CwVXOZrSmvExv-bMGXQZbHdEue4Jwp"),
                 client: new ton_1.TonClient({
                     endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC?api_key=9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
                     apiKey: "9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
@@ -29,21 +29,21 @@ var ChainFactoryConfigs;
                 provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.BSC),
             },
             polygonParams: {
-                addressBook: ethers_1.ethers.getAddress("0xEA844fAF9a240Ac9911c1bd2204cd1536f7859b6"),
+                addressBook: ethers_1.ethers.getAddress("0x8d948925A0CB920c965C3296Eb4aef31EfE32ce9"),
                 provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.POLYGON),
                 // oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
                 chainName: "polygon",
                 nativeCoin: "MATIC",
             },
             ethParams: {
-                addressBook: ethers_1.ethers.getAddress("0x0F416Ea0661BfD7Ffb5b79259Bd98Bd4496a5558"),
+                addressBook: ethers_1.ethers.getAddress("0x8b87FE2b3f3D9816432b34D5A6a30B1330594082"),
                 chainName: "sepolia",
                 nativeCoin: "ETH",
                 provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.ETH),
             },
             multisigParams: {
                 provider: new ethers_1.JsonRpcProvider(rpcs_1.TestNetRpcUri.ETH),
-                address: ethers_1.ethers.getAddress("0xbFb23770aF5044C5ce4A62dE2f25Bf48691CeBbB"),
+                address: ethers_1.ethers.getAddress("0xf0829bFB635ccC4724F5D7Cd9005Ed4D368fA5C4"),
             },
         };
     }
