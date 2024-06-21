@@ -268,8 +268,8 @@ export function tonHandler({
     },
     nativeCoin: () => "TON",
     chainName: () => chainName,
-    async txFee() {
-      return 0n
+    async txFee(tc) {
+      return (await bridgeReader.getChainFees()).get(tc) ?? raise(`Chain Fees not configured for Chain ID${2}`)
     },
     async token(symbol) {
       const tokens = await bridgeReader.getTokens();
