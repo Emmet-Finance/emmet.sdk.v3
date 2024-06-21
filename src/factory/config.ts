@@ -10,7 +10,7 @@ export namespace ChainFactoryConfigs {
     return {
       tonParams: {
         bridge: Address.parse(
-          "kQDbnRkkvebKKLifzmMH-oT9ggd6EWGE7G17h9VmMCzjZWeL",
+          "kQBsCcFRNXzbxxLMU7CwVXOZrSmvExv-bMGXQZbHdEue4Jwp",
         ),
         client: new TonClient({
           endpoint:
@@ -38,7 +38,7 @@ export namespace ChainFactoryConfigs {
       },
       polygonParams: {
         addressBook: ethers.getAddress(
-          "0xEA844fAF9a240Ac9911c1bd2204cd1536f7859b6",
+          "0x8d948925A0CB920c965C3296Eb4aef31EfE32ce9",
         ),
         provider: new JsonRpcProvider(TestNetRpcUri.POLYGON),
         // oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
@@ -47,7 +47,7 @@ export namespace ChainFactoryConfigs {
       },
       ethParams: {
         addressBook: ethers.getAddress(
-          "0x0F416Ea0661BfD7Ffb5b79259Bd98Bd4496a5558",
+          "0x8b87FE2b3f3D9816432b34D5A6a30B1330594082",
         ),
         chainName: "sepolia",
         nativeCoin: "ETH",
@@ -56,7 +56,7 @@ export namespace ChainFactoryConfigs {
       multisigParams: {
         provider: new JsonRpcProvider(TestNetRpcUri.ETH),
         address: ethers.getAddress(
-          "0xbFb23770aF5044C5ce4A62dE2f25Bf48691CeBbB",
+          "0xf0829bFB635ccC4724F5D7Cd9005Ed4D368fA5C4",
         ),
       },
     } satisfies Partial<ChainParams>;
