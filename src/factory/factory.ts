@@ -135,7 +135,6 @@ export function ChainFactoryBuilder(
       const tx = await multisig.getStats();
       return {
         totalTransactions: tx.totalTransactions,
-        total24HourTransactions: tx.total24HourTransactions,
         totalFees: tx.totalFees,
         totalVolume: tx.totalVolume,
         uniqueUser: tx.uniqueUsers,

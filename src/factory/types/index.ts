@@ -125,7 +125,6 @@ export type DetailedTx = Transaction & {
 
 export interface ExplorerMeta {
   totalTransactions: bigint;
-  total24HourTransactions: bigint;
   totalFees: bigint;
   totalVolume: bigint;
   uniqueUser: bigint;

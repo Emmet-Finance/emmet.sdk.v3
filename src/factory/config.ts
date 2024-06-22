@@ -47,7 +47,7 @@ export namespace ChainFactoryConfigs {
       },
       ethParams: {
         addressBook: ethers.getAddress(
-          "0x8b87FE2b3f3D9816432b34D5A6a30B1330594082",
+          "0x57d49F8cA354002692284d38edD4c5772eC72e81",
         ),
         chainName: "sepolia",
         nativeCoin: "ETH",
@@ -56,7 +56,7 @@ export namespace ChainFactoryConfigs {
       multisigParams: {
         provider: new JsonRpcProvider(TestNetRpcUri.ETH),
         address: ethers.getAddress(
-          "0xf0829bFB635ccC4724F5D7Cd9005Ed4D368fA5C4",
+          "",
         ),
       },
     } satisfies Partial<ChainParams>;
