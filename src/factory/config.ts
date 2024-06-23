@@ -10,7 +10,7 @@ export namespace ChainFactoryConfigs {
     return {
       tonParams: {
         bridge: Address.parse(
-          "kQDXGV3-veEoCbXY5sITzVb38nhOUrEndj4eJFieYcWarxsI",
+          "EQBVLgSAoR9rGm8WHx9SUbDlvxQEtQZnO-bmyF0y_cvt0Gir",
         ),
         client: new TonClient({
           endpoint:
