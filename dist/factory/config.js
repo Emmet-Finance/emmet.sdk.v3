@@ -11,7 +11,7 @@ var ChainFactoryConfigs;
     function TestNet() {
         return {
             tonParams: {
-                bridge: core_1.Address.parse("kQDXGV3-veEoCbXY5sITzVb38nhOUrEndj4eJFieYcWarxsI"),
+                bridge: core_1.Address.parse("EQBVLgSAoR9rGm8WHx9SUbDlvxQEtQZnO-bmyF0y_cvt0Gir"),
                 client: new ton_1.TonClient({
                     endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC?api_key=9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
                     apiKey: "9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
