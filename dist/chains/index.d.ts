@@ -60,7 +60,7 @@ export interface GetTokenBalance {
      */
     tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
-export type AddressBookKeys = "GasFees" | "EmmetTokenVault" | "EmmetData" | "CCTPHelper" | "HashHelper" | "SignatureVerifier" | "LiquidityPoolHelper" | "EmmetBridge" | "AddressStorageHelper" | "WTON" | "EMMET" | "TON/USD" | "BNB/USD" | "MATIC/USD" | "EmmetMultisig";
+export type AddressBookKeys = 'GasFees' | 'EmmetTokenVault' | 'EmmetData' | 'CCTPHelper' | 'HashHelper' | 'SignatureVerifier' | 'LiquidityPoolHelper' | 'EmmetBridge' | 'AddressStorageHelper' | 'WTON' | 'EMMET' | 'TON/USD' | 'BNB/USD' | 'MATIC/USD' | 'EmmetMultisig';
 export interface AddressBook {
     address: (contr: AddressBookKeys) => Promise<string>;
 }
@@ -98,6 +98,9 @@ export interface PreTransfer<Signer, GasArgs> {
      * @returns A promise that resolves to a string which is the hash of the transaction.
      */
     preTransfer: (signer: Signer, token: string, spender: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
+}
+export interface GetProtocolFeeInUSD {
+    protocolFeeInUSD: () => Promise<bigint>;
 }
 /**
  * Represents an interface for getting the approved token amount for a particular user.
