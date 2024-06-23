@@ -51,7 +51,7 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
     tokenSymbol: string,
     destAddress: string,
     fee?: bigint,
-    gasArgs?: GasArgs,
+    gasArgs?: GasArgs
   ) => Promise<{ hash: string; tx: Ret }>;
 }
 
@@ -72,21 +72,21 @@ export interface GetTokenBalance {
 }
 
 export type AddressBookKeys =
-  | "GasFees"
-  | "EmmetTokenVault"
-  | "EmmetData"
-  | "CCTPHelper"
-  | "HashHelper"
-  | "SignatureVerifier"
-  | "LiquidityPoolHelper"
-  | "EmmetBridge"
-  | "AddressStorageHelper"
-  | "WTON" // Wrapped Token
-  | "EMMET" // Token
-  | "TON/USD" // price feed
-  | "BNB/USD" // price feed
-  | "MATIC/USD" // Price Feed
-  | "EmmetMultisig";
+  | 'GasFees'
+  | 'EmmetTokenVault'
+  | 'EmmetData'
+  | 'CCTPHelper'
+  | 'HashHelper'
+  | 'SignatureVerifier'
+  | 'LiquidityPoolHelper'
+  | 'EmmetBridge'
+  | 'AddressStorageHelper'
+  | 'WTON' // Wrapped Token
+  | 'EMMET' // Token
+  | 'TON/USD' // price feed
+  | 'BNB/USD' // price feed
+  | 'MATIC/USD' // Price Feed
+  | 'EmmetMultisig';
 
 export interface AddressBook {
   address: (contr: AddressBookKeys) => Promise<string>;
@@ -132,8 +132,12 @@ export interface PreTransfer<Signer, GasArgs> {
     token: string,
     spender: string,
     amount: bigint,
-    gasArgs: GasArgs,
+    gasArgs: GasArgs
   ) => Promise<string>;
+}
+
+export interface GetProtocolFeeInUSD {
+  protocolFeeInUSD: () => Promise<bigint>;
 }
 
 /**
@@ -149,7 +153,7 @@ export interface GetApprovedTokenAmount {
   getApprovedAmount: (
     token: string,
     owner: string,
-    spender: string,
+    spender: string
   ) => Promise<bigint>;
 }
 
@@ -157,7 +161,7 @@ export interface GetTxFee {
   txFee: (
     targetChain: bigint,
     fromToken: string,
-    targetToken: string,
+    targetToken: string
   ) => Promise<bigint>;
 }
 
@@ -190,7 +194,7 @@ export interface GetEstimatedTime {
   estimateTime(
     targetChain: bigint,
     fromToken: string,
-    targetToken: string,
+    targetToken: string
   ): Promise<bigint | undefined>;
 }
 
