@@ -19,6 +19,8 @@ import type {
   GetProtocolFeeInUSD,
   GetProvider,
   GetTokenBalance,
+  GetTokenPrice,
+  GetTokenPriceDecimals,
   GetTxFee,
   NativeCoinName,
   ProtocolFee,
@@ -49,7 +51,9 @@ export type TonHelper = GetBalance &
   TokenInfo &
   GetEstimatedTime &
   GetBridgeAddress &
-  GetProtocolFeeInUSD;
+  GetProtocolFeeInUSD &
+  GetTokenPrice &
+  GetTokenPriceDecimals;
 
 export interface TonParams {
   client: TonClient;
@@ -247,6 +251,12 @@ export function tonHandler({
 
   return {
     estimateTime: () => Promise.resolve(undefined),
+    async getPriceDecimals(_) {
+      return 0n;
+    },
+    async getTokenPrice(_) {
+      return 0n;
+    },
     async emmetHashFromtx(hash) {
       const txs = await client.getTransactions(bridge, {
         hash,

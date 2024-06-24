@@ -17,6 +17,8 @@ import type {
   GetProtocolFeeInUSD,
   GetProvider,
   GetTokenBalance,
+  GetTokenPrice,
+  GetTokenPriceDecimals,
   GetTxFee,
   NativeCoinName,
   PreTransfer,
@@ -51,7 +53,9 @@ export type Web3Helper = GetBalance &
   GetEmmetHashFromTx &
   GetEstimatedTime &
   GetBridgeAddress &
-  GetProtocolFeeInUSD;
+  GetProtocolFeeInUSD &
+  GetTokenPrice &
+  GetTokenPriceDecimals;
 
 export interface Web3Params {
   provider: Provider;
@@ -206,6 +210,14 @@ export async function web3Helper({
         hash: tx.hash,
         tx: tx,
       };
+    },
+    async getTokenPrice(symbol) {
+      const tokenPrice = data.getTokenPrice(symbol);
+      return tokenPrice;
+    },
+    async getPriceDecimals(symbol) {
+      const tokenDecimals = data.getPriceDecimals(symbol);
+      return tokenDecimals;
     },
   };
 }
