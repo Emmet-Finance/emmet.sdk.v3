@@ -245,8 +245,18 @@ export function tonHandler({
     );
   };
 
-  async function isWrappedToken(_tokenId: bigint) {
-    return false;
+  async function isWrappedToken(targetChain: bigint, fromTokenId: bigint, targetTokenId: bigint) {
+    const steps = await bridgeReader.getCrossChainStrategy();
+    console.log(targetChain)
+    console.log(steps.get(targetChain))
+    const strategy = steps.get(targetChain)?.i.get(fromTokenId)?.i.get(targetTokenId);
+    console.log(strategy)
+    if (!strategy) return false
+    for (let i = 0; i < strategy.local_steps.size; i++) {
+      const strat = strategy.local_steps.steps.get(BigInt(i));
+      if (strat === 3n) return true
+    }
+    return false
   }
 
   return {
@@ -350,7 +360,8 @@ export function tonHandler({
     ) => {
       const lastBridgeTxHash = await getLastBridgeTxHashInBase64();
       const bc = client.open(Bridge.fromAddress(bridge));
-      const tid = BigInt(`0x${sha256_sync(fromSymbol).toString('hex')}`);
+      const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
+      const tid = BigInt(`0x${sha256_sync(targetSymbol).toString("hex")}`);
       if (tid === nativeTokenId) {
         await transferTon(
           bc,
@@ -361,7 +372,7 @@ export function tonHandler({
           amt,
           fee ? { ...gasArgs, value: fee } : gasArgs
         );
-      } else if (await isWrappedToken(tid)) {
+      } else if (await isWrappedToken(cid, fsid , tid)) {
         await transferJetton(
           burner,
           signer,
