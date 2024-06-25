@@ -201,11 +201,3 @@ export interface GetEstimatedTime {
 export interface GetBridgeAddress {
   bridge: () => Promise<string>;
 }
-
-export interface GetTokenPrice {
-  getTokenPrice: (symbol: string) => Promise<bigint>;
-}
-
-export interface GetTokenPriceDecimals {
-  getPriceDecimals: (symbol: string) => Promise<bigint>;
-}
