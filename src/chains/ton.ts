@@ -139,6 +139,7 @@ export function tonHandler({
         query_id: 0n,
         destination: burner,
         forward_payload: beginCell()
+        .storeAddress(bridge)
           .storeUint(cid, 64) // Target Chain
           .storeRef(
             beginCell()
@@ -243,10 +244,7 @@ export function tonHandler({
 
   async function isWrappedToken(targetChain: bigint, fromTokenId: bigint, targetTokenId: bigint) {
     const steps = await bridgeReader.getCrossChainStrategy();
-    console.log(targetChain)
-    console.log(steps.get(targetChain))
     const strategy = steps.get(targetChain)?.i.get(fromTokenId)?.i.get(targetTokenId);
-    console.log(strategy)
     if (!strategy) return false
     for (let i = 0; i < strategy.local_steps.size; i++) {
       const strat = strategy.local_steps.steps.get(BigInt(i));
@@ -352,6 +350,7 @@ export function tonHandler({
       const bc = client.open(Bridge.fromAddress(bridge));
       const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
       const tid = BigInt(`0x${sha256_sync(targetSymbol).toString("hex")}`);
+      const isWrapped = await isWrappedToken(cid, fsid, tid)
       if (tid === nativeTokenId) {
         await transferTon(
           bc,
@@ -362,7 +361,7 @@ export function tonHandler({
           amt,
           fee ? { ...gasArgs, value: fee } : gasArgs
         );
-      } else if (await isWrappedToken(cid, fsid , tid)) {
+      } else if (isWrapped) {
         await transferJetton(
           burner,
           signer,
