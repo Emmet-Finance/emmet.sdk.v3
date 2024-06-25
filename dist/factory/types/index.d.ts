@@ -1,7 +1,7 @@
-import type { Web3Helper, Web3Params } from "../../chains/web3";
-import type { TonHelper, TonParams } from "../../chains/ton";
-import type { GetTxFee, PreTransfer, SendInstallment } from "../../chains";
-import type { JsonRpcProvider } from "ethers";
+import type { Web3Helper, Web3Params } from '../../chains/web3';
+import type { TonHelper, TonParams } from '../../chains/ton';
+import type { GetTxFee, PreTransfer, SendInstallment } from '../../chains';
+import type { JsonRpcProvider } from 'ethers';
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
 type MetaMapAssert = {
@@ -35,7 +35,7 @@ export interface ChainParams {
     tonParams: TonParams;
     multisigParams: {
         provider: JsonRpcProvider;
-        address: string;
+        ab: string;
     };
 }
 export interface ChainData<T extends ChainNonce> {
@@ -60,6 +60,8 @@ export interface ChainFactory {
     getTransaction: (hash: string) => Promise<DetailedTx>;
     getExplorerStats: () => Promise<ExplorerMeta>;
     getTxCount: () => Promise<bigint>;
+    getTokenPrice: (symbol: string) => Promise<bigint>;
+    getPriceDecimals: (symbol: string) => Promise<bigint>;
 }
 export interface Transaction {
     txHash: string;
