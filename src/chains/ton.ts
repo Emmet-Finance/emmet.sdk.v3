@@ -84,14 +84,12 @@ export function tonHandler({
     targetTkn: string,
     chainId: bigint,
     amount: bigint,
-    gasArgs?: TonGasArgs
+    gasArgs: TonGasArgs
   ): Promise<string> {
     return (await bridge.send(
       sender,
       {
-        //@ts-ignore
-        value: amount + toNano('0.45'),
-        ...gasArgs,
+        value: amount + gasArgs.value
       },
       {
         $$type: 'FreezeTon',
@@ -117,7 +115,7 @@ export function tonHandler({
     amt: bigint,
     destAddress: string,
     cid: bigint,
-    gasArgs?: TonGasArgs
+    gasArgs: TonGasArgs
   ): Promise<string> => {
     const tid = toKey(fromToken);
     const wtd = await bridgeReader.getTokens();
@@ -131,7 +129,7 @@ export function tonHandler({
 
     return (await jtw.send(
       signer,
-      { value: toNano('0.45'), ...gasArgs },
+      {...gasArgs },
       {
         $$type: 'JettonTransfer',
         amount: amt,
@@ -167,7 +165,7 @@ export function tonHandler({
     target_chain: bigint,
     destAddress: string,
     amt: bigint,
-    gasArgs?: TonGasArgs
+    gasArgs: TonGasArgs
   ) => {
     const tid = toKey(fromToken);
     const ntd = await bridgeReader.getTokens();
@@ -180,7 +178,7 @@ export function tonHandler({
     );
     return (await jtw.send(
       signer,
-      { value: toNano('0.45'), ...gasArgs },
+      { ...gasArgs },
       {
         $$type: 'JettonTransfer',
         amount: amt,
@@ -217,7 +215,7 @@ export function tonHandler({
     chainId: bigint,
     amount: bigint,
     destAddress: string,
-    gasArgs?: TonGasArgs
+    gasArgs: TonGasArgs
   ): Promise<string> => {
     if (to.toString() === burner.toString()) {
       return await transferJettonToBurner(
@@ -343,24 +341,24 @@ export function tonHandler({
       fromSymbol,
       targetSymbol,
       destAddress,
-      fee,
-      gasArgs
+      fee
     ) => {
       const lastBridgeTxHash = await getLastBridgeTxHashInBase64();
       const bc = client.open(Bridge.fromAddress(bridge));
       const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
       const tid = BigInt(`0x${sha256_sync(targetSymbol).toString("hex")}`);
-      const isWrapped = await isWrappedToken(cid, fsid, tid)
+      const isWrapped = await isWrappedToken(cid, fsid, tid);
+      const bridgeFees = await bridgeReader.getProtocolFee() + (await (await bridgeReader.getChainFees()).get(cid) ?? raise("No chain fee set for this chain."))
+      const gs =
+        fee !== undefined
+          ? {
+              value: fee,
+            }
+          : {
+              value: bridgeFees,
+            };
       if (tid === nativeTokenId) {
-        await transferTon(
-          bc,
-          signer,
-          destAddress,
-          targetSymbol,
-          cid,
-          amt,
-          fee ? { ...gasArgs, value: fee } : gasArgs
-        );
+        await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
       } else if (isWrapped) {
         await transferJetton(
           burner,
@@ -370,7 +368,7 @@ export function tonHandler({
           cid,
           amt,
           destAddress,
-          fee ? { ...gasArgs, value: fee } : gasArgs
+          gs,
         );
       } else {
         await transferJetton(
@@ -381,7 +379,7 @@ export function tonHandler({
           cid,
           amt,
           destAddress,
-          fee ? { ...gasArgs, value: fee } : gasArgs
+          gs,
         );
       }
 
