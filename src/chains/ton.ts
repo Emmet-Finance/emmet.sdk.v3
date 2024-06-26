@@ -277,10 +277,8 @@ export function tonHandler({
     nativeCoin: () => 'TON',
     chainName: () => chainName,
     async txFee(tc) {
-      return (
-        (await bridgeReader.getChainFees()).get(tc) ??
-        raise(`Chain Fees not configured for Chain ID${2}`)
-      );
+      const fee = await bridgeReader.getProtocolFee() + ((await bridgeReader.getChainFees()).get(tc) ?? raise("Chain fees not configured for this chain"))
+      return fee
     },
     async token(symbol) {
       const tokens = await bridgeReader.getTokens();
@@ -348,14 +346,16 @@ export function tonHandler({
       const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
       const tid = BigInt(`0x${sha256_sync(targetSymbol).toString("hex")}`);
       const isWrapped = await isWrappedToken(cid, fsid, tid);
-      const bridgeFees = await bridgeReader.getProtocolFee() + (await (await bridgeReader.getChainFees()).get(cid) ?? raise("No chain fee set for this chain."))
       const gs =
         fee !== undefined
           ? {
               value: fee,
             }
           : {
-              value: bridgeFees,
+              value:
+                (await bridgeReader.getProtocolFee()) +
+                ((await bridgeReader.getChainFees()).get(cid) ??
+                  raise("Chain fees not configured for this chain")),
             };
       if (tid === nativeTokenId) {
         await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
