@@ -129,7 +129,7 @@ export function tonHandler({
 
     return (await jtw.send(
       signer,
-      { ...gasArgs },
+      { value: gasArgs.value + toNano("0.05") },
       {
         $$type: "JettonTransfer",
         amount: amt,
@@ -153,7 +153,7 @@ export function tonHandler({
               .asCell(),
           )
           .endCell(),
-        forward_ton_amount: toNano("0.40"),
+        forward_ton_amount: gasArgs.value,
         response_destination: bridge,
       },
     )) as unknown as Promise<string>;
@@ -178,7 +178,7 @@ export function tonHandler({
     );
     return (await jtw.send(
       signer,
-      { ...gasArgs },
+      { value: gasArgs.value + toNano("0.05") },
       {
         $$type: "JettonTransfer",
         amount: amt,
@@ -200,7 +200,7 @@ export function tonHandler({
               .asCell(),
           )
           .endCell(),
-        forward_ton_amount: toNano("0.40"),
+        forward_ton_amount:  gasArgs.value,
         query_id: 0n,
         response_destination: bridge,
       },
