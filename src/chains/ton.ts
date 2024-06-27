@@ -200,7 +200,7 @@ export function tonHandler({
               .asCell(),
           )
           .endCell(),
-        forward_ton_amount:  gasArgs.value,
+        forward_ton_amount: gasArgs.value,
         query_id: 0n,
         response_destination: bridge,
       },
