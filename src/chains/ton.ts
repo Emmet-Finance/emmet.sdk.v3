@@ -318,16 +318,23 @@ export function tonHandler({
       return bridgeReader.getProtocolFee();
     },
     async txInfo(hash) {
+      const bs64 = Buffer.from(hash.replace("0x", ""), "hex").toString(
+        "base64",
+      );
       try {
         const tx = await client.getTransactions(bridge, {
           limit: 1,
-          hash: hash,
+          hash: bs64,
         });
+        console.log({ tx });
+
         return {
           timestamp: BigInt(tx[0].now),
           value: tx[0].totalFees.coins,
         };
-      } catch (_) {
+      } catch (e) {
+        console.log(e);
+
         return {
           timestamp: 0n,
           value: 0n,
