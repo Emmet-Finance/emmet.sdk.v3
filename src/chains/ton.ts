@@ -129,7 +129,7 @@ export function tonHandler({
 
     return (await jtw.send(
       signer,
-      { value: gasArgs.value + toNano("0.05") },
+      { value: gasArgs.value + toNano("0.08") },
       {
         $$type: "JettonTransfer",
         amount: amt,
@@ -153,7 +153,7 @@ export function tonHandler({
               .asCell(),
           )
           .endCell(),
-        forward_ton_amount: gasArgs.value,
+        forward_ton_amount: gasArgs.value + toNano("0.03"),
         response_destination: bridge,
       },
     )) as unknown as Promise<string>;
