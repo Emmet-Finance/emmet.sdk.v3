@@ -1,5 +1,5 @@
-import type { Web3Helper, Web3Params } from '../../chains/web3';
-import type { TonHelper, TonParams } from '../../chains/ton';
+import type { Web3Helper, Web3Params } from "../../chains/web3";
+import type { TonHelper, TonParams } from "../../chains/ton";
 import type {
   Decimals,
   GetTxFee,
@@ -7,8 +7,8 @@ import type {
   PreTransfer,
   ProtocolFee,
   SendInstallment,
-} from '../../chains';
-import type { JsonRpcProvider } from 'ethers';
+} from "../../chains";
+import type { JsonRpcProvider } from "ethers";
 
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
@@ -88,7 +88,7 @@ export interface ChainFactory {
     fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,
-    gasArgs?: GasArgs
+    gasArgs?: GasArgs,
   ) => Promise<{ hash: string; tx: RetTx }>;
   preTransfer: <Signer, GasArgs>(
     chain: PreTransfer<Signer, GasArgs>,
@@ -96,11 +96,11 @@ export interface ChainFactory {
     tid: string,
     spender: string,
     amount: bigint,
-    gasArgs: GasArgs
+    gasArgs: GasArgs,
   ) => Promise<string>;
   getTransactions: (
     batch: bigint | number,
-    offset: bigint | number
+    offset: bigint | number,
   ) => Promise<Transaction[]>;
   getTransaction: (hash: string) => Promise<DetailedTx>;
   getExplorerStats: () => Promise<ExplorerMeta>;
@@ -108,7 +108,7 @@ export interface ChainFactory {
   getTokenPrice: (symbol: string) => Promise<bigint>;
   getPriceDecimals: (symbol: string) => Promise<bigint>;
   getProtocolFeeInUSD: (
-    chain: ProtocolFee & NativeCoinName & Decimals
+    chain: ProtocolFee & NativeCoinName & Decimals,
   ) => Promise<number>;
 }
 

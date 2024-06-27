@@ -2,10 +2,10 @@ import {
   EmmetAddressBook__factory,
   EmmetData__factory,
   EmmetMultisig__factory,
-} from '@emmet-contracts/web3';
-import { tonHandler } from '../chains/ton';
-import { web3Helper } from '../chains/web3';
-import { Chain, type ChainFactory } from './types';
+} from "@emmet-contracts/web3";
+import { tonHandler } from "../chains/ton";
+import { web3Helper } from "../chains/web3";
+import { Chain, type ChainFactory } from "./types";
 
 import type {
   ChainInfo,
@@ -13,8 +13,8 @@ import type {
   ChainParams,
   HelperMap,
   ParamMap,
-} from './types';
-import { ChainIDToDomain, type SupportedChainID } from '../explorer-utils';
+} from "./types";
+import { ChainIDToDomain, type SupportedChainID } from "../explorer-utils";
 
 function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   const cToP: ParamMap = new Map();
@@ -30,50 +30,50 @@ export const CHAIN_INFO: ChainInfo = new Map();
 CHAIN_INFO.set(Chain.POLYGON, {
   constructor: web3Helper,
   decimals: 18,
-  name: 'Polygon',
+  name: "Polygon",
   nonce: Chain.POLYGON,
 });
 
 CHAIN_INFO.set(Chain.BSC, {
   constructor: web3Helper,
   decimals: 18,
-  name: 'BSC',
+  name: "BSC",
   nonce: Chain.BSC,
 });
 
 CHAIN_INFO.set(Chain.ETHEREUM, {
   constructor: web3Helper,
   decimals: 18,
-  name: 'Ethereum',
+  name: "Ethereum",
   nonce: Chain.ETHEREUM,
 });
 
 CHAIN_INFO.set(Chain.TON, {
   decimals: 18,
-  name: 'Ton',
+  name: "Ton",
   nonce: Chain.TON,
   constructor: async (...args) => tonHandler(...args),
 });
 
 export async function ChainFactoryBuilder(
-  chainParams: Partial<ChainParams>
+  chainParams: Partial<ChainParams>,
 ): Promise<ChainFactory> {
   const helpers: HelperMap<ChainNonce> = new Map();
 
   const cToP = mapNonceToParams(chainParams);
   const ab = EmmetAddressBook__factory.connect(
     chainParams.multisigParams!.ab,
-    chainParams.multisigParams?.provider
+    chainParams.multisigParams?.provider,
   );
-  const msig = await ab.get('EmmetMultisig');
-  const mData = await ab.get('EmmetData');
+  const msig = await ab.get("EmmetMultisig");
+  const mData = await ab.get("EmmetData");
   const multisig = EmmetMultisig__factory.connect(
     msig,
-    chainParams.multisigParams?.provider
+    chainParams.multisigParams?.provider,
   );
   const emmetData = EmmetData__factory.connect(
     mData,
-    chainParams.multisigParams?.provider
+    chainParams.multisigParams?.provider,
   );
 
   const inner = async <T extends ChainNonce>(chain: T) => {
@@ -164,7 +164,7 @@ export async function ChainFactoryBuilder(
       fromSymbol,
       tokenSymbol,
       destAddress,
-      gasArgs
+      gasArgs,
     ) => {
       const dc = await inner(chainId as ChainNonce);
       const targetChainId = await dc.id();
@@ -174,7 +174,7 @@ export async function ChainFactoryBuilder(
       const isValid = await dc.validateAddress(destAddress);
       if (!isValid) {
         throw new Error(
-          `Invalid destination user address for chain id: ${chainId}`
+          `Invalid destination user address for chain id: ${chainId}`,
         );
       }
       const fee = await chain.txFee(targetChainId, fromSymbol, tokenSymbol);
@@ -186,7 +186,7 @@ export async function ChainFactoryBuilder(
         tokenSymbol,
         destAddress,
         fee,
-        gasArgs
+        gasArgs,
       );
     },
     getTokenPrice(symbol) {
