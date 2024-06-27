@@ -18,24 +18,24 @@ exports.CHAIN_INFO = new Map();
 exports.CHAIN_INFO.set(types_1.Chain.POLYGON, {
     constructor: web3_2.web3Helper,
     decimals: 18,
-    name: 'Polygon',
+    name: "Polygon",
     nonce: types_1.Chain.POLYGON,
 });
 exports.CHAIN_INFO.set(types_1.Chain.BSC, {
     constructor: web3_2.web3Helper,
     decimals: 18,
-    name: 'BSC',
+    name: "BSC",
     nonce: types_1.Chain.BSC,
 });
 exports.CHAIN_INFO.set(types_1.Chain.ETHEREUM, {
     constructor: web3_2.web3Helper,
     decimals: 18,
-    name: 'Ethereum',
+    name: "Ethereum",
     nonce: types_1.Chain.ETHEREUM,
 });
 exports.CHAIN_INFO.set(types_1.Chain.TON, {
     decimals: 18,
-    name: 'Ton',
+    name: "Ton",
     nonce: types_1.Chain.TON,
     constructor: async (...args) => (0, ton_1.tonHandler)(...args),
 });
@@ -43,8 +43,8 @@ async function ChainFactoryBuilder(chainParams) {
     const helpers = new Map();
     const cToP = mapNonceToParams(chainParams);
     const ab = web3_1.EmmetAddressBook__factory.connect(chainParams.multisigParams.ab, chainParams.multisigParams?.provider);
-    const msig = await ab.get('EmmetMultisig');
-    const mData = await ab.get('EmmetData');
+    const msig = await ab.get("EmmetMultisig");
+    const mData = await ab.get("EmmetData");
     const multisig = web3_1.EmmetMultisig__factory.connect(msig, chainParams.multisigParams?.provider);
     const emmetData = web3_1.EmmetData__factory.connect(mData, chainParams.multisigParams?.provider);
     const inner = async (chain) => {

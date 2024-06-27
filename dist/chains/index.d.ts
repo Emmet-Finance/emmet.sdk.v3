@@ -60,7 +60,7 @@ export interface GetTokenBalance {
      */
     tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
-export type AddressBookKeys = 'GasFees' | 'EmmetTokenVault' | 'EmmetData' | 'CCTPHelper' | 'HashHelper' | 'SignatureVerifier' | 'LiquidityPoolHelper' | 'EmmetBridge' | 'AddressStorageHelper' | 'WTON' | 'EMMET' | 'TON/USD' | 'BNB/USD' | 'MATIC/USD' | 'EmmetMultisig';
+export type AddressBookKeys = "GasFees" | "EmmetTokenVault" | "EmmetData" | "CCTPHelper" | "HashHelper" | "SignatureVerifier" | "LiquidityPoolHelper" | "EmmetBridge" | "AddressStorageHelper" | "WTON" | "EMMET" | "TON/USD" | "BNB/USD" | "MATIC/USD" | "EmmetMultisig";
 export interface AddressBook {
     address: (contr: AddressBookKeys) => Promise<string>;
 }

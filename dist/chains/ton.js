@@ -13,19 +13,19 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
     const bridgeReader = client.open(ton_2.Bridge.fromAddress(bridge));
     async function getLastBridgeTxHashInBase64() {
         const txns = await client.getTransactions(bridge, { limit: 1 });
-        return txns[0].hash().toString('base64');
+        return txns[0].hash().toString("base64");
     }
     async function transferTon(bridge, sender, to, targetTkn, chainId, amount, gasArgs) {
         return (await bridge.send(sender, {
             value: amount + gasArgs.value,
         }, {
-            $$type: 'FreezeTon',
+            $$type: "FreezeTon",
             amount: amount,
             target_chain: BigInt(chainId),
             to: (0, ton_1.beginCell)().storeStringRefTail(to).endCell(),
             from_token: (0, ton_1.beginCell)()
-                .storeInt(toKey('TON'), 256)
-                .storeStringRefTail('TON')
+                .storeInt(toKey("TON"), 256)
+                .storeStringRefTail("TON")
                 .endCell(),
             to_token: (0, ton_1.beginCell)()
                 .storeInt(toKey(targetTkn), 256)
@@ -40,7 +40,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
         const jt = client.open(jetton_master_1.WrappedJetton.fromAddress(wt.address));
         const jtw = client.open(jetton_wallet_1.WrappedJettonWallet.fromAddress(await jt.getGetWalletAddress(signer.address)));
         return (await jtw.send(signer, { ...gasArgs }, {
-            $$type: 'JettonTransfer',
+            $$type: "JettonTransfer",
             amount: amt,
             custom_payload: null,
             query_id: 0n,
@@ -58,7 +58,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
                 .storeStringRefTail(targetToken)
                 .asCell())
                 .endCell(),
-            forward_ton_amount: (0, ton_1.toNano)('0.40'),
+            forward_ton_amount: (0, ton_1.toNano)("0.40"),
             response_destination: bridge,
         }));
     };
@@ -69,7 +69,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
         const jt = client.open(jetton_master_1.WrappedJetton.fromAddress(wt.address));
         const jtw = client.open(jetton_wallet_1.WrappedJettonWallet.fromAddress(await jt.getGetWalletAddress(signer.address)));
         return (await jtw.send(signer, { ...gasArgs }, {
-            $$type: 'JettonTransfer',
+            $$type: "JettonTransfer",
             amount: amt,
             custom_payload: null,
             destination: bridge,
@@ -85,7 +85,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
                 .storeStringRefTail(targetToken)
                 .asCell())
                 .endCell(),
-            forward_ton_amount: (0, ton_1.toNano)('0.40'),
+            forward_ton_amount: (0, ton_1.toNano)("0.40"),
             query_id: 0n,
             response_destination: bridge,
         }));
@@ -129,25 +129,25 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
                     }
                 }
             }
-            throw new Error('No send installment found');
+            throw new Error("No send installment found");
         },
         id: () => Promise.resolve(chainId),
         async bridge() {
             return await bridge.toString();
         },
-        nativeCoin: () => 'TON',
+        nativeCoin: () => "TON",
         chainName: () => chainName,
         async txFee(tc) {
             const fee = (await bridgeReader.getProtocolFee()) +
                 ((await bridgeReader.getChainFees()).get(tc) ??
-                    raise('Chain fees not configured for this chain'));
+                    raise("Chain fees not configured for this chain"));
             return fee;
         },
         async token(symbol) {
             const tokens = await bridgeReader.getTokens();
             const qToken = tokens.get(toKey(symbol));
             if (!qToken)
-                throw new Error('No Such Token Found in Storage');
+                throw new Error("No Such Token Found in Storage");
             return {
                 address: qToken.address.toString(),
                 decimals: qToken.decimals,
@@ -198,8 +198,8 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
         sendInstallment: async (signer, amt, cid, fromSymbol, targetSymbol, destAddress, fee) => {
             const lastBridgeTxHash = await getLastBridgeTxHashInBase64();
             const bc = client.open(ton_2.Bridge.fromAddress(bridge));
-            const fsid = BigInt(`0x${(0, crypto_1.sha256_sync)(fromSymbol).toString('hex')}`);
-            const tid = BigInt(`0x${(0, crypto_1.sha256_sync)(targetSymbol).toString('hex')}`);
+            const fsid = BigInt(`0x${(0, crypto_1.sha256_sync)(fromSymbol).toString("hex")}`);
+            const tid = BigInt(`0x${(0, crypto_1.sha256_sync)(targetSymbol).toString("hex")}`);
             const isWrapped = await isWrappedToken(cid, fsid, tid);
             const gs = fee !== undefined
                 ? {
@@ -208,7 +208,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
                 : {
                     value: (await bridgeReader.getProtocolFee()) +
                         ((await bridgeReader.getChainFees()).get(cid) ??
-                            raise('Chain fees not configured for this chain')),
+                            raise("Chain fees not configured for this chain")),
                 };
             if (tid === nativeTokenId) {
                 await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
@@ -220,12 +220,12 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
                 await transferJetton(bridge, signer, fromSymbol, targetSymbol, cid, amt, destAddress, gs);
             }
             let foundTx = false;
-            let hash = '';
+            let hash = "";
             let retries = 0;
             while (!foundTx && retries < 10) {
                 await new Promise((e) => setTimeout(e, 2000));
                 const latestTx = (await client.getTransactions(bridge, { limit: 1 }))[0];
-                if (latestTx.hash().toString('base64') === lastBridgeTxHash) {
+                if (latestTx.hash().toString("base64") === lastBridgeTxHash) {
                     await new Promise((e) => setTimeout(e, 10000));
                     retries++;
                     continue;
@@ -233,8 +233,8 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
                 const txs = await client.getTransactions(bridge, { limit: 2 });
                 for (const tx of txs) {
                     for (let i = 0; i < tx.outMessages.size; i++) {
-                        const msg = tx.outMessages.get(i) ?? raise('Unreachable');
-                        if (tx.hash().toString('base64') === lastBridgeTxHash) {
+                        const msg = tx.outMessages.get(i) ?? raise("Unreachable");
+                        if (tx.hash().toString("base64") === lastBridgeTxHash) {
                             await new Promise((e) => setTimeout(e, 10000));
                             continue;
                         }
@@ -244,12 +244,12 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
                         const log = (0, ton_2.loadSentInstallment)(msg.body.asSlice());
                         const emmethash = log.tx_hash;
                         const txn = (await bridgeReader.getOutgoing()).get(emmethash) ??
-                            raise('Unreachable');
+                            raise("Unreachable");
                         if (destAddress === txn.to.asSlice().loadStringRefTail() &&
                             amt === txn.amount &&
                             txn.from_token.asSlice().loadStringRefTail() === fromSymbol) {
                             foundTx = true;
-                            hash = tx.hash().toString('hex');
+                            hash = tx.hash().toString("hex");
                         }
                     }
                 }
@@ -264,7 +264,7 @@ function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, 
 }
 exports.tonHandler = tonHandler;
 const toKey = (key) => {
-    return BigInt(`0x${(0, crypto_1.sha256_sync)(key).toString('hex')}`);
+    return BigInt(`0x${(0, crypto_1.sha256_sync)(key).toString("hex")}`);
 };
 function raise(msg) {
     throw new Error(msg);

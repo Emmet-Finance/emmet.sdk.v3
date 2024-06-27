@@ -5,8 +5,8 @@ const ethers_1 = require("ethers");
 const web3_1 = require("@emmet-contracts/web3");
 async function web3Helper({ provider, addressBook, chainName, nativeCoin, }) {
     const addrBook = web3_1.EmmetAddressBook__factory.connect(addressBook, provider);
-    const bridgeAddr = await addrBook.get('EmmetBridge');
-    const emmetData = await addrBook.get('EmmetData');
+    const bridgeAddr = await addrBook.get("EmmetBridge");
+    const emmetData = await addrBook.get("EmmetData");
     const bridge = web3_1.EmmetBridge__factory.connect(bridgeAddr, provider);
     const data = web3_1.EmmetData__factory.connect(emmetData, provider);
     return {
@@ -23,13 +23,13 @@ async function web3Helper({ provider, addressBook, chainName, nativeCoin, }) {
             return protocolFee + ffc;
         },
         async txInfo(hash) {
-            if (hash === '') {
+            if (hash === "") {
                 return {
                     timestamp: 0n,
                     value: 0n,
                 };
             }
-            if (!hash.startsWith('0x')) {
+            if (!hash.startsWith("0x")) {
                 //biome-ignore lint/style/noParameterAssign: ignore
                 hash = `0x${hash}`;
             }
@@ -54,7 +54,7 @@ async function web3Helper({ provider, addressBook, chainName, nativeCoin, }) {
             const receipt = await provider.waitForTransaction(hash);
             if (!receipt)
                 throw new Error(`No receipt found for tx hash: ${hash}`);
-            const log = receipt.logs.find((e) => e.topics.includes(bridge.interface.getEvent('SendInstallment').topicHash));
+            const log = receipt.logs.find((e) => e.topics.includes(bridge.interface.getEvent("SendInstallment").topicHash));
             if (!log)
                 throw new Error(`No send installment log found for tx hash: ${hash}`);
             const decode = bridge.interface.parseLog(log);

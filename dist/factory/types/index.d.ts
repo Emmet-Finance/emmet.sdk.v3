@@ -1,7 +1,7 @@
-import type { Web3Helper, Web3Params } from '../../chains/web3';
-import type { TonHelper, TonParams } from '../../chains/ton';
-import type { Decimals, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment } from '../../chains';
-import type { JsonRpcProvider } from 'ethers';
+import type { Web3Helper, Web3Params } from "../../chains/web3";
+import type { TonHelper, TonParams } from "../../chains/ton";
+import type { Decimals, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment } from "../../chains";
+import type { JsonRpcProvider } from "ethers";
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
 type MetaMapAssert = {

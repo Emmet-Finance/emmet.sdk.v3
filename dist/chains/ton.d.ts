@@ -1,5 +1,5 @@
-import { Address, type Sender, type TonClient } from '@ton/ton';
-import type { ChainID, ChainName, Decimals, FetchTxInfo, GetBalance, GetBridgeAddress, GetEmmetHashFromTx, GetEstimatedTime, GetProvider, GetTokenBalance, GetTxFee, NativeCoinName, ProtocolFee, SendInstallment, TokenInfo, ValidateAddress } from '.';
+import { Address, type Sender, type TonClient } from "@ton/ton";
+import type { ChainID, ChainName, Decimals, FetchTxInfo, GetBalance, GetBridgeAddress, GetEmmetHashFromTx, GetEstimatedTime, GetProvider, GetTokenBalance, GetTxFee, NativeCoinName, ProtocolFee, SendInstallment, TokenInfo, ValidateAddress } from ".";
 export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
