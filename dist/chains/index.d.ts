@@ -102,6 +102,9 @@ export interface PreTransfer<Signer, GasArgs> {
 export interface GetProtocolFeeInUSD {
     protocolFeeInUSD: () => Promise<bigint>;
 }
+export interface Decimals {
+    decimals: () => number;
+}
 /**
  * Represents an interface for getting the approved token amount for a particular user.
  */

@@ -1,6 +1,6 @@
 import type { Web3Helper, Web3Params } from '../../chains/web3';
 import type { TonHelper, TonParams } from '../../chains/ton';
-import type { GetTxFee, PreTransfer, SendInstallment } from '../../chains';
+import type { Decimals, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment } from '../../chains';
 import type { JsonRpcProvider } from 'ethers';
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
@@ -62,6 +62,7 @@ export interface ChainFactory {
     getTxCount: () => Promise<bigint>;
     getTokenPrice: (symbol: string) => Promise<bigint>;
     getPriceDecimals: (symbol: string) => Promise<bigint>;
+    getProtocolFeeInUSD: (chain: ProtocolFee & NativeCoinName & Decimals) => Promise<number>;
 }
 export interface Transaction {
     txHash: string;
