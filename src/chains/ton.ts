@@ -11,12 +11,12 @@ import {
 import type {
   ChainID,
   ChainName,
+  Decimals,
   FetchTxInfo,
   GetBalance,
   GetBridgeAddress,
   GetEmmetHashFromTx,
   GetEstimatedTime,
-  GetProtocolFeeInUSD,
   GetProvider,
   GetTokenBalance,
   GetTxFee,
@@ -49,7 +49,7 @@ export type TonHelper = GetBalance &
   TokenInfo &
   GetEstimatedTime &
   GetBridgeAddress &
-  GetProtocolFeeInUSD;
+  Decimals;
 
 export interface TonParams {
   client: TonClient;
@@ -89,7 +89,7 @@ export function tonHandler({
     return (await bridge.send(
       sender,
       {
-        value: amount + gasArgs.value
+        value: amount + gasArgs.value,
       },
       {
         $$type: 'FreezeTon',
@@ -129,7 +129,7 @@ export function tonHandler({
 
     return (await jtw.send(
       signer,
-      {...gasArgs },
+      { ...gasArgs },
       {
         $$type: 'JettonTransfer',
         amount: amt,
@@ -137,7 +137,7 @@ export function tonHandler({
         query_id: 0n,
         destination: burner,
         forward_payload: beginCell()
-        .storeAddress(bridge)
+          .storeAddress(bridge)
           .storeUint(cid, 64) // Target Chain
           .storeRef(
             beginCell()
@@ -240,18 +240,26 @@ export function tonHandler({
     );
   };
 
-  async function isWrappedToken(targetChain: bigint, fromTokenId: bigint, targetTokenId: bigint) {
+  async function isWrappedToken(
+    targetChain: bigint,
+    fromTokenId: bigint,
+    targetTokenId: bigint
+  ) {
     const steps = await bridgeReader.getCrossChainStrategy();
-    const strategy = steps.get(targetChain)?.i.get(fromTokenId)?.i.get(targetTokenId);
-    if (!strategy) return false
+    const strategy = steps
+      .get(targetChain)
+      ?.i.get(fromTokenId)
+      ?.i.get(targetTokenId);
+    if (!strategy) return false;
     for (let i = 0; i < strategy.local_steps.size; i++) {
       const strat = strategy.local_steps.steps.get(BigInt(i));
-      if (strat === 3n) return true
+      if (strat === 3n) return true;
     }
-    return false
+    return false;
   }
 
   return {
+    decimals: () => 9,
     estimateTime: () => Promise.resolve(undefined),
     async emmetHashFromtx(hash) {
       const txs = await client.getTransactions(bridge, {
@@ -277,8 +285,11 @@ export function tonHandler({
     nativeCoin: () => 'TON',
     chainName: () => chainName,
     async txFee(tc) {
-      const fee = await bridgeReader.getProtocolFee() + ((await bridgeReader.getChainFees()).get(tc) ?? raise("Chain fees not configured for this chain"))
-      return fee
+      const fee =
+        (await bridgeReader.getProtocolFee()) +
+        ((await bridgeReader.getChainFees()).get(tc) ??
+          raise('Chain fees not configured for this chain'));
+      return fee;
     },
     async token(symbol) {
       const tokens = await bridgeReader.getTokens();
@@ -305,9 +316,6 @@ export function tonHandler({
     },
     protocolFee() {
       return bridgeReader.getProtocolFee();
-    },
-    async protocolFeeInUSD() {
-      return 0n;
     },
     async txInfo(hash) {
       try {
@@ -343,8 +351,8 @@ export function tonHandler({
     ) => {
       const lastBridgeTxHash = await getLastBridgeTxHashInBase64();
       const bc = client.open(Bridge.fromAddress(bridge));
-      const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
-      const tid = BigInt(`0x${sha256_sync(targetSymbol).toString("hex")}`);
+      const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString('hex')}`);
+      const tid = BigInt(`0x${sha256_sync(targetSymbol).toString('hex')}`);
       const isWrapped = await isWrappedToken(cid, fsid, tid);
       const gs =
         fee !== undefined
@@ -355,7 +363,7 @@ export function tonHandler({
               value:
                 (await bridgeReader.getProtocolFee()) +
                 ((await bridgeReader.getChainFees()).get(cid) ??
-                  raise("Chain fees not configured for this chain")),
+                  raise('Chain fees not configured for this chain')),
             };
       if (tid === nativeTokenId) {
         await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
@@ -368,7 +376,7 @@ export function tonHandler({
           cid,
           amt,
           destAddress,
-          gs,
+          gs
         );
       } else {
         await transferJetton(
@@ -379,7 +387,7 @@ export function tonHandler({
           cid,
           amt,
           destAddress,
-          gs,
+          gs
         );
       }
 

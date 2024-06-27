@@ -8,6 +8,7 @@ import type {
   AddressBook,
   ChainID,
   ChainName,
+  Decimals,
   FetchTxInfo,
   GetApprovedTokenAmount,
   GetBalance,
@@ -51,7 +52,8 @@ export type Web3Helper = GetBalance &
   GetEmmetHashFromTx &
   GetEstimatedTime &
   GetBridgeAddress &
-  GetProtocolFeeInUSD;
+  GetProtocolFeeInUSD &
+  Decimals;
 
 export interface Web3Params {
   provider: Provider;
@@ -142,6 +144,7 @@ export async function web3Helper({
         symbol: token.symbol,
       };
     },
+    decimals: () => 18,
     nativeCoin: () => nativeCoin,
     chainName: () => chainName,
     preTransfer: async (signer, tid, spender, amt, gasArgs) => {

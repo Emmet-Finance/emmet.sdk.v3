@@ -195,5 +195,12 @@ export async function ChainFactoryBuilder(
     getPriceDecimals(symbol) {
       return emmetData.getPriceDecimals(symbol);
     },
+    async getProtocolFeeInUSD(chain) {
+      const tp = Number(await emmetData.getTokenPrice(chain.nativeCoin()));
+      const td = Number(await emmetData.getPriceDecimals(chain.nativeCoin()));
+      const pf = Number(await chain.protocolFee());
+      const cd = chain.decimals();
+      return Number(((pf * tp) / 10 ** (cd + td)).toFixed(2));
+    },
   };
 }
