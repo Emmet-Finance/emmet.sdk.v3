@@ -10,7 +10,7 @@ export namespace ChainFactoryConfigs {
     return {
       tonParams: {
         bridge: Address.parse(
-          "kQA5ISPjIffNDXLlGJD95mShiazd_ci1gNGJVi8-C8EfxcEv",
+          "kQD6Kjw_WiGJ1SFhHWa7vxbHDR8A694Te6Vl5xYKfubm5EyS",
         ),
         client: new TonClient({
           endpoint: "https://testnet-ton-node.emmet.finance/jsonRPC",
