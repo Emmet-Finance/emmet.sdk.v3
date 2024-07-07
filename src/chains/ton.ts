@@ -131,13 +131,11 @@ export function tonHandler({
       signer,
       { value: gasArgs.value + toNano("0.08") },
       {
-        $$type: "JettonTransfer",
+        $$type: "JettonBurn",
         amount: amt,
         custom_payload: null,
         query_id: 0n,
-        destination: burner,
         forward_payload: beginCell()
-          .storeAddress(bridge)
           .storeUint(cid, 64) // Target Chain
           .storeRef(
             beginCell()
