@@ -11,7 +11,7 @@ var ChainFactoryConfigs;
     function TestNet() {
         return {
             tonParams: {
-                bridge: core_1.Address.parse("kQA5ISPjIffNDXLlGJD95mShiazd_ci1gNGJVi8-C8EfxcEv"),
+                bridge: core_1.Address.parse("kQD6Kjw_WiGJ1SFhHWa7vxbHDR8A694Te6Vl5xYKfubm5EyS"),
                 client: new ton_1.TonClient({
                     endpoint: "https://testnet-ton-node.emmet.finance/jsonRPC",
                     apiKey: "9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
