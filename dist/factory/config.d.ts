@@ -18,6 +18,18 @@ export declare namespace ChainFactoryConfigs {
             nativeCoin: string;
             provider: ethers.JsonRpcProvider;
         };
+        onlylayerParams: {
+            chainName: string;
+            addressBook: string;
+            nativeCoin: string;
+            provider: ethers.JsonRpcProvider;
+        };
+        berachainParams: {
+            chainName: string;
+            addressBook: string;
+            nativeCoin: string;
+            provider: ethers.JsonRpcProvider;
+        };
         polygonParams: {
             addressBook: string;
             provider: ethers.JsonRpcProvider;
