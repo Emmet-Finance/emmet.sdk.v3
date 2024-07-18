@@ -35,6 +35,22 @@ export namespace ChainFactoryConfigs {
         nativeCoin: "BNB",
         provider: new JsonRpcProvider(TestNetRpcUri.BSC),
       },
+      onlylayerParams: {
+        chainName: "onlylayerTestnet",
+        addressBook: ethers.getAddress(
+          "0x6b30f76CecE9F92D27f0e9Ad78312E77709E74A5",
+        ),
+        nativeCoin: "ETH",
+        provider: new JsonRpcProvider(TestNetRpcUri.ONLYLAYER),
+      },
+      berachainParams: {
+        chainName: "berachainBarito",
+        addressBook: ethers.getAddress(
+          "0x6b30f76CecE9F92D27f0e9Ad78312E77709E74A5",
+        ),
+        nativeCoin: "BERA",
+        provider: new JsonRpcProvider(TestNetRpcUri.BERACHAIN),
+      },
       polygonParams: {
         addressBook: ethers.getAddress(
           "0x8d948925A0CB920c965C3296Eb4aef31EfE32ce9",

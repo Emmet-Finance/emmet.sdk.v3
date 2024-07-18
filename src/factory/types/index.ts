@@ -19,6 +19,8 @@ export type MetaMap = {
   0: EvmMeta;
   7: EvmMeta;
   4: EvmMeta;
+  728696: EvmMeta;
+  80084: EvmMeta;
   65535: TonMeta;
 } & MetaMapAssert;
 
@@ -27,6 +29,8 @@ export namespace Chain {
   export const BSC = 4;
   export const ETHEREUM = 0;
   export const TON = 65535;
+  export const ONLYLAYER = 728696;
+  export const BERACHAIN = 80084;
 }
 
 export type ChainNonce = keyof MetaMap;
@@ -54,6 +58,8 @@ export interface ChainParams {
   bscParams: Web3Params;
   ethParams: Web3Params;
   polygonParams: Web3Params;
+  onlylayerParams: Web3Params;
+  berachainParams: Web3Params;
   tonParams: TonParams;
   multisigParams: {
     provider: JsonRpcProvider;

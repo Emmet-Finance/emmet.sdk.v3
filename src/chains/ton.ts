@@ -260,7 +260,7 @@ export function tonHandler({
     decimals: () => 9,
     estimateTime: () => Promise.resolve(undefined),
     async emmetHashFromtx(hash) {
-      const b64 = Buffer.from(hash, 'hex').toString('base64')
+      const b64 = Buffer.from(hash, "hex").toString("base64");
       const txs = await client.getTransactions(bridge, {
         hash: b64,
         limit: 10,

@@ -22,6 +22,8 @@ function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   cToP.set(Chain.POLYGON, chainParams.polygonParams);
   cToP.set(Chain.BSC, chainParams.bscParams);
   cToP.set(Chain.ETHEREUM, chainParams.ethParams);
+  cToP.set(Chain.ONLYLAYER, chainParams.onlylayerParams);
+  cToP.set(Chain.BERACHAIN, chainParams.berachainParams);
   return cToP;
 }
 
@@ -46,6 +48,20 @@ CHAIN_INFO.set(Chain.ETHEREUM, {
   decimals: 18,
   name: "Ethereum",
   nonce: Chain.ETHEREUM,
+});
+
+CHAIN_INFO.set(Chain.ONLYLAYER, {
+  constructor: web3Helper,
+  decimals: 18,
+  name: "Only Layer",
+  nonce: Chain.ONLYLAYER,
+});
+
+CHAIN_INFO.set(Chain.BERACHAIN, {
+  constructor: web3Helper,
+  decimals: 18,
+  name: "Berachain",
+  nonce: Chain.BERACHAIN,
 });
 
 CHAIN_INFO.set(Chain.TON, {
