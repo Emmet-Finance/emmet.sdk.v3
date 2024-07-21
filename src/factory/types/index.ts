@@ -1,12 +1,15 @@
 import type { Web3Helper, Web3Params } from "../../chains/web3";
 import type { TonHelper, TonParams } from "../../chains/ton";
 import type {
+  AddressBook,
   Decimals,
   GetTxFee,
   NativeCoinName,
   PreTransfer,
   ProtocolFee,
   SendInstallment,
+  StakeLiquidity,
+  WithdrawLiquidity,
 } from "../../chains";
 import type { JsonRpcProvider } from "ethers";
 
@@ -85,6 +88,20 @@ export type HelperMap<K extends ChainNonce> = Map<
 >;
 
 export interface ChainFactory {
+  stakeLiqiduity: <Signer, RetTx, GasArgs>(
+    chain: StakeLiquidity<Signer, RetTx, GasArgs> & AddressBook,
+    signer: Signer,
+    token: string,
+    amount: bigint,
+    ga: GasArgs | undefined,
+  ) => Promise<{ hash: string; tx: RetTx }>;
+  withdrawLiqiduity: <Signer, RetTx, GasArgs>(
+    chain: WithdrawLiquidity<Signer, RetTx, GasArgs> & AddressBook,
+    signer: Signer,
+    token: string,
+    amount: bigint,
+    ga: GasArgs | undefined,
+  ) => Promise<{ hash: string; tx: RetTx }>;
   inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
   sendInstallment: <Signer, RetTx, GasArgs>(
     chain: SendInstallment<Signer, RetTx, GasArgs> & GetTxFee,

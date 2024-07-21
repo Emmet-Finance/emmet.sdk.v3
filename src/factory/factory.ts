@@ -15,6 +15,7 @@ import type {
   ParamMap,
 } from "./types";
 import { ChainIDToDomain, type SupportedChainID } from "../explorer-utils";
+import { AddressBookKeys } from "../chains";
 
 function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   const cToP: ParamMap = new Map();
@@ -103,6 +104,16 @@ export async function ChainFactoryBuilder(
 
   return {
     inner,
+    async stakeLiqiduity(chain, signer, token, amount, ga) {
+      const lp = await chain.address(`elp${token}`);
+      const response = chain.stakeLiquidity(signer, lp, amount, ga);
+      return response;
+    },
+    async withdrawLiqiduity(chain, signer, token, amount, ga) {
+      const lp = await chain.address(`elp${token}`);
+      const response = chain.withdrawLiquidity(signer, lp, amount, ga);
+      return response;
+    },
     preTransfer: async (chain, signer, tid, spender, amt, ga) => {
       const pt = await chain.preTransfer(signer, tid, spender, amt, ga);
       return pt;

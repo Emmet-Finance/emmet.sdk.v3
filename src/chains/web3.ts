@@ -4,7 +4,7 @@ import {
   Overrides,
   type Provider,
   type Signer,
-} from 'ethers';
+} from "ethers";
 import type {
   AddressBook,
   ChainID,
@@ -33,15 +33,15 @@ import type {
   GetLpTokenFee,
   GetLpProtocolFee,
   GetLpProtocolFeeAmount,
-} from '.';
+} from ".";
 import {
   EmmetAddressBook__factory,
   EmmetBridge__factory,
   EmmetData__factory,
   EmmetLPV2__factory,
   WrappedERC20__factory,
-} from '@emmet-contracts/web3';
-import type { PayableOverrides } from '@emmet-contracts/web3/dist/common';
+} from "@emmet-contracts/web3";
+import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -85,21 +85,27 @@ export async function web3Helper({
   nativeCoin,
 }: Web3Params): Promise<Web3Helper> {
   const addrBook = EmmetAddressBook__factory.connect(addressBook, provider);
-  const bridgeAddr = await addrBook.get('EmmetBridge');
-  const emmetData = await addrBook.get('EmmetData');
+  const bridgeAddr = await addrBook.get("EmmetBridge");
+  const emmetData = await addrBook.get("EmmetData");
   const bridge = EmmetBridge__factory.connect(bridgeAddr, provider);
   const data = EmmetData__factory.connect(emmetData, provider);
   return {
     id: async () => (await provider.getNetwork()).chainId,
     stakeLiquidity: async (signer, pool, amt, ga) => {
       const lp = EmmetLPV2__factory.connect(pool, signer);
-      const deposit = await lp.deposit(amt, ga);
-      return deposit;
+      const deposit = await lp.deposit(amt, { ...ga });
+      return {
+        hash: deposit.hash,
+        tx: deposit,
+      };
     },
     withdrawLiquidity: async (signer, pool, amt, ga) => {
       const lp = EmmetLPV2__factory.connect(pool, signer);
-      const withdraw = await lp.withdrawTokens(amt, ga);
-      return withdraw;
+      const withdraw = await lp.withdrawTokens(amt, { ...ga });
+      return {
+        hash: withdraw.hash,
+        tx: withdraw,
+      };
     },
     getLpCurrentAPY: async (pool) => {
       const lp = EmmetLPV2__factory.connect(pool);
@@ -137,18 +143,18 @@ export async function web3Helper({
       const ffc = await data.getForeignFeeCompensation(
         targetChainId,
         fromToken,
-        targetToken
+        targetToken,
       );
       return protocolFee + ffc;
     },
     async txInfo(hash) {
-      if (hash === '') {
+      if (hash === "") {
         return {
           timestamp: 0n,
           value: 0n,
         };
       }
-      if (!hash.startsWith('0x')) {
+      if (!hash.startsWith("0x")) {
         //biome-ignore lint/style/noParameterAssign: ignore
         hash = `0x${hash}`;
       }
@@ -173,8 +179,8 @@ export async function web3Helper({
       if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
       const log = receipt.logs.find((e) =>
         e.topics.includes(
-          bridge.interface.getEvent('SendInstallment').topicHash
-        )
+          bridge.interface.getEvent("SendInstallment").topicHash,
+        ),
       );
       if (!log)
         throw new Error(`No send installment log found for tx hash: ${hash}`);
@@ -212,7 +218,7 @@ export async function web3Helper({
     getApprovedAmount: async (tid, owner, spender) =>
       await WrappedERC20__factory.connect(tid, provider).allowance(
         owner,
-        spender
+        spender,
       ),
     balance: (addr) => provider.getBalance(addr),
     provider: () => provider,
@@ -220,7 +226,7 @@ export async function web3Helper({
       const ts = await data.getCrossChainTokenStrategy(
         targetChain,
         fromToken,
-        targetToken
+        targetToken,
       );
       const localSteps = ts[0];
       const foreignSteps = ts[1];
