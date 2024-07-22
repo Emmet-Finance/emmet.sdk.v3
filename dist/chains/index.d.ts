@@ -60,7 +60,7 @@ export interface GetTokenBalance {
      */
     tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
-export type AddressBookKeys = "GasFees" | "EmmetTokenVault" | "EmmetData" | "CCTPHelper" | "HashHelper" | "SignatureVerifier" | "LiquidityPoolHelper" | "EmmetBridge" | "AddressStorageHelper" | "WTON" | "EMMET" | "TON/USD" | "BNB/USD" | "MATIC/USD" | "EmmetMultisig";
+export type AddressBookKeys = "GasFees" | "EmmetTokenVault" | "EmmetData" | "CCTPHelper" | "HashHelper" | "SignatureVerifier" | "LiquidityPoolHelper" | "EmmetBridge" | "AddressStorageHelper" | "WTON" | "EMMET" | "TON/USD" | "BNB/USD" | "MATIC/USD" | "EmmetMultisig" | `elp${string}`;
 export interface AddressBook {
     address: (contr: AddressBookKeys) => Promise<string>;
 }
@@ -144,5 +144,32 @@ export interface GetEstimatedTime {
 }
 export interface GetBridgeAddress {
     bridge: () => Promise<string>;
+}
+export interface StakeLiquidity<Signer, RetTx, GasArgs> {
+    stakeLiquidity: (signer: Signer, pool: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
+        hash: string;
+        tx: RetTx;
+    }>;
+}
+export interface WithdrawLiquidity<Signer, RetTx, GasArgs> {
+    withdrawLiquidity: (signer: Signer, pool: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
+        hash: string;
+        tx: RetTx;
+    }>;
+}
+export interface GetLpCurrentAPY {
+    getLpCurrentAPY: (pool: string) => Promise<bigint>;
+}
+export interface GetLpTotalSupply {
+    getLpTotalSupply: (pool: string) => Promise<bigint>;
+}
+export interface GetLpTokenFee {
+    getLpTokenFee: (pool: string) => Promise<bigint>;
+}
+export interface GetLpProtocolFee {
+    getLpProtocolFee: (pool: string) => Promise<bigint>;
+}
+export interface GetLpProtocolFeeAmount {
+    getLpProtocolFeeAmount: (pool: string) => Promise<bigint>;
 }
 //# sourceMappingURL=index.d.ts.map
