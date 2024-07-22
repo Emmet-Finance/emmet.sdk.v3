@@ -15,7 +15,6 @@ import type {
   ParamMap,
 } from "./types";
 import { ChainIDToDomain, type SupportedChainID } from "../explorer-utils";
-import { AddressBookKeys } from "../chains";
 
 function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   const cToP: ParamMap = new Map();
