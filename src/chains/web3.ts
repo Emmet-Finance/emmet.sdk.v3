@@ -108,27 +108,27 @@ export async function web3Helper({
       };
     },
     getLpCurrentAPY: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool);
+      const lp = EmmetLPV2__factory.connect(pool, provider);
       const apy = await lp.currentAPY();
       return apy;
     },
     getLpTotalSupply: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool);
+      const lp = EmmetLPV2__factory.connect(pool, provider);
       const totalSupply = await lp.totalSupply();
       return totalSupply;
     },
     getLpTokenFee: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool);
+      const lp = EmmetLPV2__factory.connect(pool, provider);
       const tokenFee = await lp.tokenFee();
       return tokenFee;
     },
     getLpProtocolFee: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool);
+      const lp = EmmetLPV2__factory.connect(pool, provider);
       const protocolFee = await lp.protocolFee();
       return protocolFee;
     },
     getLpProtocolFeeAmount: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool);
+      const lp = EmmetLPV2__factory.connect(pool, provider);
       const protocolFeeAmount = await lp.protocolFeeAmount();
       return protocolFeeAmount;
     },
