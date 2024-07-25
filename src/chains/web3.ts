@@ -33,6 +33,7 @@ import type {
   GetLpTokenFee,
   GetLpProtocolFee,
   GetLpProtocolFeeAmount,
+  WithdrawFees,
 } from ".";
 import {
   EmmetAddressBook__factory,
@@ -65,6 +66,7 @@ export type Web3Helper = GetBalance &
   Decimals &
   StakeLiquidity<Signer, ContractTransactionResponse, Overrides> &
   WithdrawLiquidity<Signer, ContractTransactionResponse, Overrides> &
+  WithdrawFees<Signer, ContractTransactionResponse, Overrides> &
   GetLpCurrentAPY &
   GetLpTotalSupply &
   GetLpTokenFee &
@@ -102,6 +104,14 @@ export async function web3Helper({
     withdrawLiquidity: async (signer, pool, amt, ga) => {
       const lp = EmmetLPV2__factory.connect(pool, signer);
       const withdraw = await lp.withdrawTokens(amt, { ...ga });
+      return {
+        hash: withdraw.hash,
+        tx: withdraw,
+      };
+    },
+    withdrawFees: async (signer, pool, ga) => {
+      const lp = EmmetLPV2__factory.connect(pool, signer);
+      const withdraw = await lp.withdrawFees({ ...ga });
       return {
         hash: withdraw.hash,
         tx: withdraw,

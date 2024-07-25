@@ -225,6 +225,14 @@ export interface WithdrawLiquidity<Signer, RetTx, GasArgs> {
   ) => Promise<{ hash: string; tx: RetTx }>;
 }
 
+export interface WithdrawFees<Signer, RetTx, GasArgs> {
+  withdrawFees: (
+    signer: Signer,
+    pool: string,
+    ga: GasArgs | undefined,
+  ) => Promise<{ hash: string; tx: RetTx }>;
+}
+
 export interface GetLpCurrentAPY {
   getLpCurrentAPY: (pool: string) => Promise<bigint>;
 }
