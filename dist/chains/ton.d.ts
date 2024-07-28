@@ -7,13 +7,12 @@ export type TonGasArgs = {
 export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, string, TonGasArgs> & ValidateAddress & GetTokenBalance & GetTxFee & ChainName & NativeCoinName & ChainID & FetchTxInfo & ProtocolFee & GetEmmetHashFromTx & TokenInfo & GetEstimatedTime & GetBridgeAddress & Decimals;
 export interface TonParams {
     client: TonClient;
-    bridge: Address;
     nativeTokenId: bigint;
-    oracle: Address;
-    burner: Address;
     chainName: string;
     chainId: bigint;
+    addressBook: Address;
 }
-export declare function tonHandler({ client, bridge, nativeTokenId, oracle, burner, chainName, chainId, }: TonParams): TonHelper;
+export declare function tonHandler({ client, nativeTokenId, chainName, chainId, addressBook, }: TonParams): Promise<TonHelper>;
 export declare function raise(msg: string): never;
+export declare function assertNotNull<T>(t: T | null | undefined): t is T;
 //# sourceMappingURL=ton.d.ts.map

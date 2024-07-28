@@ -4,12 +4,10 @@ import { TonClient } from "@ton/ton";
 export declare namespace ChainFactoryConfigs {
     function TestNet(): {
         tonParams: {
-            bridge: Address;
+            addressBook: Address;
             client: TonClient;
             nativeTokenId: bigint;
-            oracle: Address;
             chainId: bigint;
-            burner: Address;
             chainName: string;
         };
         bscParams: {
