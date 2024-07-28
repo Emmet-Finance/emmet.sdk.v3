@@ -415,6 +415,7 @@ export declare class EmmetLP implements Contract {
     getProtocolFee(provider: ContractProvider): Promise<bigint>;
     getTokenFee(provider: ContractProvider): Promise<bigint>;
     getStakeToken(provider: ContractProvider): Promise<Address>;
+    getDecimals(provider: ContractProvider): Promise<bigint>;
     getGetJettonData(provider: ContractProvider): Promise<{
         $$type: "JettonData";
         total_supply: bigint;
