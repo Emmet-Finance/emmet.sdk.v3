@@ -83,9 +83,10 @@ export type AddressBookKeys =
   | "AddressStorageHelper"
   | "WTON" // Wrapped Token
   | "EMMET" // Token
-  | "TON/USD" // price feed
+  | "BERA/USD // price feed
   | "BNB/USD" // price feed
   | "MATIC/USD" // Price Feed
+  | "TON/USD" // price feed
   | "EmmetMultisig"
   | `elp${string}`;
 
