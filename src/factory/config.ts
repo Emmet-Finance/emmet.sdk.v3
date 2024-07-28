@@ -9,22 +9,14 @@ export namespace ChainFactoryConfigs {
   export function TestNet() {
     return {
       tonParams: {
-        bridge: Address.parse(
-          "kQD6Kjw_WiGJ1SFhHWa7vxbHDR8A694Te6Vl5xYKfubm5EyS",
-        ),
+        addressBook: Address.parse("EQDI0bpR2Qv-_4kuh2RT0lndPsZJATIr3SitkrT7BTUT0Mx1"),
         client: new TonClient({
           endpoint: "https://testnet-ton-node.emmet.finance/jsonRPC",
           apiKey:
             "9e899d38874458e92addb70d6f336ccbe51e21e378af5797486ba9a9d1a3c5c3",
         }),
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
-        oracle: Address.parse(
-          "EQAx41_27fvdX4C30RxQmzbiLeHyO090XzGHBadgGfdp5Uqd",
-        ),
         chainId: 65535n, // TON Testnet
-        burner: Address.parse(
-          "EQBtE7sxSqbDZwuWhxxQRzSZZ3UAm8j4mhR25iWS2xfEmZ6D",
-        ),
         chainName: "tonTestnet",
       },
       bscParams: {
