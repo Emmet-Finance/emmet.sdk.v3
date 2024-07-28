@@ -1,7 +1,7 @@
 import {
   type ContractTransactionResponse,
   isAddress,
-  Overrides,
+  type Overrides,
   type Provider,
   type Signer,
 } from "ethers";

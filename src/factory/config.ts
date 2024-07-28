@@ -9,7 +9,9 @@ export namespace ChainFactoryConfigs {
   export function TestNet() {
     return {
       tonParams: {
-        addressBook: Address.parse("EQDI0bpR2Qv-_4kuh2RT0lndPsZJATIr3SitkrT7BTUT0Mx1"),
+        addressBook: Address.parse(
+          "EQDI0bpR2Qv-_4kuh2RT0lndPsZJATIr3SitkrT7BTUT0Mx1",
+        ),
         client: new TonClient({
           endpoint: "https://testnet-ton-node.emmet.finance/jsonRPC",
           apiKey:
