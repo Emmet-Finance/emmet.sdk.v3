@@ -143,7 +143,7 @@ export interface GetProtocolFeeInUSD {
 }
 
 export interface Decimals {
-  decimals: () => number;
+  decimals: (pool?: string) => Promise<number>;
 }
 
 /**

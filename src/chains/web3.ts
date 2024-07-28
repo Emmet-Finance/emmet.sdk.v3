@@ -40,6 +40,7 @@ import {
   EmmetBridge__factory,
   EmmetData__factory,
   EmmetLPV2__factory,
+  ERC20__factory,
   WrappedERC20__factory,
 } from "@emmet-contracts/web3";
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
@@ -211,7 +212,10 @@ export async function web3Helper({
         symbol: token.symbol,
       };
     },
-    decimals: () => 18,
+    decimals: async (pool) => {
+      if (!pool) return 18;
+      return Number(await ERC20__factory.connect(pool, provider).decimals());
+    },
     nativeCoin: () => nativeCoin,
     chainName: () => chainName,
     preTransfer: async (signer, tid, spender, amt, gasArgs) => {

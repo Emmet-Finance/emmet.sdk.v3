@@ -406,7 +406,12 @@ export async function tonHandler({
       );
       return await getNewTxAfterHash(last, da.address, 1814330430);
     },
-    decimals: () => 9,
+    decimals: async  (pool) => {
+      if (!pool) return 9;
+      const lp = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const dec = await lp.getDecimals()
+      return Number(dec);
+    },
     async address(contr) {
       const address =
         (await ab.getGet(contr)) ??
