@@ -34,6 +34,7 @@ import type {
   GetLpProtocolFee,
   GetLpProtocolFeeAmount,
   WithdrawFees,
+  GetLpProviderRewards,
 } from ".";
 import {
   EmmetAddressBook__factory,
@@ -72,7 +73,8 @@ export type Web3Helper = GetBalance &
   GetLpTotalSupply &
   GetLpTokenFee &
   GetLpProtocolFee &
-  GetLpProtocolFeeAmount;
+  GetLpProtocolFeeAmount &
+  GetLpProviderRewards;
 
 export interface Web3Params {
   provider: Provider;
@@ -139,6 +141,11 @@ export async function web3Helper({
       return protocolFee;
     },
     getLpProtocolFeeAmount: async (pool) => {
+      const lp = EmmetLPV2__factory.connect(pool, provider);
+      const protocolFeeAmount = await lp.protocolFeeAmount();
+      return protocolFeeAmount;
+    },
+    getLpProviderRewards: async (pool) => {
       const lp = EmmetLPV2__factory.connect(pool, provider);
       const protocolFeeAmount = await lp.protocolFeeAmount();
       return protocolFeeAmount;

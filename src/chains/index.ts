@@ -253,3 +253,7 @@ export interface GetLpProtocolFee {
 export interface GetLpProtocolFeeAmount {
   getLpProtocolFeeAmount: (pool: string) => Promise<bigint>;
 }
+
+export interface GetLpProviderRewards {
+  getLpProviderRewards: (pool: string, address: string) => Promise<bigint>;
+}
