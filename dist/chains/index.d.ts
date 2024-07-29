@@ -178,4 +178,13 @@ export interface GetLpProtocolFee {
 export interface GetLpProtocolFeeAmount {
     getLpProtocolFeeAmount: (pool: string) => Promise<bigint>;
 }
+export interface GetLpProviderRewards {
+    getLpProviderRewards: (pool: string, address: string) => Promise<bigint>;
+}
+export interface GetLpFeeGrowthGlobal {
+    getLpFeeGrowthGlobal: (pool: string) => Promise<bigint>;
+}
+export interface GetLpFeeDecimals {
+    getLpFeeDecimals: (pool: string) => Promise<bigint>;
+}
 //# sourceMappingURL=index.d.ts.map
