@@ -1,7 +1,7 @@
-import type { Web3Helper, Web3Params } from "../../chains/web3";
-import type { TonHelper, TonParams } from "../../chains/ton";
-import type { AddressBook, Decimals, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment, StakeLiquidity, WithdrawLiquidity } from "../../chains";
-import type { JsonRpcProvider } from "ethers";
+import type { Web3Helper, Web3Params } from '../../chains/web3';
+import type { TonHelper, TonParams } from '../../chains/ton';
+import type { AddressBook, Decimals, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment, StakeLiquidity, WithdrawFees, WithdrawLiquidity } from '../../chains';
+import type { JsonRpcProvider } from 'ethers';
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
 type MetaMapAssert = {
@@ -61,6 +61,10 @@ export interface ChainFactory {
         tx: RetTx;
     }>;
     withdrawLiqiduity: <Signer, RetTx, GasArgs>(chain: WithdrawLiquidity<Signer, RetTx, GasArgs> & AddressBook, signer: Signer, token: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
+        hash: string;
+        tx: RetTx;
+    }>;
+    withdrawFees: <Signer, RetTx, GasArgs>(chain: WithdrawFees<Signer, RetTx, GasArgs> & AddressBook, signer: Signer, token: string, ga: GasArgs | undefined) => Promise<{
         hash: string;
         tx: RetTx;
     }>;
