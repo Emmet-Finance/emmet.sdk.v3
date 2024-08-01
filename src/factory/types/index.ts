@@ -1,5 +1,5 @@
-import type { Web3Helper, Web3Params } from "../../chains/web3";
-import type { TonHelper, TonParams } from "../../chains/ton";
+import type { Web3Helper, Web3Params } from '../../chains/web3';
+import type { TonHelper, TonParams } from '../../chains/ton';
 import type {
   AddressBook,
   Decimals,
@@ -9,9 +9,10 @@ import type {
   ProtocolFee,
   SendInstallment,
   StakeLiquidity,
+  WithdrawFees,
   WithdrawLiquidity,
-} from "../../chains";
-import type { JsonRpcProvider } from "ethers";
+} from '../../chains';
+import type { JsonRpcProvider } from 'ethers';
 
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
@@ -93,14 +94,20 @@ export interface ChainFactory {
     signer: Signer,
     token: string,
     amount: bigint,
-    ga: GasArgs | undefined,
+    ga: GasArgs | undefined
   ) => Promise<{ hash: string; tx: RetTx }>;
   withdrawLiqiduity: <Signer, RetTx, GasArgs>(
     chain: WithdrawLiquidity<Signer, RetTx, GasArgs> & AddressBook,
     signer: Signer,
     token: string,
     amount: bigint,
-    ga: GasArgs | undefined,
+    ga: GasArgs | undefined
+  ) => Promise<{ hash: string; tx: RetTx }>;
+  withdrawFees: <Signer, RetTx, GasArgs>(
+    chain: WithdrawFees<Signer, RetTx, GasArgs> & AddressBook,
+    signer: Signer,
+    token: string,
+    ga: GasArgs | undefined
   ) => Promise<{ hash: string; tx: RetTx }>;
   inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
   sendInstallment: <Signer, RetTx, GasArgs>(
@@ -111,7 +118,7 @@ export interface ChainFactory {
     fromSymbol: string,
     tokenSymbol: string,
     destAddress: string,
-    gasArgs?: GasArgs,
+    gasArgs?: GasArgs
   ) => Promise<{ hash: string; tx: RetTx }>;
   preTransfer: <Signer, GasArgs>(
     chain: PreTransfer<Signer, GasArgs>,
@@ -119,11 +126,11 @@ export interface ChainFactory {
     tid: string,
     spender: string,
     amount: bigint,
-    gasArgs: GasArgs,
+    gasArgs: GasArgs
   ) => Promise<string>;
   getTransactions: (
     batch: bigint | number,
-    offset: bigint | number,
+    offset: bigint | number
   ) => Promise<Transaction[]>;
   getTransaction: (hash: string) => Promise<DetailedTx>;
   getExplorerStats: () => Promise<ExplorerMeta>;
@@ -131,7 +138,7 @@ export interface ChainFactory {
   getTokenPrice: (symbol: string) => Promise<bigint>;
   getPriceDecimals: (symbol: string) => Promise<bigint>;
   getProtocolFeeInUSD: (
-    chain: ProtocolFee & NativeCoinName & Decimals,
+    chain: ProtocolFee & NativeCoinName & Decimals
   ) => Promise<number>;
 }
 
