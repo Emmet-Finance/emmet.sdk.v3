@@ -1,5 +1,5 @@
 import { Address, type Sender, type TonClient } from "@ton/ton";
-import type { ChainID, ChainName, Decimals, FetchTxInfo, GetBalance, GetBridgeAddress, GetEmmetHashFromTx, GetEstimatedTime, GetProvider, GetTokenBalance, GetTxFee, NativeCoinName, ProtocolFee, SendInstallment, TokenInfo, ValidateAddress, AddressBook, StakeLiquidity, GetLpCurrentAPY, GetLpProtocolFee, GetLpProtocolFeeAmount, GetLpTokenFee, GetLpTotalSupply, WithdrawFees, WithdrawLiquidity } from ".";
+import type { ChainID, ChainName, Decimals, FetchTxInfo, GetBalance, GetBridgeAddress, GetEmmetHashFromTx, GetEstimatedTime, GetProvider, GetTokenBalance, GetTxFee, NativeCoinName, ProtocolFee, SendInstallment, TokenInfo, ValidateAddress, AddressBook, StakeLiquidity, GetLpCurrentAPY, GetLpProtocolFee, GetLpProtocolFeeAmount, GetLpTokenFee, GetLpTotalSupply, WithdrawFees, WithdrawLiquidity, GetLpFeeDecimals, GetLpFeeGrowthGlobal, GetLpProviderRewards } from ".";
 export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
@@ -13,7 +13,7 @@ export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Se
 }> & WithdrawFees<Sender, string, {
     value: bigint;
     bounce?: boolean;
-}> & GetLpCurrentAPY & GetLpTotalSupply & GetLpTokenFee & GetLpProtocolFee & GetLpProtocolFeeAmount;
+}> & GetLpCurrentAPY & GetLpTotalSupply & GetLpTokenFee & GetLpProtocolFee & GetLpProtocolFeeAmount & GetLpProviderRewards & GetLpFeeGrowthGlobal & GetLpFeeDecimals;
 export interface TonParams {
     client: TonClient;
     nativeTokenId: bigint;
