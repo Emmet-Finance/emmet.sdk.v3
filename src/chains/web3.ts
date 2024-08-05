@@ -37,6 +37,7 @@ import type {
   GetLpProviderRewards,
   GetLpFeeGrowthGlobal,
   GetLpFeeDecimals,
+  IsTransferFomLp,
 } from ".";
 import {
   EmmetAddressBook__factory,
@@ -78,7 +79,8 @@ export type Web3Helper = GetBalance &
   GetLpProtocolFeeAmount &
   GetLpProviderRewards &
   GetLpFeeGrowthGlobal &
-  GetLpFeeDecimals;
+  GetLpFeeDecimals &
+  IsTransferFomLp;
 
 export interface Web3Params {
   provider: Provider;
@@ -276,6 +278,15 @@ export async function web3Helper({
         return timeInMs;
       }
       return undefined;
+    },
+    async isTransferFromLp(targetChain, fromToken, targetToken) {
+      const ts = await data.getCrossChainTokenStrategy(
+        targetChain,
+        fromToken,
+        targetToken,
+      );
+      const _isTransferFromLp = ts[1].includes(7n);
+      return _isTransferFromLp;
     },
     protocolFeeInUSD: async () => {
       const fee = await data.protocolFee();

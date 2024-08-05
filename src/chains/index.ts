@@ -204,6 +204,14 @@ export interface GetEstimatedTime {
   ): Promise<bigint | undefined>;
 }
 
+export interface IsTransferFomLp {
+  isTransferFromLp(
+    targetChain: bigint,
+    fromToken: string,
+    targetToken: string,
+  ): Promise<boolean>;
+}
+
 export interface GetBridgeAddress {
   bridge: () => Promise<string>;
 }

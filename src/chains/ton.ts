@@ -38,6 +38,7 @@ import type {
   GetLpFeeDecimals,
   GetLpFeeGrowthGlobal,
   GetLpProviderRewards,
+  IsTransferFomLp,
 } from ".";
 import { Bridge, loadSentInstallment } from "../contracts/ton";
 import { sha256_sync } from "@ton/crypto";
@@ -80,7 +81,8 @@ export type TonHelper = GetBalance &
   GetLpProtocolFeeAmount &
   GetLpProviderRewards &
   GetLpFeeGrowthGlobal &
-  GetLpFeeDecimals;
+  GetLpFeeDecimals &
+  IsTransferFomLp;
 
 export interface TonParams {
   client: TonClient;
@@ -113,7 +115,7 @@ export async function tonHandler({
     targetTkn: string,
     chainId: bigint,
     amount: bigint,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ): Promise<string> {
     return (await bridge.send(
       sender,
@@ -133,7 +135,7 @@ export async function tonHandler({
           .storeInt(toKey(targetTkn), 256)
           .storeStringRefTail(targetTkn)
           .endCell(),
-      }
+      },
     )) as unknown as Promise<string>;
   }
 
@@ -144,7 +146,7 @@ export async function tonHandler({
     amt: bigint,
     destAddress: string,
     cid: bigint,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ): Promise<string> => {
     const tid = toKey(fromToken);
     const wtd = await bridgeReader.getTokens();
@@ -152,8 +154,8 @@ export async function tonHandler({
     const jt = client.open(WrappedJetton.fromAddress(wt.address));
     const jtw = client.open(
       WrappedJettonWallet.fromAddress(
-        await jt.getGetWalletAddress(signer.address!)
-      )
+        await jt.getGetWalletAddress(signer.address!),
+      ),
     );
 
     return (await jtw.send(
@@ -170,19 +172,19 @@ export async function tonHandler({
             beginCell()
               .storeUint(toKey(fromToken), 256)
               .storeStringRefTail(fromToken)
-              .asCell()
+              .asCell(),
           )
           .storeRef(beginCell().storeStringRefTail(destAddress).asCell())
           .storeRef(
             beginCell()
               .storeUint(toKey(targetToken), 256)
               .storeStringRefTail(targetToken)
-              .asCell()
+              .asCell(),
           )
           .endCell(),
         forward_ton_amount: gasArgs.value + toNano("0.03"),
         response_destination: bridge,
-      }
+      },
     )) as unknown as Promise<string>;
   };
   const transferJettonToBridge = async (
@@ -192,7 +194,7 @@ export async function tonHandler({
     target_chain: bigint,
     destAddress: string,
     amt: bigint,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ) => {
     const tid = toKey(fromToken);
     const ntd = await bridgeReader.getTokens();
@@ -200,8 +202,8 @@ export async function tonHandler({
     const jt = client.open(WrappedJetton.fromAddress(wt.address));
     const jtw = client.open(
       WrappedJettonWallet.fromAddress(
-        await jt.getGetWalletAddress(signer.address!)
-      )
+        await jt.getGetWalletAddress(signer.address!),
+      ),
     );
     return (await jtw.send(
       signer,
@@ -217,20 +219,20 @@ export async function tonHandler({
             beginCell()
               .storeUint(toKey(fromToken), 256)
               .storeStringRefTail(fromToken)
-              .asCell()
+              .asCell(),
           )
           .storeRef(beginCell().storeStringRefTail(destAddress).asCell())
           .storeRef(
             beginCell()
               .storeUint(toKey(targetToken), 256)
               .storeStringRefTail(targetToken)
-              .asCell()
+              .asCell(),
           )
           .endCell(),
         forward_ton_amount: gasArgs.value,
         query_id: 0n,
         response_destination: bridge,
-      }
+      },
     )) as unknown as Promise<string>;
   };
 
@@ -242,7 +244,7 @@ export async function tonHandler({
     chainId: bigint,
     amount: bigint,
     destAddress: string,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ): Promise<string> => {
     if (to.toString() === bridge.toString()) {
       return await transferJettonToBurner(
@@ -252,7 +254,7 @@ export async function tonHandler({
         amount,
         destAddress,
         chainId,
-        gasArgs
+        gasArgs,
       );
     }
 
@@ -263,14 +265,14 @@ export async function tonHandler({
       chainId,
       destAddress,
       amount,
-      gasArgs
+      gasArgs,
     );
   };
 
   async function isWrappedToken(
     targetChain: bigint,
     fromTokenId: bigint,
-    targetTokenId: bigint
+    targetTokenId: bigint,
   ) {
     const steps = await bridgeReader.getCrossChainStrategy();
     const strategy = steps
@@ -288,7 +290,7 @@ export async function tonHandler({
   async function getNewTxAfterHash(
     last: string,
     addr: Address,
-    op: number
+    op: number,
   ): Promise<{ hash: string; tx: string }> {
     let foundTx = false;
     let hash = "";
@@ -410,7 +412,7 @@ export async function tonHandler({
           forward_ton_amount: toNano("0.2"),
           query_id: 0n,
           response_destination: lp.address,
-        }
+        },
       );
       return await getNewTxAfterHash(last, lp.address, 1935855772);
     },
@@ -437,7 +439,7 @@ export async function tonHandler({
         {
           $$type: "WithdrawTokens",
           amount,
-        }
+        },
       );
       return await getNewTxAfterHash(last, da.address, 1814330430);
     },
@@ -451,11 +453,12 @@ export async function tonHandler({
       const address =
         (await ab.getGet(contr)) ??
         raise(
-          `Failed to fetch address for ${contr} in ${addressBook.toString()}`
+          `Failed to fetch address for ${contr} in ${addressBook.toString()}`,
         );
       return address.toString();
     },
     estimateTime: () => Promise.resolve(undefined),
+    isTransferFromLp: () => Promise.resolve(false), // TODO: update it
     async emmetHashFromtx(hash) {
       const b64 = Buffer.from(hash, "hex").toString("base64");
       const txs = await client.getTransactions(bridge, {
@@ -515,7 +518,7 @@ export async function tonHandler({
     },
     async txInfo(hash) {
       const bs64 = Buffer.from(hash.replace("0x", ""), "hex").toString(
-        "base64"
+        "base64",
       );
       try {
         const tx = await client.getTransactions(bridge, {
@@ -550,7 +553,7 @@ export async function tonHandler({
       fromSymbol,
       targetSymbol,
       destAddress,
-      fee
+      fee,
     ) => {
       const lastBridgeTxHash = await getLastTxHashInBase64ForAddress(bridge);
       const bc = client.open(Bridge.fromAddress(bridge));
@@ -579,7 +582,7 @@ export async function tonHandler({
           cid,
           amt,
           destAddress,
-          gs
+          gs,
         );
       } else {
         await transferJetton(
@@ -590,7 +593,7 @@ export async function tonHandler({
           cid,
           amt,
           destAddress,
-          gs
+          gs,
         );
       }
 
