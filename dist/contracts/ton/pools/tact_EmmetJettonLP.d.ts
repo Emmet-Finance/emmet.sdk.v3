@@ -369,11 +369,13 @@ export declare function loadTokenTransfer(slice: Slice): {
 export type UpdateDeposit = {
     $$type: 'UpdateDeposit';
     feeGrowthGlobal: bigint;
+    new_total_supply: bigint;
 };
 export declare function storeUpdateDeposit(src: UpdateDeposit): (builder: Builder) => void;
 export declare function loadUpdateDeposit(slice: Slice): {
     $$type: "UpdateDeposit";
     feeGrowthGlobal: bigint;
+    new_total_supply: bigint;
 };
 export type InternalWithdrawFee = {
     $$type: 'InternalWithdrawFee';
@@ -387,6 +389,17 @@ export declare function loadInternalWithdrawFee(slice: Slice): {
     lastFeeGrowth: bigint;
     owner: Address;
     balance: bigint;
+};
+export type WithdrawCallback = {
+    $$type: 'WithdrawCallback';
+    feeGrowthGlobal: bigint;
+    rewards: bigint;
+};
+export declare function storeWithdrawCallback(src: WithdrawCallback): (builder: Builder) => void;
+export declare function loadWithdrawCallback(slice: Slice): {
+    $$type: "WithdrawCallback";
+    feeGrowthGlobal: bigint;
+    rewards: bigint;
 };
 export type Staked = {
     $$type: 'Staked';
@@ -432,13 +445,13 @@ export declare function loadRewardsPaid(slice: Slice): {
     user: Address;
     amount: bigint;
 };
-export declare class EmmetLPWallet implements Contract {
-    static init(owner: Address, jetton_master: Address): Promise<{
+export declare class EmmetJettonLP implements Contract {
+    static init(admin: Address, owner: Address, bridge: Address, stake_token: Address, decimals: bigint, protocolFee: bigint, tokenFee: bigint, jetton_content: Cell): Promise<{
         code: Cell;
         data: Cell;
     }>;
-    static fromInit(owner: Address, jetton_master: Address): Promise<EmmetLPWallet>;
-    static fromAddress(address: Address): EmmetLPWallet;
+    static fromInit(admin: Address, owner: Address, bridge: Address, stake_token: Address, decimals: bigint, protocolFee: bigint, tokenFee: bigint, jetton_content: Cell): Promise<EmmetJettonLP>;
+    static fromAddress(address: Address): EmmetJettonLP;
     readonly address: Address;
     readonly init?: {
         code: Cell;
@@ -449,14 +462,27 @@ export declare class EmmetLPWallet implements Contract {
     send(provider: ContractProvider, via: Sender, args: {
         value: bigint;
         bounce?: boolean | null | undefined;
-    }, message: UpdateDeposit | 'WithdrawFees' | JettonTransfer | JettonBurn | JettonInternalTransfer): Promise<void>;
-    getLastInternalFeeGrowth(provider: ContractProvider): Promise<bigint>;
-    getGetWalletData(provider: ContractProvider): Promise<{
-        $$type: "WalletData";
-        balance: bigint;
-        owner: Address;
-        jetton: Address;
+    }, message: SetWalletAddress | JettonTransferNotification | ReleaseTokens | null | JettonExcesses | InternalWithdrawFee | Deploy | JettonBurnNotification | JettonMint | GrantRole | RevokeRole | RenounceRole | UpdateRoleAdmin): Promise<void>;
+    getFeeGrowthGlobal(provider: ContractProvider): Promise<bigint>;
+    getProtocolFeeAmount(provider: ContractProvider): Promise<bigint>;
+    getCurrentApy(provider: ContractProvider): Promise<bigint>;
+    getRewards(provider: ContractProvider, lastInternalFeeGrowth: bigint, balance: bigint): Promise<bigint>;
+    getBridgeRoleId(provider: ContractProvider): Promise<bigint>;
+    getProtocolFee(provider: ContractProvider): Promise<bigint>;
+    getTokenFee(provider: ContractProvider): Promise<bigint>;
+    getStakeToken(provider: ContractProvider): Promise<Address>;
+    getDecimals(provider: ContractProvider): Promise<bigint>;
+    getGetJettonData(provider: ContractProvider): Promise<{
+        $$type: "JettonData";
+        total_supply: bigint;
+        mintable: boolean;
+        admin_address: Address;
+        jetton_content: Cell;
         jetton_wallet_code: Cell;
     }>;
+    getGetWalletAddress(provider: ContractProvider, owner_address: Address): Promise<Address>;
+    getHasRole(provider: ContractProvider, address: Address, role_id: bigint): Promise<boolean>;
+    getRoleAdmin(provider: ContractProvider, role_id: bigint): Promise<bigint>;
+    getAdminRoleId(provider: ContractProvider): Promise<bigint>;
 }
-//# sourceMappingURL=tact_EmmetLPWallet.d.ts.map
+//# sourceMappingURL=tact_EmmetJettonLP.d.ts.map
