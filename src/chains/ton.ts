@@ -2,7 +2,6 @@ import {
   address,
   Address,
   beginCell,
-  type Cell,
   JettonMaster,
   JettonWallet,
   type OpenedContract,
@@ -46,8 +45,9 @@ import { sha256_sync } from "@ton/crypto";
 import { WrappedJetton } from "../contracts/ton/jetton-master";
 import { WrappedJettonWallet } from "../contracts/ton/jetton-wallet";
 import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
-import { EmmetLP } from "../contracts/ton/pools/tact_EmmetLP";
-import { EmmetLPWallet } from "../contracts/ton/pools/tact_EmmetLPWallet";
+import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
+import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
+import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -325,44 +325,44 @@ export async function tonHandler({
 
   return {
     async getLpCurrentAPY(pool) {
-      const pc = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const apy = await pc.getCurrentApy();
       return apy;
     },
     async getLpProtocolFee(pool) {
-      const pc = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const pf = await pc.getProtocolFee();
       return pf;
     },
     async getLpTokenFee(pool) {
-      const pc = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const pf = await pc.getTokenFee();
       return pf;
     },
     async getLpTotalSupply(pool) {
-      const pc = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const jet = await pc.getGetJettonData();
       return jet.total_supply;
     },
     async getLpProtocolFeeAmount(pool) {
-      const pc = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const pf = await pc.getProtocolFeeAmount();
       return pf;
     },
     async getLpFeeDecimals(pool) {
-      const pc = client.open(EmmetLP.fromAddress(address(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(address(pool)));
       const pf = await pc.getDecimals();
       return pf;
     },
     async getLpFeeGrowthGlobal(pool) {
-      const pc = client.open(EmmetLP.fromAddress(address(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(address(pool)));
       const fgg = pc.getFeeGrowthGlobal();
       return fgg;
     },
     async getLpProviderRewards(pool, user) {
-      const pc = client.open(EmmetLP.fromAddress(address(pool)));
+      const pc = client.open(EmmetJettonLP.fromAddress(address(pool)));
       const depositAddress = await pc.getGetWalletAddress(address(user));
-      const deposit = client.open(EmmetLPWallet.fromAddress(depositAddress));
+      const deposit = client.open(EmmetJettonLPWallet.fromAddress(depositAddress));
       const rewards = await deposit.getLastInternalFeeGrowth();
       const fgg = await pc.getFeeGrowthGlobal();
       const feeGrowthInside = fgg - rewards;
@@ -381,7 +381,7 @@ export async function tonHandler({
       const pa = Address.parse(pool);
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
-      const lp = client.open(EmmetLP.fromAddress(pa));
+      const lp = client.open(EmmetJettonLP.fromAddress(pa));
       const tonLp = await ab.getGet("elpTON");
       const isTonLp = tonLp?.equals(pa) ?? false;
 
@@ -392,24 +392,24 @@ export async function tonHandler({
       const wallet = await token.getWalletAddress(
         isTonLp ? lp.address : signer.address,
       );
-      const wc = client.open(EmmetLPWallet.fromAddress(wallet));
-
-      const last = await getLastTxHashInBase64ForAddress(wc.address);
 
       if (tonLp?.equals(pa)) {
-        const body = createTonTransferBody({
-          query_id: 0n,
-          response_destination: lp.address,
-          forward_payload: payload.endCell(),
-          amount,
-        });
-        await signer.send({
-          body,
-          to: wc.address,
-          value: amount + toNano("0.5"),
-        });
-        throw new Error("Unimplemented");
+        const tonLp = client.open(EmmetTonLP.fromAddress(pa));
+        const last = await getLastTxHashInBase64ForAddress(tonLp.address);
+        await tonLp.send(
+          signer,
+          {
+            value: amount + toNano("0.1"),
+          },
+          {
+            $$type: "Deposit",
+            amount,
+          },
+        );
+        return await getNewTxAfterHash(last, tonLp.address, 2308551012);
       }
+      const wc = client.open(EmmetJettonLPWallet.fromAddress(wallet));
+      const last = await getLastTxHashInBase64ForAddress(wc.address);
       await wc.send(
         signer,
         {
@@ -432,9 +432,9 @@ export async function tonHandler({
     async withdrawFees(signer, pool, ga) {
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
-      const lp = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const lp = client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const deposit = await lp.getGetWalletAddress(signer.address);
-      const da = client.open(EmmetLPWallet.fromAddress(deposit));
+      const da = client.open(EmmetJettonLPWallet.fromAddress(deposit));
       const last = await getLastTxHashInBase64ForAddress(da.address);
       await da.send(signer, { value: toNano("0.5"), ...ga }, "WithdrawFees");
       return await getNewTxAfterHash(last, da.address, 0);
@@ -442,9 +442,9 @@ export async function tonHandler({
     async withdrawLiquidity(signer, pool, amount, ga) {
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
-      const lp = await client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const lp = await client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const deposit = await lp.getGetWalletAddress(signer.address);
-      const da = client.open(EmmetLPWallet.fromAddress(deposit));
+      const da = client.open(EmmetJettonLPWallet.fromAddress(deposit));
       const last = await getLastTxHashInBase64ForAddress(da.address);
       await da.send(
         signer,
@@ -463,7 +463,7 @@ export async function tonHandler({
     },
     decimals: async (pool) => {
       if (!pool) return 9;
-      const lp = client.open(EmmetLP.fromAddress(Address.parse(pool)));
+      const lp = client.open(EmmetJettonLP.fromAddress(Address.parse(pool)));
       const dec = await lp.getDecimals();
       return Number(dec);
     },
@@ -681,27 +681,4 @@ export function assertNotNull<T>(t: T | null | undefined): t is T {
     throw new Error(`Failed to unwrap value: ${t}`);
   }
   return true;
-}
-
-type PTonTransfer = {
-  query_id: bigint;
-  amount: bigint;
-  response_destination: Address;
-  forward_payload: Cell;
-};
-
-function createTonTransferBody({
-  query_id,
-  amount,
-  response_destination,
-  forward_payload,
-}: PTonTransfer) {
-  const builder = beginCell();
-  builder.storeUint(32736093, 32);
-  builder.storeUint(query_id, 64);
-  builder.storeCoins(amount);
-  builder.storeAddress(response_destination);
-  builder.storeBit(true);
-  builder.storeBuilder(forward_payload.asBuilder());
-  return builder.endCell();
 }
