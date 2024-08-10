@@ -175,7 +175,7 @@ async function web3Helper({ provider, addressBook, chainName, nativeCoin, }) {
         },
         async isTransferFromLp(targetChain, fromToken, targetToken) {
             const ts = await data.getCrossChainTokenStrategy(targetChain, fromToken, targetToken);
-            const _isTransferFromLp = ts[1].includes(7n);
+            const _isTransferFromLp = ts[1].includes(6n);
             return _isTransferFromLp;
         },
         protocolFeeInUSD: async () => {
