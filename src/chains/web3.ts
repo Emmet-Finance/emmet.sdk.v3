@@ -37,7 +37,7 @@ import type {
   GetLpProviderRewards,
   GetLpFeeGrowthGlobal,
   GetLpFeeDecimals,
-  IsTransferFomLp,
+  IsTransferFromLp,
 } from ".";
 import {
   EmmetAddressBook__factory,
@@ -80,7 +80,7 @@ export type Web3Helper = GetBalance &
   GetLpProviderRewards &
   GetLpFeeGrowthGlobal &
   GetLpFeeDecimals &
-  IsTransferFomLp;
+  IsTransferFromLp;
 
 export interface Web3Params {
   provider: Provider;

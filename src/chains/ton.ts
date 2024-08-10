@@ -38,7 +38,7 @@ import type {
   GetLpFeeDecimals,
   GetLpFeeGrowthGlobal,
   GetLpProviderRewards,
-  IsTransferFomLp,
+  IsTransferFromLp,
 } from ".";
 import { Bridge, loadSentInstallment } from "../contracts/ton";
 import { sha256_sync } from "@ton/crypto";
@@ -79,7 +79,7 @@ export type TonHelper = GetBalance &
   GetLpProviderRewards &
   GetLpFeeGrowthGlobal &
   GetLpFeeDecimals &
-  IsTransferFomLp;
+  IsTransferFromLp;
 
 export interface TonParams {
   client: TonClient;
