@@ -142,8 +142,8 @@ export interface GetEmmetHashFromTx {
 export interface GetEstimatedTime {
     estimateTime(targetChain: bigint, fromToken: string, targetToken: string): Promise<bigint | undefined>;
 }
-export interface IsTransferFomLp {
-    isTransferFromLp(targetChain: bigint, fromToken: string, targetToken: string): Promise<boolean>;
+export interface IsTransferFromLp {
+    isTransferFromLp(targetChain: number, fromToken: string, targetToken: string): Promise<boolean>;
 }
 export interface GetBridgeAddress {
     bridge: () => Promise<string>;
