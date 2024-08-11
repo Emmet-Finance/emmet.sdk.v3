@@ -285,7 +285,7 @@ export async function web3Helper({
         fromToken,
         targetToken,
       );
-      const _isTransferFromLp = ts[1].includes(6n);
+      const _isTransferFromLp = ts[1].includes(7n);
       return _isTransferFromLp;
     },
     protocolFeeInUSD: async () => {
