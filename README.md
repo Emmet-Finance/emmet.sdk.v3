@@ -2,6 +2,8 @@
 
 All the Emmet.Bridge related data is stored `on-chain`!. Use async / await to fetch it.
 
+NB: To avoid repetition, every variable is set once in the document. If you forgot how to set the variable search for the other occurances in the document above its usage.
+
 ## Library installation
 
 Go to https://github.com/Emmet-Finance/emmet.sdk.v3/tree/dist and check the hash of the last commit.
@@ -55,18 +57,19 @@ import { chainFactoryTestnet } from "./your-path-to/chainFactory";
 
 ### Getting token data
 
-Currently supported tokens:
-
-- $CAVI or CAVI (partner project)
-- DAI (AAVE liquidity)
-- GrabClub (on Ton chain)
-- TON (native Ton chain currency)
-- TRT (Ston.fi Test RED Token)
-- USDC (Circle)
-
 Getting the token data:
 
 ```ts
+
+type TTokenName = 
+    'CAVI' 
+    | 'DAI'
+    | 'GrabClub'
+    | 'TON'
+    | 'TRT'
+    | 'USDC'
+    ;
+
 type TToken {
     address:     string,    // the token contract address
     swap?:       string,    // will be deprecated soon
@@ -107,7 +110,7 @@ If token allowance is less than the amount intended to be bridged, the transfer 
 })()
 ```
 
-### getting an EVM Signer
+### Getting an EVM Signer
 
 To trigger user signature generate a signer object
 
@@ -142,7 +145,6 @@ To avoid transfer failure, the amount must be approved
 
 ```ts
 import { useEthersSigner } from "./useEthersSigner";
-import { AddressBookKeys } from "emmet.js";
 
 (async () => {
     ...
@@ -169,4 +171,138 @@ import { AddressBookKeys } from "emmet.js";
     ...
 
 })()
+```
+
+### Getting a TON signer
+
+```ts
+import { useTonAddress, useTonConnectUI } from "@tonconnect/ui-react";
+import { Address, Sender, SenderArguments } from "@ton/core";
+
+export function useTonConnect(): {
+  sender: Sender;
+  connected: boolean;
+  hash: string;
+} {
+  const [tonConnectUI] = useTonConnectUI();
+  const address = useTonAddress();
+
+  return {
+    sender: {
+      // @ts-ignore
+      send: async (args: SenderArguments) => {
+        await tonConnectUI.sendTransaction({
+          messages: [
+            {
+              address: args.to.toString(),
+              amount: args.value.toString(),
+              payload: args.body?.toBoc().toString("base64"),
+            },
+          ],
+          validUntil: Date.now() + 5 * 60 * 1000, // 5 minutes for user to approve
+        });
+        return 0;
+      },
+      address: address ? Address.parse(address) : undefined,
+    },
+    connected: tonConnectUI.connected,
+  };
+}
+```
+
+### Transferring tokens
+
+```ts
+export const SUPPORTED_CHAINS = { ...MAINNETS, ...TESTNETS };
+export type TChainName = keyof typeof SUPPORTED_CHAINS;
+export const ChainToDestinationDomain: { [key in TChainName]: number } = {
+    // CCTP unsupported chains
+  ethereum: 0,
+  sepolia: 0,
+  avalanche: 1,
+  avalancheFuji: 1,
+  optimism: 2,
+  optimismSepolia: 2,
+  arbitrum: 3,
+  arbitrumSepolia: 3,
+  bsc: 4,
+  bscTestnet: 4,
+  base: 6,
+  baseSepolia: 6,
+  polygon: 7,
+  polygonAmoy: 7,
+  // Other chains
+  ton: 65534,
+  tonTestnet: 65535,
+  berachainBartio: 80084,
+  onlylayerTestnet: 728696,
+  solana: 102, // TODO: subject to change
+};
+
+(async (
+    fromChain: TChainName,
+    toChain: TChainName, 
+    fromToken: TTokenName, 
+    toToken: TTokenName,
+    amount: bigint,
+    mintRecipient: string // the address of the destination beneficiary
+) => {
+    ...
+    const { sender: tonSender } = useTonConnect();
+    // See: https://github.com/Emmet-Finance/websitev2/blob/feat/TON/src/hooks/useBridgeFee.ts
+    const { fee } = useBridgeFee();
+    const signer = useEthersSigner();
+
+    const fromChainID = ChainToDestinationDomain[toChain];
+    const formattedAmount: bigint = amount * 10n ** tokenDecimals;
+    const destinationDomain = ChainToDestinationDomain[toChain];
+
+     // TON example:
+    if(fromChainID === Chain.TON){
+        const handler = await chainFactoryTestnet.inner(fromChainID);
+        const { hash } = await chainFactoryTestnet.sendInstallment(
+            handler,
+            tonSender,
+            BigInt(Math.ceil(formattedAmount)),
+            destinationDomain,
+            fromToken,
+            toToken,
+            mintRecipient,
+        );
+        console.log(hash);
+    // EVM chains example:
+    } else if ( 
+          fromChainID === Chain.POLYGON ||
+          fromChainID === Chain.ETHEREUM ||
+          fromChainID === Chain.BSC ||
+          fromChainID === Chain.BERACHAIN ||
+          fromChainID === Chain.ONLYLAYER
+    ) {
+        const handler = await chainFactoryTestnet.inner(fromChainID);
+
+        const { hash } = await chainFactoryTestnet.sendInstallment(
+            handler,
+            // @ts-ignore
+            signer,
+            BigInt(Math.ceil(formattedAmount)),
+            destinationDomain,
+            fromToken,
+            toToken,
+            mintRecipient,
+            {
+              value: fee,
+            },
+          );
+          console.log(hash);
+
+    }
+
+})(
+    'tonTestnet'
+    'sepolia',
+    'USDC',
+    'USDC',
+    10n,
+    'your-evm-address'
+)   
 ```
