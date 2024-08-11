@@ -12,7 +12,7 @@ export declare namespace ChainFactoryConfigs {
             chainName: string;
             addressBook: string;
             nativeCoin: string;
-            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public"];
+            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public", "https://api.zan.top/node/v1/bsc/testnet/public", "https://bsc-testnet.public.blastapi.io", "https://bsc-testnet-rpc.publicnode.com"];
         };
         onlylayerParams: {
             chainName: string;
@@ -24,11 +24,11 @@ export declare namespace ChainFactoryConfigs {
             chainName: string;
             addressBook: string;
             nativeCoin: string;
-            rpcs: readonly ["https://bartio.rpc.berachain.com"];
+            rpcs: readonly ["https://bartio.rpc.berachain.com", "https://bera-testnet.nodeinfra.com", "https://bartio.drpc.org", "https://bartio.rpc.b-harvest.io"];
         };
         polygonParams: {
             addressBook: string;
-            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public"];
+            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public", "https://api.zan.top/node/v1/bsc/testnet/public", "https://bsc-testnet.public.blastapi.io", "https://bsc-testnet-rpc.publicnode.com"];
             chainName: string;
             nativeCoin: string;
         };
@@ -36,10 +36,10 @@ export declare namespace ChainFactoryConfigs {
             addressBook: string;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly ["https://eth-sepolia.public.blastapi.io"];
+            rpcs: readonly ["https://eth-sepolia.public.blastapi.io", "https://eth-sepolia.api.onfinality.io/public", "https://gateway.tenderly.co/public/sepolia", "https://ethereum-sepolia-rpc.publicnode.com"];
         };
         multisigParams: {
-            rpcs: readonly ["https://eth-sepolia.public.blastapi.io"];
+            rpcs: readonly ["https://eth-sepolia.public.blastapi.io", "https://eth-sepolia.api.onfinality.io/public", "https://gateway.tenderly.co/public/sepolia", "https://ethereum-sepolia-rpc.publicnode.com"];
             ab: string;
         };
     };
