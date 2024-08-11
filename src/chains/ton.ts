@@ -8,7 +8,7 @@ import {
   type Sender,
   toNano,
   TonClient,
-} from '@ton/ton';
+} from "@ton/ton";
 import type {
   ChainID,
   ChainName,
@@ -39,15 +39,15 @@ import type {
   GetLpFeeGrowthGlobal,
   GetLpProviderRewards,
   IsTransferFromLp,
-} from '.';
-import { Bridge, loadSentInstallment } from '../contracts/ton';
-import { sha256_sync } from '@ton/crypto';
-import { WrappedJetton } from '../contracts/ton/jetton-master';
-import { WrappedJettonWallet } from '../contracts/ton/jetton-wallet';
-import { AddressBook as TonAddressBook } from '../contracts/ton/address-book';
-import { EmmetJettonLP } from '../contracts/ton/pools/tact_EmmetJettonLP';
-import { EmmetJettonLPWallet } from '../contracts/ton/pools/tact_EmmetJettonLPWallet';
-import { EmmetTonLP } from '../contracts/ton/pools/ton/tact_EmmetTonLP';
+} from ".";
+import { Bridge, loadSentInstallment } from "../contracts/ton";
+import { sha256_sync } from "@ton/crypto";
+import { WrappedJetton } from "../contracts/ton/jetton-master";
+import { WrappedJettonWallet } from "../contracts/ton/jetton-wallet";
+import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
+import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
+import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
+import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -104,12 +104,12 @@ export async function tonHandler({
 
   const ab = fetchClient().open(TonAddressBook.fromAddress(addressBook));
   const bridge =
-    (await ab.getGet('EmmetBridge')) ??
-    raise('Failed to fetch bridge from addressbook');
+    (await ab.getGet("EmmetBridge")) ??
+    raise("Failed to fetch bridge from addressbook");
   const bridgeReader = fetchClient().open(Bridge.fromAddress(bridge));
   async function getLastTxHashInBase64ForAddress(addr: Address) {
     const txns = await fetchClient().getTransactions(addr, { limit: 1 });
-    return txns[0].hash().toString('base64');
+    return txns[0].hash().toString("base64");
   }
   async function transferTon(
     bridge: OpenedContract<Bridge>,
@@ -118,7 +118,7 @@ export async function tonHandler({
     targetTkn: string,
     chainId: bigint,
     amount: bigint,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ): Promise<string> {
     return (await bridge.send(
       sender,
@@ -126,19 +126,19 @@ export async function tonHandler({
         value: amount + gasArgs.value,
       },
       {
-        $$type: 'FreezeTon',
+        $$type: "FreezeTon",
         amount: amount,
         target_chain: BigInt(chainId),
         to: beginCell().storeStringRefTail(to).endCell(),
         from_token: beginCell()
-          .storeInt(toKey('TON'), 256)
-          .storeStringRefTail('TON')
+          .storeInt(toKey("TON"), 256)
+          .storeStringRefTail("TON")
           .endCell(),
         to_token: beginCell()
           .storeInt(toKey(targetTkn), 256)
           .storeStringRefTail(targetTkn)
           .endCell(),
-      }
+      },
     )) as unknown as Promise<string>;
   }
 
@@ -149,7 +149,7 @@ export async function tonHandler({
     amt: bigint,
     destAddress: string,
     cid: bigint,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ): Promise<string> => {
     const tid = toKey(fromToken);
     const wtd = await bridgeReader.getTokens();
@@ -157,15 +157,15 @@ export async function tonHandler({
     const jt = fetchClient().open(WrappedJetton.fromAddress(wt.address));
     const jtw = fetchClient().open(
       WrappedJettonWallet.fromAddress(
-        await jt.getGetWalletAddress(signer.address!)
-      )
+        await jt.getGetWalletAddress(signer.address!),
+      ),
     );
 
     return (await jtw.send(
       signer,
-      { value: gasArgs.value + toNano('0.08') },
+      { value: gasArgs.value + toNano("0.08") },
       {
-        $$type: 'JettonBurn',
+        $$type: "JettonBurn",
         amount: amt,
         custom_payload: null,
         query_id: 0n,
@@ -175,19 +175,19 @@ export async function tonHandler({
             beginCell()
               .storeUint(toKey(fromToken), 256)
               .storeStringRefTail(fromToken)
-              .asCell()
+              .asCell(),
           )
           .storeRef(beginCell().storeStringRefTail(destAddress).asCell())
           .storeRef(
             beginCell()
               .storeUint(toKey(targetToken), 256)
               .storeStringRefTail(targetToken)
-              .asCell()
+              .asCell(),
           )
           .endCell(),
-        forward_ton_amount: gasArgs.value + toNano('0.03'),
+        forward_ton_amount: gasArgs.value + toNano("0.03"),
         response_destination: bridge,
-      }
+      },
     )) as unknown as Promise<string>;
   };
   const transferJettonToBridge = async (
@@ -197,7 +197,7 @@ export async function tonHandler({
     target_chain: bigint,
     destAddress: string,
     amt: bigint,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ) => {
     const tid = toKey(fromToken);
     const ntd = await bridgeReader.getTokens();
@@ -205,14 +205,14 @@ export async function tonHandler({
     const jt = fetchClient().open(WrappedJetton.fromAddress(wt.address));
     const jtw = fetchClient().open(
       WrappedJettonWallet.fromAddress(
-        await jt.getGetWalletAddress(signer.address!)
-      )
+        await jt.getGetWalletAddress(signer.address!),
+      ),
     );
     return (await jtw.send(
       signer,
-      { value: gasArgs.value + toNano('0.05') },
+      { value: gasArgs.value + toNano("0.05") },
       {
-        $$type: 'JettonTransfer',
+        $$type: "JettonTransfer",
         amount: amt,
         custom_payload: null,
         destination: bridge,
@@ -222,20 +222,20 @@ export async function tonHandler({
             beginCell()
               .storeUint(toKey(fromToken), 256)
               .storeStringRefTail(fromToken)
-              .asCell()
+              .asCell(),
           )
           .storeRef(beginCell().storeStringRefTail(destAddress).asCell())
           .storeRef(
             beginCell()
               .storeUint(toKey(targetToken), 256)
               .storeStringRefTail(targetToken)
-              .asCell()
+              .asCell(),
           )
           .endCell(),
         forward_ton_amount: gasArgs.value,
         query_id: 0n,
         response_destination: bridge,
-      }
+      },
     )) as unknown as Promise<string>;
   };
 
@@ -247,7 +247,7 @@ export async function tonHandler({
     chainId: bigint,
     amount: bigint,
     destAddress: string,
-    gasArgs: TonGasArgs
+    gasArgs: TonGasArgs,
   ): Promise<string> => {
     if (to.toString() === bridge.toString()) {
       return await transferJettonToBurner(
@@ -257,7 +257,7 @@ export async function tonHandler({
         amount,
         destAddress,
         chainId,
-        gasArgs
+        gasArgs,
       );
     }
 
@@ -268,14 +268,14 @@ export async function tonHandler({
       chainId,
       destAddress,
       amount,
-      gasArgs
+      gasArgs,
     );
   };
 
   async function isWrappedToken(
     targetChain: bigint,
     fromTokenId: bigint,
-    targetTokenId: bigint
+    targetTokenId: bigint,
   ) {
     const steps = await bridgeReader.getCrossChainStrategy();
     const strategy = steps
@@ -293,16 +293,16 @@ export async function tonHandler({
   async function getNewTxAfterHash(
     last: string,
     addr: Address,
-    op: number
+    op: number,
   ): Promise<{ hash: string; tx: string }> {
     let foundTx = false;
-    let hash = '';
+    let hash = "";
     let retries = 0;
     while (!foundTx && retries < 10) {
       const latestTx = (
         await fetchClient().getTransactions(addr, { limit: 1 })
       )[0];
-      if (latestTx.hash().toString('base64') === last) {
+      if (latestTx.hash().toString("base64") === last) {
         await new Promise((e) => setTimeout(e, 10000));
         retries++;
         continue;
@@ -310,10 +310,10 @@ export async function tonHandler({
       const txs = await fetchClient().getTransactions(addr, { limit: 25 });
       for (const tx of txs) {
         for (let i = 0; i < tx.outMessages.size; i++) {
-          const msg = tx.outMessages.get(i) ?? raise('Unreachable');
+          const msg = tx.outMessages.get(i) ?? raise("Unreachable");
           if (msg.body.asSlice().loadUint(32) === op) {
             foundTx = true;
-            hash = tx.hash().toString('hex');
+            hash = tx.hash().toString("hex");
           }
         }
       }
@@ -328,35 +328,35 @@ export async function tonHandler({
   return {
     async getLpCurrentAPY(pool) {
       const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const apy = await pc.getCurrentApy();
       return apy;
     },
     async getLpProtocolFee(pool) {
       const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const pf = await pc.getProtocolFee();
       return pf;
     },
     async getLpTokenFee(pool) {
       const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const pf = await pc.getTokenFee();
       return pf;
     },
     async getLpTotalSupply(pool) {
       const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const jet = await pc.getGetJettonData();
       return jet.total_supply;
     },
     async getLpProtocolFeeAmount(pool) {
       const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const pf = await pc.getProtocolFeeAmount();
       return pf;
@@ -375,7 +375,7 @@ export async function tonHandler({
       const pc = fetchClient().open(EmmetJettonLP.fromAddress(address(pool)));
       const depositAddress = await pc.getGetWalletAddress(address(user));
       const deposit = fetchClient().open(
-        EmmetJettonLPWallet.fromAddress(depositAddress)
+        EmmetJettonLPWallet.fromAddress(depositAddress),
       );
       const rewards = await deposit.getLastInternalFeeGrowth();
       const fgg = await pc.getFeeGrowthGlobal();
@@ -396,7 +396,7 @@ export async function tonHandler({
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
       const lp = fetchClient().open(EmmetJettonLP.fromAddress(pa));
-      const tonLp = await ab.getGet('elpTON');
+      const tonLp = await ab.getGet("elpTON");
       const isTonLp = tonLp?.equals(pa) ?? false;
       if (isTonLp) {
         const tonLp = fetchClient().open(EmmetTonLP.fromAddress(pa));
@@ -404,12 +404,12 @@ export async function tonHandler({
         await tonLp.send(
           signer,
           {
-            value: amount + toNano('0.1'),
+            value: amount + toNano("0.1"),
           },
           {
-            $$type: 'Deposit',
+            $$type: "Deposit",
             amount,
-          }
+          },
         );
         return await getNewTxAfterHash(last, tonLp.address, 923309543);
       }
@@ -417,26 +417,26 @@ export async function tonHandler({
       const ta = await lp.getStakeToken();
       const token = fetchClient().open(JettonMaster.create(ta));
       const wallet = await token.getWalletAddress(
-        isTonLp ? lp.address : signer.address
+        isTonLp ? lp.address : signer.address,
       );
       const wc = fetchClient().open(EmmetJettonLPWallet.fromAddress(wallet));
       const last = await getLastTxHashInBase64ForAddress(wc.address);
       await wc.send(
         signer,
         {
-          value: toNano('0.4'),
+          value: toNano("0.4"),
           ...ga,
         },
         {
-          $$type: 'JettonTransfer',
+          $$type: "JettonTransfer",
           amount: amount,
           custom_payload: null,
           destination: lp.address,
           forward_payload: payload.endCell(),
-          forward_ton_amount: toNano('0.2'),
+          forward_ton_amount: toNano("0.2"),
           query_id: 0n,
           response_destination: lp.address,
-        }
+        },
       );
       return await getNewTxAfterHash(last, lp.address, 923309543);
     },
@@ -444,42 +444,42 @@ export async function tonHandler({
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
       const lp = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const deposit = await lp.getGetWalletAddress(signer.address);
       const da = fetchClient().open(EmmetJettonLPWallet.fromAddress(deposit));
       const last = await getLastTxHashInBase64ForAddress(da.address);
-      await da.send(signer, { value: toNano('0.5'), ...ga }, 'WithdrawFees');
+      await da.send(signer, { value: toNano("0.5"), ...ga }, "WithdrawFees");
       return await getNewTxAfterHash(last, da.address, 0);
     },
     async withdrawLiquidity(signer, pool, amount, ga) {
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
       const lp = await fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const deposit = await lp.getGetWalletAddress(signer.address);
       const da = fetchClient().open(EmmetJettonLPWallet.fromAddress(deposit));
       const last = await getLastTxHashInBase64ForAddress(da.address);
       await da.send(
         signer,
-        { value: toNano('0.5'), ...ga },
+        { value: toNano("0.5"), ...ga },
         {
-          $$type: 'JettonBurn',
+          $$type: "JettonBurn",
           amount,
           custom_payload: null,
           forward_payload: beginCell().endCell(),
           forward_ton_amount: 0n,
           query_id: 0n,
           response_destination: signer.address,
-        }
+        },
       );
       return await getNewTxAfterHash(last, da.address, 1814330430);
     },
     decimals: async (pool) => {
       if (!pool) return 9;
       const lp = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool))
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
       );
       const dec = await lp.getDecimals();
       return Number(dec);
@@ -488,14 +488,14 @@ export async function tonHandler({
       const address =
         (await ab.getGet(contr)) ??
         raise(
-          `Failed to fetch address for ${contr} in ${addressBook.toString()}`
+          `Failed to fetch address for ${contr} in ${addressBook.toString()}`,
         );
       return address.toString();
     },
     estimateTime: () => Promise.resolve(undefined),
     isTransferFromLp: () => Promise.resolve(false), // TODO: update it
     async emmetHashFromtx(hash) {
-      const b64 = Buffer.from(hash, 'hex').toString('base64');
+      const b64 = Buffer.from(hash, "hex").toString("base64");
       const txs = await fetchClient().getTransactions(bridge, {
         hash: b64,
         limit: 10,
@@ -510,25 +510,25 @@ export async function tonHandler({
           }
         }
       }
-      throw new Error('No send installment found');
+      throw new Error("No send installment found");
     },
     id: () => Promise.resolve(chainId),
     async bridge() {
       return await bridge.toString();
     },
-    nativeCoin: () => 'TON',
+    nativeCoin: () => "TON",
     chainName: () => chainName,
     async txFee(tc) {
       const fee =
         (await bridgeReader.getProtocolFee()) +
         ((await bridgeReader.getChainFees()).get(tc) ??
-          raise('Chain fees not configured for this chain'));
+          raise("Chain fees not configured for this chain"));
       return fee;
     },
     async token(symbol) {
       const tokens = await bridgeReader.getTokens();
       const qToken = tokens.get(toKey(symbol));
-      if (!qToken) throw new Error('No Such Token Found in Storage');
+      if (!qToken) throw new Error("No Such Token Found in Storage");
       return {
         address: qToken.address.toString(),
         decimals: qToken.decimals,
@@ -552,8 +552,8 @@ export async function tonHandler({
       return bridgeReader.getProtocolFee();
     },
     async txInfo(hash) {
-      const bs64 = Buffer.from(hash.replace('0x', ''), 'hex').toString(
-        'base64'
+      const bs64 = Buffer.from(hash.replace("0x", ""), "hex").toString(
+        "base64",
       );
       try {
         const tx = await fetchClient().getTransactions(bridge, {
@@ -585,12 +585,12 @@ export async function tonHandler({
       fromSymbol,
       targetSymbol,
       destAddress,
-      fee
+      fee,
     ) => {
       const lastBridgeTxHash = await getLastTxHashInBase64ForAddress(bridge);
       const bc = fetchClient().open(Bridge.fromAddress(bridge));
-      const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString('hex')}`);
-      const tid = BigInt(`0x${sha256_sync(targetSymbol).toString('hex')}`);
+      const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
+      const tid = BigInt(`0x${sha256_sync(targetSymbol).toString("hex")}`);
       const isWrapped = await isWrappedToken(cid, fsid, tid);
       const gs =
         fee !== undefined
@@ -601,7 +601,7 @@ export async function tonHandler({
               value:
                 (await bridgeReader.getProtocolFee()) +
                 ((await bridgeReader.getChainFees()).get(cid) ??
-                  raise('Chain fees not configured for this chain')),
+                  raise("Chain fees not configured for this chain")),
             };
       if (tid === nativeTokenId) {
         await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
@@ -614,7 +614,7 @@ export async function tonHandler({
           cid,
           amt,
           destAddress,
-          gs
+          gs,
         );
       } else {
         await transferJetton(
@@ -625,19 +625,19 @@ export async function tonHandler({
           cid,
           amt,
           destAddress,
-          gs
+          gs,
         );
       }
 
       let foundTx = false;
-      let hash = '';
+      let hash = "";
       let retries = 0;
       while (!foundTx && retries < 10) {
         await new Promise((e) => setTimeout(e, 2000));
         const latestTx = (
           await fetchClient().getTransactions(bridge, { limit: 1 })
         )[0];
-        if (latestTx.hash().toString('base64') === lastBridgeTxHash) {
+        if (latestTx.hash().toString("base64") === lastBridgeTxHash) {
           await new Promise((e) => setTimeout(e, 10000));
           retries++;
           continue;
@@ -645,8 +645,8 @@ export async function tonHandler({
         const txs = await fetchClient().getTransactions(bridge, { limit: 2 });
         for (const tx of txs) {
           for (let i = 0; i < tx.outMessages.size; i++) {
-            const msg = tx.outMessages.get(i) ?? raise('Unreachable');
-            if (tx.hash().toString('base64') === lastBridgeTxHash) {
+            const msg = tx.outMessages.get(i) ?? raise("Unreachable");
+            if (tx.hash().toString("base64") === lastBridgeTxHash) {
               await new Promise((e) => setTimeout(e, 10000));
               continue;
             }
@@ -657,7 +657,7 @@ export async function tonHandler({
             const emmethash = log.tx_hash;
             const txn =
               (await bridgeReader.getOutgoing()).get(emmethash) ??
-              raise('Unreachable');
+              raise("Unreachable");
 
             if (
               destAddress === txn.to.asSlice().loadStringRefTail() &&
@@ -665,7 +665,7 @@ export async function tonHandler({
               txn.from_token.asSlice().loadStringRefTail() === fromSymbol
             ) {
               foundTx = true;
-              hash = tx.hash().toString('hex');
+              hash = tx.hash().toString("hex");
             }
           }
         }
@@ -681,7 +681,7 @@ export async function tonHandler({
 }
 
 const toKey = (key: string) => {
-  return BigInt(`0x${sha256_sync(key).toString('hex')}`);
+  return BigInt(`0x${sha256_sync(key).toString("hex")}`);
 };
 export function raise(msg: string): never {
   throw new Error(msg);

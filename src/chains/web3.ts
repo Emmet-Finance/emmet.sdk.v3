@@ -5,7 +5,7 @@ import {
   type Overrides,
   type Provider,
   type Signer,
-} from 'ethers';
+} from "ethers";
 import type {
   AddressBook,
   ChainID,
@@ -39,7 +39,7 @@ import type {
   GetLpFeeGrowthGlobal,
   GetLpFeeDecimals,
   IsTransferFromLp,
-} from '.';
+} from ".";
 import {
   EmmetAddressBook__factory,
   EmmetBridge__factory,
@@ -47,8 +47,8 @@ import {
   EmmetLPV2__factory,
   ERC20__factory,
   WrappedERC20__factory,
-} from '@emmet-contracts/web3';
-import type { PayableOverrides } from '@emmet-contracts/web3/dist/common';
+} from "@emmet-contracts/web3";
+import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -105,10 +105,10 @@ export async function web3Helper({
 
   const addrBook = EmmetAddressBook__factory.connect(
     addressBook,
-    fetchProvider()
+    fetchProvider(),
   );
-  const bridgeAddr = await addrBook.get('EmmetBridge');
-  const emmetData = await addrBook.get('EmmetData');
+  const bridgeAddr = await addrBook.get("EmmetBridge");
+  const emmetData = await addrBook.get("EmmetData");
   const bridge = EmmetBridge__factory.connect(bridgeAddr, fetchProvider());
   const data = EmmetData__factory.connect(emmetData, fetchProvider());
   return {
@@ -188,18 +188,18 @@ export async function web3Helper({
       const ffc = await data.getForeignFeeCompensation(
         targetChainId,
         fromToken,
-        targetToken
+        targetToken,
       );
       return protocolFee + ffc;
     },
     async txInfo(hash) {
-      if (hash === '') {
+      if (hash === "") {
         return {
           timestamp: 0n,
           value: 0n,
         };
       }
-      if (!hash.startsWith('0x')) {
+      if (!hash.startsWith("0x")) {
         //biome-ignore lint/style/noParameterAssign: ignore
         hash = `0x${hash}`;
       }
@@ -224,8 +224,8 @@ export async function web3Helper({
       if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
       const log = receipt.logs.find((e) =>
         e.topics.includes(
-          bridge.interface.getEvent('SendInstallment').topicHash
-        )
+          bridge.interface.getEvent("SendInstallment").topicHash,
+        ),
       );
       if (!log)
         throw new Error(`No send installment log found for tx hash: ${hash}`);
@@ -249,7 +249,7 @@ export async function web3Helper({
     decimals: async (pool) => {
       if (!pool) return 18;
       return Number(
-        await ERC20__factory.connect(pool, fetchProvider()).decimals()
+        await ERC20__factory.connect(pool, fetchProvider()).decimals(),
       );
     },
     nativeCoin: () => nativeCoin,
@@ -268,7 +268,7 @@ export async function web3Helper({
     getApprovedAmount: async (tid, owner, spender) =>
       await WrappedERC20__factory.connect(tid, fetchProvider()).allowance(
         owner,
-        spender
+        spender,
       ),
     balance: (addr) => fetchProvider().getBalance(addr),
     provider: () => fetchProvider(),
@@ -276,7 +276,7 @@ export async function web3Helper({
       const ts = await data.getCrossChainTokenStrategy(
         targetChain,
         fromToken,
-        targetToken
+        targetToken,
       );
       const localSteps = ts[0];
       const foreignSteps = ts[1];
@@ -296,7 +296,7 @@ export async function web3Helper({
       const ts = await data.getCrossChainTokenStrategy(
         targetChain,
         fromToken,
-        targetToken
+        targetToken,
       );
       const _isTransferFromLp = ts[1].includes(7n);
       return _isTransferFromLp;
