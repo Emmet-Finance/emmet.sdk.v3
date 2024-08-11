@@ -3,10 +3,10 @@ import type { AddressBook, ChainID, ChainName, Decimals, FetchTxInfo, GetApprove
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
 export type Web3Helper = GetBalance & GetProvider<Provider> & SendInstallment<Signer, ContractTransactionResponse, PayableOverrides> & ValidateAddress & GetTokenBalance & GetApprovedTokenAmount & PreTransfer<Signer, PayableOverrides> & ChainName & NativeCoinName & AddressBook & TokenInfo & ChainID & GetTxFee & FetchTxInfo & ProtocolFee & GetEmmetHashFromTx & GetEstimatedTime & GetBridgeAddress & GetProtocolFeeInUSD & Decimals & StakeLiquidity<Signer, ContractTransactionResponse, Overrides> & WithdrawLiquidity<Signer, ContractTransactionResponse, Overrides> & WithdrawFees<Signer, ContractTransactionResponse, Overrides> & GetLpCurrentAPY & GetLpTotalSupply & GetLpTokenFee & GetLpProtocolFee & GetLpProtocolFeeAmount & GetLpProviderRewards & GetLpFeeGrowthGlobal & GetLpFeeDecimals & IsTransferFromLp;
 export interface Web3Params {
-    provider: Provider;
+    rpcs: readonly string[];
     addressBook: string;
     chainName: string;
     nativeCoin: string;
 }
-export declare function web3Helper({ provider, addressBook, chainName, nativeCoin, }: Web3Params): Promise<Web3Helper>;
+export declare function web3Helper({ rpcs, addressBook, chainName, nativeCoin, }: Web3Params): Promise<Web3Helper>;
 //# sourceMappingURL=web3.d.ts.map

@@ -1,7 +1,6 @@
 import type { Web3Helper, Web3Params } from "../../chains/web3";
 import type { TonHelper, TonParams } from "../../chains/ton";
 import type { AddressBook, Decimals, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment, StakeLiquidity, WithdrawFees, WithdrawLiquidity } from "../../chains";
-import type { JsonRpcProvider } from "ethers";
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
 type MetaMapAssert = {
@@ -40,7 +39,7 @@ export interface ChainParams {
     berachainParams: Web3Params;
     tonParams: TonParams;
     multisigParams: {
-        provider: JsonRpcProvider;
+        rpcs: readonly string[];
         ab: string;
     };
 }

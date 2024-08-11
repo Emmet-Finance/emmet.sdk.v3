@@ -1,11 +1,9 @@
-import { ethers } from "ethers";
 import { Address } from "@ton/core";
-import { TonClient } from "@ton/ton";
 export declare namespace ChainFactoryConfigs {
     function TestNet(): {
         tonParams: {
             addressBook: Address;
-            client: TonClient;
+            rpcs: string[];
             nativeTokenId: bigint;
             chainId: bigint;
             chainName: string;
@@ -14,23 +12,23 @@ export declare namespace ChainFactoryConfigs {
             chainName: string;
             addressBook: string;
             nativeCoin: string;
-            provider: ethers.JsonRpcProvider;
+            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public"];
         };
         onlylayerParams: {
             chainName: string;
             addressBook: string;
             nativeCoin: string;
-            provider: ethers.JsonRpcProvider;
+            rpcs: readonly ["https://onlylayer.org"];
         };
         berachainParams: {
             chainName: string;
             addressBook: string;
             nativeCoin: string;
-            provider: ethers.JsonRpcProvider;
+            rpcs: readonly ["https://bartio.rpc.berachain.com"];
         };
         polygonParams: {
             addressBook: string;
-            provider: ethers.JsonRpcProvider;
+            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public"];
             chainName: string;
             nativeCoin: string;
         };
@@ -38,10 +36,10 @@ export declare namespace ChainFactoryConfigs {
             addressBook: string;
             chainName: string;
             nativeCoin: string;
-            provider: ethers.JsonRpcProvider;
+            rpcs: readonly ["https://eth-sepolia.public.blastapi.io"];
         };
         multisigParams: {
-            provider: ethers.JsonRpcProvider;
+            rpcs: readonly ["https://eth-sepolia.public.blastapi.io"];
             ab: string;
         };
     };
