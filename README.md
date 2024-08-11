@@ -1,4 +1,4 @@
-# Emmet Lock-n-Mint Client Library
+# Emmet Cross-Chain Bridge Client Library
 
 All the Emmet.Bridge related data is stored `on-chain`!. Use async / await to fetch it.
 
@@ -38,6 +38,7 @@ export const chainFactoryTestnet: ChainFactory = await ChainFactoryBuilder(
 
 ```ts
 import {Chain} from "emmet.js/dist/factory/types";
+import { chainFactoryTestnet } from "./your-path-to/chainFactory";
 
 // Same for Mainnets & Testnets
 
@@ -79,7 +80,93 @@ type TToken {
     ...
     const tokenSymbol: string = "USDC";
     const token: TToken = await handler.token(tokenSymbol);
-    console.log(token)
+    console.log(token);
+    const tokenAddress:     string = token.address;
+    const tokenDecimals:    bigint = token.decimals;
     ...
+})()
+```
+
+### Getting Token allowance
+
+If token allowance is less than the amount intended to be bridged, the transfer will fail.
+
+```ts
+(async () => {
+
+    const bridgeAddress: string = await handler.bridge();
+
+    const allowance: bigint = await handler.getApprovedAmount(
+        token.address,
+        bridge.senderAddress,
+        bridgeAddress
+    );
+
+    console.log(allowance);
+
+})()
+```
+
+### getting an EVM Signer
+
+To trigger user signature generate a signer object
+
+```ts
+import { BrowserProvider, JsonRpcSigner } from "ethers";
+import { useMemo } from "react";
+import type { Account, Chain, Client, Transport } from "viem";
+import { type Config, useConnectorClient } from "wagmi";
+
+export function clientToSigner(client: Client<Transport, Chain, Account>) {
+  const { account, chain, transport } = client;
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  const provider = new BrowserProvider(transport, network);
+  const signer = new JsonRpcSigner(provider, account.address);
+  return signer;
+}
+
+/** Hook to convert a viem Wallet Client to an ethers.js Signer. */
+export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
+  const { data: client } = useConnectorClient<Config>({ chainId });
+  return useMemo(() => (client ? clientToSigner(client) : undefined), [client]);
+}
+```
+
+### Approving (only relevant for EVM chains)
+
+To avoid transfer failure, the amount must be approved
+
+```ts
+import { useEthersSigner } from "./useEthersSigner";
+import { AddressBookKeys } from "emmet.js";
+
+(async () => {
+    ...
+    const bridgeAddress: string = await handler.bridge();
+
+    const signer = useEthersSigner();
+
+    const amountToApprove: bigint = 10; // update to your amount
+
+    const formattedAmount: bigint = amountToApprove * 10n ** tokenDecimals;
+
+    // Some non-Evm chains don't have approval, ut have pre-transfer
+    // The SDK function is called so for compatibility with them all
+    await chainFactoryTestnet.preTransfer(
+          // @ts-ignore
+          handler,
+          signer,
+          tokenAddress,
+          bridgeAddress,
+          BigInt(Math.ceil(formattedAmount)),
+          {},
+        );
+
+    ...
+
 })()
 ```
