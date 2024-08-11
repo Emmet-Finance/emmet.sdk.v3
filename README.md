@@ -39,6 +39,8 @@ export const chainFactoryTestnet: ChainFactory = await ChainFactoryBuilder(
 ### Getting the current chain handler
 
 ```ts
+import { Web3Helper } from "emmet.js/dist/chains/web3";
+import { TonHelper } from "emmet.js/dist/chains/ton";
 import {Chain} from "emmet.js/dist/factory/types";
 import { chainFactoryTestnet } from "./your-path-to/chainFactory";
 
@@ -46,11 +48,11 @@ import { chainFactoryTestnet } from "./your-path-to/chainFactory";
 
 (async () => {
     ...
-    const berachain = await chainFactoryTestnet.inner(Chain.BERACHAIN);
-    const ethereum  = await chainFactoryTestnet.inner(Chain.ETHEREUM);
-    const onlylayer = await chainFactoryTestnet.inner(Chain.ONLYLAYER);
-    const polygon   = await chainFactoryTestnet.inner(Chain.POLYGON);
-    const ton       = await chainFactoryTestnet.inner(Chain.TON);
+    const berachain: Web3Helper  = await chainFactoryTestnet.inner(Chain.BERACHAIN) as Web3Helper;
+    const ethereum:  Web3Helper  = await chainFactoryTestnet.inner(Chain.ETHEREUM)  as Web3Helper;
+    const onlylayer: Web3Helper  = await chainFactoryTestnet.inner(Chain.ONLYLAYER) as Web3Helper;
+    const polygon:   Web3Helper  = await chainFactoryTestnet.inner(Chain.POLYGON)   as Web3Helper;
+    const ton:       TonHelper   = await chainFactoryTestnet.inner(Chain.TON)       as TonHelper;
     ...
 })()
 ```
@@ -159,7 +161,6 @@ import { useEthersSigner } from "./useEthersSigner";
     // Some non-Evm chains don't have approval, ut have pre-transfer
     // The SDK function is called so for compatibility with them all
     await chainFactoryTestnet.preTransfer(
-          // @ts-ignore
           handler,
           signer,
           tokenAddress,
@@ -278,12 +279,11 @@ export const ChainToDestinationDomain: { [key in TChainName]: number } = {
           fromChainID === Chain.BERACHAIN ||
           fromChainID === Chain.ONLYLAYER
     ) {
-        const handler = await chainFactoryTestnet.inner(fromChainID);
+        const handler: Web3Helper = await chainFactoryTestnet.inner(fromChainID) as Web3Helper;
 
         const { hash } = await chainFactoryTestnet.sendInstallment(
             handler,
-            // @ts-ignore
-            signer,
+            signer!,
             BigInt(Math.ceil(formattedAmount)),
             destinationDomain,
             fromToken,
