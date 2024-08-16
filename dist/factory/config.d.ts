@@ -36,10 +36,10 @@ export declare namespace ChainFactoryConfigs {
             addressBook: string;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly ["https://eth-sepolia.public.blastapi.io", "https://eth-sepolia.api.onfinality.io/public", "https://gateway.tenderly.co/public/sepolia", "https://ethereum-sepolia-rpc.publicnode.com"];
+            rpcs: readonly ["https://eth-sepolia.public.blastapi.io", "https://eth-sepolia.api.onfinality.io/public", "https://ethereum-sepolia-rpc.publicnode.com"];
         };
         multisigParams: {
-            rpcs: readonly ["https://eth-sepolia.public.blastapi.io", "https://eth-sepolia.api.onfinality.io/public", "https://gateway.tenderly.co/public/sepolia", "https://ethereum-sepolia-rpc.publicnode.com"];
+            rpcs: readonly ["https://eth-sepolia.public.blastapi.io", "https://eth-sepolia.api.onfinality.io/public", "https://ethereum-sepolia-rpc.publicnode.com"];
             ab: string;
         };
     };
