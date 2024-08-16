@@ -1,7 +1,6 @@
 export const TestNetRpcUri = {
   BSC: [
     "https://bsc-testnet.blockpi.network/v1/rpc/public",
-    "https://api.zan.top/node/v1/bsc/testnet/public",
     "https://bsc-testnet.public.blastapi.io",
     "https://bsc-testnet-rpc.publicnode.com",
   ],

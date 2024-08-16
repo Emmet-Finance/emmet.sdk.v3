@@ -97,22 +97,36 @@ export async function web3Helper({
   nativeCoin,
 }: Web3Params): Promise<Web3Helper> {
   const initializedProviders = rpcs.map((e) => new JsonRpcProvider(e));
+  const cache: Record<number, Provider> = {};
 
-  const fetchProvider = () => {
+  const fetchProvider = async (): Promise<Provider> => {
     const randomRpcIndex = Math.floor(Math.random() * rpcs.length);
-    return initializedProviders[randomRpcIndex];
+    if (cache[randomRpcIndex]) {
+      return cache[randomRpcIndex];
+    }
+    const provider = initializedProviders[randomRpcIndex];
+    try {
+      await provider.getNetwork();
+      cache[randomRpcIndex] = provider;
+      return provider;
+    } catch {
+      return fetchProvider();
+    }
   };
 
   const addrBook = EmmetAddressBook__factory.connect(
     addressBook,
-    fetchProvider(),
+    await fetchProvider(),
   );
   const bridgeAddr = await addrBook.get("EmmetBridge");
   const emmetData = await addrBook.get("EmmetData");
-  const bridge = EmmetBridge__factory.connect(bridgeAddr, fetchProvider());
-  const data = EmmetData__factory.connect(emmetData, fetchProvider());
+  const bridge = EmmetBridge__factory.connect(
+    bridgeAddr,
+    await fetchProvider(),
+  );
+  const data = EmmetData__factory.connect(emmetData, await fetchProvider());
   return {
-    id: async () => (await fetchProvider().getNetwork()).chainId,
+    id: async () => (await (await fetchProvider()).getNetwork()).chainId,
     stakeLiquidity: async (signer, pool, amt, ga) => {
       const lp = EmmetLPV2__factory.connect(pool, signer);
       const deposit = await lp.deposit(amt, { ...ga });
@@ -138,42 +152,42 @@ export async function web3Helper({
       };
     },
     getLpCurrentAPY: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const apy = await lp.currentAPY();
       return apy;
     },
     getLpTotalSupply: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const totalSupply = await lp.totalSupply();
       return totalSupply;
     },
     getLpTokenFee: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const tokenFee = await lp.tokenFee();
       return tokenFee;
     },
     getLpProtocolFee: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const protocolFee = await lp.protocolFee();
       return protocolFee;
     },
     getLpProtocolFeeAmount: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const protocolFeeAmount = await lp.protocolFeeAmount();
       return protocolFeeAmount;
     },
     getLpProviderRewards: async (pool, address) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const providerRewards = await lp.getProviderRewards(address);
       return providerRewards;
     },
     getLpFeeGrowthGlobal: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const feeGrowthGlobal = await lp.feeGrowthGlobal();
       return feeGrowthGlobal;
     },
     getLpFeeDecimals: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, fetchProvider());
+      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
       const feeDecimals = await lp.feeDecimals();
       return feeDecimals;
     },
@@ -193,6 +207,7 @@ export async function web3Helper({
       return protocolFee + ffc;
     },
     async txInfo(hash) {
+      const provider = await fetchProvider();
       if (hash === "") {
         return {
           timestamp: 0n,
@@ -204,10 +219,10 @@ export async function web3Helper({
         hash = `0x${hash}`;
       }
       try {
-        const receipt = await fetchProvider().waitForTransaction(hash);
+        const receipt = await provider.waitForTransaction(hash);
         if (!receipt)
           throw new Error(`No such transaction found with hash: ${hash}`);
-        const block = await fetchProvider().getBlock(receipt.blockNumber);
+        const block = await provider.getBlock(receipt.blockNumber);
         return {
           timestamp: BigInt(block?.timestamp ?? 0),
           value: receipt.fee,
@@ -220,7 +235,7 @@ export async function web3Helper({
       }
     },
     async emmetHashFromtx(hash) {
-      const receipt = await fetchProvider().waitForTransaction(hash);
+      const receipt = await (await fetchProvider()).waitForTransaction(hash);
       if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
       const log = receipt.logs.find((e) =>
         e.topics.includes(
@@ -249,7 +264,7 @@ export async function web3Helper({
     decimals: async (pool) => {
       if (!pool) return 18;
       return Number(
-        await ERC20__factory.connect(pool, fetchProvider()).decimals(),
+        await ERC20__factory.connect(pool, await fetchProvider()).decimals(),
       );
     },
     nativeCoin: () => nativeCoin,
@@ -266,12 +281,12 @@ export async function web3Helper({
     },
 
     getApprovedAmount: async (tid, owner, spender) =>
-      await WrappedERC20__factory.connect(tid, fetchProvider()).allowance(
+      await WrappedERC20__factory.connect(tid, await fetchProvider()).allowance(
         owner,
         spender,
       ),
-    balance: (addr) => fetchProvider().getBalance(addr),
-    provider: () => fetchProvider(),
+    balance: async (addr) => (await fetchProvider()).getBalance(addr),
+    provider: async () => await fetchProvider(),
     async estimateTime(targetChain, fromToken, targetToken) {
       const ts = await data.getCrossChainTokenStrategy(
         targetChain,
@@ -307,7 +322,7 @@ export async function web3Helper({
     },
     validateAddress: (addr) => Promise.resolve(isAddress(addr)),
     tokenBalance: async (tkn, addr) =>
-      WrappedERC20__factory.connect(tkn, fetchProvider()).balanceOf(addr),
+      WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, fee, gasArgs) => {
       const sendGas = await bridge
         .connect(signer)

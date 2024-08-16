@@ -21,7 +21,7 @@ export interface GetProvider<T> {
    * Gets the provider.
    * @returns The provider.
    */
-  provider: () => T;
+  provider: () => Promise<T>;
 }
 
 export interface ChainID {
