@@ -28,7 +28,7 @@ export declare namespace ChainFactoryConfigs {
         };
         polygonParams: {
             addressBook: string;
-            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public", "https://bsc-testnet.public.blastapi.io", "https://bsc-testnet-rpc.publicnode.com"];
+            rpcs: readonly ["https://rpc-amoy.polygon.technology/", "https://rpc.ankr.com/polygon_amoy", "https://polygon-amoy.gateway.tatum.io", "https://polygon-amoy-bor-rpc.publicnode.com"];
             chainName: string;
             nativeCoin: string;
         };
