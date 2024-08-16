@@ -239,39 +239,6 @@ export async function tonHandler({
     )) as unknown as Promise<string>;
   };
 
-  const transferJetton = async (
-    to: Address,
-    sender: Sender,
-    fromToken: string,
-    targetToken: string,
-    chainId: bigint,
-    amount: bigint,
-    destAddress: string,
-    gasArgs: TonGasArgs
-  ): Promise<string> => {
-    if (to.toString() === bridge.toString()) {
-      return await transferJettonToBurner(
-        fromToken,
-        targetToken,
-        sender,
-        amount,
-        destAddress,
-        chainId,
-        gasArgs
-      );
-    }
-
-    return await transferJettonToBridge(
-      fromToken,
-      targetToken,
-      sender,
-      chainId,
-      destAddress,
-      amount,
-      gasArgs
-    );
-  };
-
   async function isWrappedToken(
     targetChain: bigint,
     fromTokenId: bigint,
@@ -285,7 +252,7 @@ export async function tonHandler({
     if (!strategy) return false;
     for (let i = 0; i < strategy.local_steps.size; i++) {
       const strat = strategy.local_steps.steps.get(BigInt(i));
-      if (strat === 3n) return true;
+      if (strat === 5n) return true;
     }
     return false;
   }
@@ -605,25 +572,24 @@ export async function tonHandler({
       if (tid === nativeTokenId) {
         await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
       } else if (isWrapped) {
-        await transferJetton(
-          bridge,
-          signer,
+        console.log('burning')
+        await transferJettonToBurner(
           fromSymbol,
           targetSymbol,
-          cid,
+          signer,
           amt,
           destAddress,
+          chainId,
           gs
         );
       } else {
-        await transferJetton(
-          bridge,
-          signer,
+        await transferJettonToBridge(
           fromSymbol,
           targetSymbol,
+          signer,
           cid,
-          amt,
           destAddress,
+          amt,
           gs
         );
       }
