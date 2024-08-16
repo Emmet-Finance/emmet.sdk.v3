@@ -12,7 +12,7 @@ export declare namespace ChainFactoryConfigs {
             chainName: string;
             addressBook: string;
             nativeCoin: string;
-            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public", "https://api.zan.top/node/v1/bsc/testnet/public", "https://bsc-testnet.public.blastapi.io", "https://bsc-testnet-rpc.publicnode.com"];
+            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public", "https://bsc-testnet.public.blastapi.io", "https://bsc-testnet-rpc.publicnode.com"];
         };
         onlylayerParams: {
             chainName: string;
@@ -28,7 +28,7 @@ export declare namespace ChainFactoryConfigs {
         };
         polygonParams: {
             addressBook: string;
-            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public", "https://api.zan.top/node/v1/bsc/testnet/public", "https://bsc-testnet.public.blastapi.io", "https://bsc-testnet-rpc.publicnode.com"];
+            rpcs: readonly ["https://bsc-testnet.blockpi.network/v1/rpc/public", "https://bsc-testnet.public.blastapi.io", "https://bsc-testnet-rpc.publicnode.com"];
             chainName: string;
             nativeCoin: string;
         };
