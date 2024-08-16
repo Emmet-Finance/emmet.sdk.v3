@@ -44,7 +44,7 @@ export namespace ChainFactoryConfigs {
         addressBook: ethers.getAddress(
           "0x8d948925A0CB920c965C3296Eb4aef31EfE32ce9",
         ),
-        rpcs: TestNetRpcUri.BSC,
+        rpcs: TestNetRpcUri.POLYGON,
         // oracle: ethers.getAddress("0x95DB799744A5b36D6E7BE9AD3b451dBC5b8De673"),
         chainName: "polygon",
         nativeCoin: "MATIC",
