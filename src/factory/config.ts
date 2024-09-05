@@ -15,6 +15,7 @@ export namespace ChainFactoryConfigs {
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
         chainId: 65535n, // TON Testnet
         chainName: "tonTestnet",
+        stonApiUrl: "https://api.ston.fi/",
       },
       bscParams: {
         chainName: "bscTestnet",

@@ -1,3 +1,5 @@
+import type { ChainNonce } from "../factory/types";
+
 /**
  * Represents an interface for getting the balance of an address.
  *
@@ -272,4 +274,44 @@ export interface GetLpFeeGrowthGlobal {
 
 export interface GetLpFeeDecimals {
   getLpFeeDecimals: (pool: string) => Promise<bigint>;
+}
+
+export type Strategy =
+  | "nothing"
+  | "cctp_burn"
+  | "cctp_claim"
+  | "lock"
+  | "mint"
+  | "burn"
+  | "pass_to_lp"
+  | "transfer_from_lp"
+  | "swap"
+  | "unlock";
+
+export interface GetIncomingStrategy {
+  incomingStrategy: (
+    fromChain: ChainNonce,
+    fromSymbol: string,
+    targetSymbol: string,
+  ) => Promise<Strategy[]>;
+}
+
+export interface GetCrossChainStrategy {
+  crossChainStrategy: (
+    targetChain: bigint,
+    fromSymbol: string,
+    targetSymbol: string,
+  ) => Promise<{
+    local: Strategy[];
+    foreign: Strategy[];
+  }>;
+}
+
+export interface GetSwapResultAmount {
+  getSwapResultAmount: (
+    fromSymbol: string,
+    targetSymbol: string,
+    amount: bigint,
+    slippage: number,
+  ) => Promise<bigint>;
 }

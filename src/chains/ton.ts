@@ -39,6 +39,10 @@ import type {
   GetLpFeeGrowthGlobal,
   GetLpProviderRewards,
   IsTransferFromLp,
+  GetSwapResultAmount,
+  GetIncomingStrategy,
+  GetCrossChainStrategy,
+  Strategy,
 } from ".";
 import { Bridge, loadOutgoingTransaction } from "../contracts/ton";
 import { sha256_sync } from "@ton/crypto";
@@ -48,6 +52,7 @@ import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
 import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
 import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
 import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
+import { StonApiClient } from "@ston-fi/api";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -79,7 +84,10 @@ export type TonHelper = GetBalance &
   GetLpProviderRewards &
   GetLpFeeGrowthGlobal &
   GetLpFeeDecimals &
-  IsTransferFromLp;
+  IsTransferFromLp &
+  GetSwapResultAmount &
+  GetIncomingStrategy &
+  GetCrossChainStrategy;
 
 export interface TonParams {
   rpcs: readonly string[];
@@ -87,6 +95,7 @@ export interface TonParams {
   chainName: string;
   chainId: bigint;
   addressBook: Address;
+  stonApiUrl: string;
 }
 
 export async function tonHandler({
@@ -94,6 +103,7 @@ export async function tonHandler({
   nativeTokenId,
   chainName,
   chainId,
+  stonApiUrl,
   addressBook,
 }: TonParams): Promise<TonHelper> {
   const clients = rpcs.map((rpc) => new TonClient({ endpoint: rpc }));
@@ -291,8 +301,89 @@ export async function tonHandler({
       tx: hash,
     };
   }
+  const ston = new StonApiClient({
+    baseURL: stonApiUrl,
+  });
 
   return {
+    async getSwapResultAmount(fromSymbol, targetSymbol, amount, slippage) {
+      const tokens = await bridgeReader.getTokens();
+      const ft = tokens.get(toKey(fromSymbol));
+      if (!ft) throw new Error("From Token not found");
+      const tt = tokens.get(toKey(targetSymbol));
+      if (!tt) throw new Error("Target Token not found");
+      const simulation = await ston.simulateSwap({
+        askAddress: tt.address.toString(),
+        offerAddress: ft.address.toString(),
+        offerUnits: amount.toString(),
+        slippageTolerance: (slippage / 10000).toString(),
+      });
+      return BigInt(simulation.minAskUnits);
+    },
+    async crossChainStrategy(targetChain, fromSymbol, targetSymbol) {
+      const ccs = await bridgeReader.getCrossChainStrategy();
+      const strategy = ccs
+        .get(BigInt(targetChain))
+        ?.i.get(toKey(fromSymbol))
+        ?.i.get(toKey(targetSymbol));
+      if (!strategy) throw new Error("No cross chain strategy found");
+      const local: Strategy[] = [];
+
+      for (let i = 0; i < strategy.local_steps.size; i++) {
+        const strat = strategy.local_steps.steps.get(BigInt(i));
+        if (strat === 0n) local.push("nothing");
+        if (strat === 1n) local.push("cctp_burn");
+        if (strat === 2n) local.push("cctp_claim");
+        if (strat === 3n) local.push("lock");
+        if (strat === 4n) local.push("mint");
+        if (strat === 5n) local.push("burn");
+        if (strat === 6n) local.push("pass_to_lp");
+        if (strat === 7n) local.push("transfer_from_lp");
+        if (strat === 8n) local.push("swap");
+        if (strat === 13n) local.push("unlock");
+      }
+      const foreign: Strategy[] = [];
+      for (let i = 0; i < strategy.foreign_steps.size; i++) {
+        const strat = strategy.foreign_steps.steps.get(BigInt(i));
+        if (strat === 0n) foreign.push("nothing");
+        if (strat === 1n) foreign.push("cctp_burn");
+        if (strat === 2n) foreign.push("cctp_claim");
+        if (strat === 3n) foreign.push("lock");
+        if (strat === 4n) foreign.push("mint");
+        if (strat === 5n) foreign.push("burn");
+        if (strat === 6n) foreign.push("pass_to_lp");
+        if (strat === 7n) foreign.push("transfer_from_lp");
+        if (strat === 8n) foreign.push("swap");
+        if (strat === 13n) foreign.push("unlock");
+      }
+      return {
+        foreign,
+        local,
+      };
+    },
+    async incomingStrategy(fromChain, fromSymbol, targetSymbol) {
+      const ics = await bridgeReader.getIncomingStrategy();
+      const strategy = ics
+        .get(BigInt(fromChain))
+        ?.i.get(toKey(fromSymbol))
+        ?.i.get(toKey(targetSymbol));
+      if (!strategy) throw new Error("No incoming strategy found");
+      const res: Strategy[] = [];
+      for (let i = 0; i < strategy.size; i++) {
+        const strat = strategy.steps.get(BigInt(i));
+        if (strat === 0n) res.push("nothing");
+        if (strat === 1n) res.push("cctp_burn");
+        if (strat === 2n) res.push("cctp_claim");
+        if (strat === 3n) res.push("lock");
+        if (strat === 4n) res.push("mint");
+        if (strat === 5n) res.push("burn");
+        if (strat === 6n) res.push("pass_to_lp");
+        if (strat === 7n) res.push("transfer_from_lp");
+        if (strat === 8n) res.push("swap");
+        if (strat === 13n) res.push("unlock");
+      }
+      return res;
+    },
     async getLpCurrentAPY(pool) {
       const pc = fetchClient().open(
         EmmetJettonLP.fromAddress(Address.parse(pool)),

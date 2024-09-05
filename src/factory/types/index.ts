@@ -2,7 +2,11 @@ import type { Web3Helper, Web3Params } from "../../chains/web3";
 import type { TonHelper, TonParams } from "../../chains/ton";
 import type {
   AddressBook,
+  ChainID,
   Decimals,
+  GetCrossChainStrategy,
+  GetLpTokenFee,
+  GetSwapResultAmount,
   GetTxFee,
   NativeCoinName,
   PreTransfer,
@@ -139,6 +143,17 @@ export interface ChainFactory {
   getProtocolFeeInUSD: (
     chain: ProtocolFee & NativeCoinName & Decimals,
   ) => Promise<number>;
+  getDestinationTokens: (
+    fromChain: GetCrossChainStrategy &
+      GetLpTokenFee &
+      AddressBook &
+      GetSwapResultAmount,
+    targetChainId: ChainID & GetSwapResultAmount & AddressBook & GetLpTokenFee,
+    fromToken: string,
+    targetToken: string,
+    sourceAmount: bigint,
+    slippage: number, // out of 10000. 100/10000 = 1%
+  ) => Promise<bigint>;
 }
 
 export interface Transaction {

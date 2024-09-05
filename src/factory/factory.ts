@@ -112,6 +112,43 @@ export async function ChainFactoryBuilder(
       const response = chain.stakeLiquidity(signer, lp, amount, ga);
       return response;
     },
+    async getDestinationTokens(
+      fc,
+      tc,
+      fromToken,
+      targetToken,
+      sourceAmount,
+      slippage,
+    ) {
+      let amount = sourceAmount;
+      const ccs = await fc.crossChainStrategy(
+        await tc.id(),
+        fromToken,
+        targetToken,
+      );
+      for (let i = 0; i < ccs.foreign.length; i++) {
+        const cc = ccs.foreign[i];
+        if (cc === "mint") {
+          return sourceAmount;
+        }
+        if (cc === "transfer_from_lp") {
+          const pool = await tc.address(`elp${fromToken}`);
+          const lp = await tc.getLpTokenFee(pool);
+          // Reduce the source amount by lp token fee
+          amount -= lp;
+        }
+        if (cc === "swap") {
+          const pool = await tc.getSwapResultAmount(
+            fromToken,
+            targetToken,
+            amount,
+            slippage,
+          );
+          amount = pool;
+        }
+      }
+      return amount;
+    },
     async withdrawLiqiduity(chain, signer, token, amount, ga) {
       const lp = await chain.address(`elp${token}`);
       const response = chain.withdrawLiquidity(signer, lp, amount, ga);

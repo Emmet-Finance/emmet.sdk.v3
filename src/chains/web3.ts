@@ -39,6 +39,9 @@ import type {
   GetLpFeeGrowthGlobal,
   GetLpFeeDecimals,
   IsTransferFromLp,
+  GetCrossChainStrategy,
+  Strategy,
+  GetSwapResultAmount,
 } from ".";
 import {
   EmmetAddressBook__factory,
@@ -81,7 +84,9 @@ export type Web3Helper = GetBalance &
   GetLpProviderRewards &
   GetLpFeeGrowthGlobal &
   GetLpFeeDecimals &
-  IsTransferFromLp;
+  IsTransferFromLp &
+  GetCrossChainStrategy &
+  GetSwapResultAmount;
 
 export interface Web3Params {
   rpcs: readonly string[];
@@ -133,6 +138,46 @@ export async function web3Helper({
       return {
         hash: deposit.hash,
         tx: deposit,
+      };
+    },
+    async getSwapResultAmount(_fromSymbol, _targetSymbol, amount, _slippage) {
+      return amount;
+    },
+    async crossChainStrategy(targetChain, fromSymbol, targetSymbol) {
+      const ccts = await data.getCrossChainTokenStrategy(
+        targetChain,
+        fromSymbol,
+        targetSymbol,
+      );
+      const local: Strategy[] = [];
+      for (const strat of ccts.localSteps) {
+        if (strat === 0n) local.push("nothing");
+        if (strat === 1n) local.push("cctp_burn");
+        if (strat === 2n) local.push("cctp_claim");
+        if (strat === 3n) local.push("lock");
+        if (strat === 4n) local.push("mint");
+        if (strat === 5n) local.push("burn");
+        if (strat === 6n) local.push("pass_to_lp");
+        if (strat === 7n) local.push("transfer_from_lp");
+        if (strat === 8n) local.push("swap");
+        if (strat === 13n) local.push("unlock");
+      }
+      const foreign: Strategy[] = [];
+      for (const strat of ccts.foreignSteps) {
+        if (strat === 0n) foreign.push("nothing");
+        if (strat === 1n) foreign.push("cctp_burn");
+        if (strat === 2n) foreign.push("cctp_claim");
+        if (strat === 3n) foreign.push("lock");
+        if (strat === 4n) foreign.push("mint");
+        if (strat === 5n) foreign.push("burn");
+        if (strat === 6n) foreign.push("pass_to_lp");
+        if (strat === 7n) foreign.push("transfer_from_lp");
+        if (strat === 8n) foreign.push("swap");
+        if (strat === 13n) foreign.push("unlock");
+      }
+      return {
+        local,
+        foreign,
       };
     },
     withdrawLiquidity: async (signer, pool, amt, ga) => {
