@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@emmet-contracts/web3": "git+https://github.com/Emmet-Finance/emmet-types#41232e8f97a04dbe5a79beba6b2b6bf9d9030bde",
+    "@ston-fi/api": "^0.9.0",
     "@ton/core": "^0.56.3",
     "@ton/crypto": "^3.2.0",
     "@ton/ton": "^13.11.1",

@@ -1,6 +1,6 @@
 import type { Web3Helper, Web3Params } from "../../chains/web3";
 import type { TonHelper, TonParams } from "../../chains/ton";
-import type { AddressBook, Decimals, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment, StakeLiquidity, WithdrawFees, WithdrawLiquidity } from "../../chains";
+import type { AddressBook, ChainID, Decimals, GetCrossChainStrategy, GetLpTokenFee, GetSwapResultAmount, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment, StakeLiquidity, WithdrawFees, WithdrawLiquidity } from "../../chains";
 export type EvmMeta = [Web3Helper, Web3Params];
 export type TonMeta = [TonHelper, TonParams];
 type MetaMapAssert = {
@@ -80,6 +80,7 @@ export interface ChainFactory {
     getTokenPrice: (symbol: string) => Promise<bigint>;
     getPriceDecimals: (symbol: string) => Promise<bigint>;
     getProtocolFeeInUSD: (chain: ProtocolFee & NativeCoinName & Decimals) => Promise<number>;
+    getDestinationTokens: (fromChain: GetCrossChainStrategy & GetLpTokenFee & AddressBook & GetSwapResultAmount, targetChainId: ChainID & GetSwapResultAmount & AddressBook & GetLpTokenFee, fromToken: string, targetToken: string, sourceAmount: bigint, slippage: number) => Promise<bigint>;
 }
 export interface Transaction {
     txHash: string;

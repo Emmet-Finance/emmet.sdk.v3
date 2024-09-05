@@ -7,6 +7,7 @@ export declare namespace ChainFactoryConfigs {
             nativeTokenId: bigint;
             chainId: bigint;
             chainName: string;
+            stonApiUrl: string;
         };
         bscParams: {
             chainName: string;
