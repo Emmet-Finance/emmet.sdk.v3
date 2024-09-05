@@ -569,7 +569,7 @@ export async function tonHandler({
                 ((await bridgeReader.getChainFees()).get(cid) ??
                   raise("Chain fees not configured for this chain")),
             };
-      if (tid === nativeTokenId) {
+      if (fsid === nativeTokenId) {
         await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
       } else if (isWrapped) {
         console.log("burning");
