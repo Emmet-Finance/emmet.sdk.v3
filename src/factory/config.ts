@@ -16,6 +16,8 @@ export namespace ChainFactoryConfigs {
         chainId: 65535n, // TON Testnet
         chainName: "tonTestnet",
         stonApiUrl: "https://api.ston.fi/",
+        stonRouterAddress: "kQCas2p939ESyXM_BzFJzcIe3GD5S0tbjJDj6EBVn-SPsEkN",
+        pTonAddress: "kQDwpyxrmYQlGDViPk-oqP4XK6J11I-bx7fJAlQCWmJB4m74",
       },
       bscParams: {
         chainName: "bscTestnet",

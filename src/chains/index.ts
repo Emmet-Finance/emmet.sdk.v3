@@ -296,6 +296,16 @@ export interface GetIncomingStrategy {
   ) => Promise<Strategy[]>;
 }
 
+export interface SwapTokens<Signer, RetTx> {
+  swapTokens: (
+    sender: Signer,
+    fromSymbol: string,
+    targetSymbol: string,
+    amount: bigint,
+    slippage: number,
+  ) => Promise<RetTx>;
+}
+
 export interface GetCrossChainStrategy {
   crossChainStrategy: (
     targetChain: bigint,
