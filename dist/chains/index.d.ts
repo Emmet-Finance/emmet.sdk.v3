@@ -195,6 +195,9 @@ export type Strategy = "nothing" | "cctp_burn" | "cctp_claim" | "lock" | "mint" 
 export interface GetIncomingStrategy {
     incomingStrategy: (fromChain: ChainNonce, fromSymbol: string, targetSymbol: string) => Promise<Strategy[]>;
 }
+export interface SwapTokens<Signer, RetTx> {
+    swapTokens: (sender: Signer, fromSymbol: string, targetSymbol: string, amount: bigint, slippage: number) => Promise<RetTx>;
+}
 export interface GetCrossChainStrategy {
     crossChainStrategy: (targetChain: bigint, fromSymbol: string, targetSymbol: string) => Promise<{
         local: Strategy[];

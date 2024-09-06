@@ -8,6 +8,8 @@ export declare namespace ChainFactoryConfigs {
             chainId: bigint;
             chainName: string;
             stonApiUrl: string;
+            stonRouterAddress: string;
+            pTonAddress: string;
         };
         bscParams: {
             chainName: string;
