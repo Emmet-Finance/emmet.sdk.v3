@@ -1,3 +1,23 @@
+export const MainnetRPCUri = {
+
+  AVALANCHE:[
+    "https://avalanche-c-chain-rpc.publicnode.com",
+    "https://api.avax.network/ext/bc/C/rpc",
+    "https://avalanche.public-rpc.com",
+    "https://avalanche-c-chain-rpc.publicnode.com",
+    "https://avalanche.blockpi.network/v1/rpc/public",
+    "https://avax-pokt.nodies.app/ext/bc/C/rpc",
+    "https://avalanche.drpc.org",
+  ],
+  POLYGON: [
+    "https://polygon-bor-rpc.publicnode.com",
+    "https://polygon-bor-rpc.publicnode.com",
+    "https://1rpc.io/matic",
+    "https://polygon.blockpi.network/v1/rpc/public",
+  ]
+
+} as const;
+
 export const TestNetRpcUri = {
   BSC: [
     "https://bsc-testnet.blockpi.network/v1/rpc/public",
