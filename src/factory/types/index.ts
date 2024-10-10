@@ -24,17 +24,25 @@ type MetaMapAssert = { [idx in (typeof Chain)[keyof typeof Chain]]: unknown };
 
 export type MetaMap = {
   0: EvmMeta;
-  7: EvmMeta;
+  1: EvmMeta;
+  2: EvmMeta;
+  3: EvmMeta;
   4: EvmMeta;
+  6: EvmMeta;
+  7: EvmMeta;
+  65535: TonMeta;
   728696: EvmMeta;
   80084: EvmMeta;
-  65535: TonMeta;
 } & MetaMapAssert;
 
 export namespace Chain {
-  export const POLYGON = 7;
-  export const BSC = 4;
   export const ETHEREUM = 0;
+  export const AVALANCHE = 1;
+  export const OPTIMISM = 2;
+  export const ARBITRUM = 3;
+  export const BSC = 4;
+  export const BASE = 6;
+  export const POLYGON = 7;
   export const TON = 65535;
   export const ONLYLAYER = 728696;
   export const BERACHAIN = 80084;
@@ -62,15 +70,19 @@ export type InferRet<K> = K extends SendInstallment<unknown, infer R, unknown>
   : never;
 
 export interface ChainParams {
-  bscParams: Web3Params;
   ethParams: Web3Params;
+  avaxParams: Web3Params;
+  opParams: Web3Params;
+  arbParams: Web3Params;
+  bscParams: Web3Params;
+  baseParams: Web3Params;
   polygonParams: Web3Params;
+  tonParams: TonParams;
   onlylayerParams: Web3Params;
   berachainParams: Web3Params;
-  tonParams: TonParams;
   multisigParams: {
     rpcs: readonly string[];
-    ab: string;
+    ab: string; // address book
   };
 }
 
