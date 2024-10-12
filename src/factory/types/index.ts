@@ -149,7 +149,12 @@ export interface ChainFactory {
   ) => Promise<Transaction[]>;
   getTransaction: (hash: string) => Promise<DetailedTx>;
   getExplorerStats: () => Promise<ExplorerMeta>;
-  getTxCount: () => Promise<bigint>;
+  getStats: () => Promise<[bigint, bigint, bigint, bigint] & { 
+    bridgedInUSD: bigint;
+    collectedFees: bigint;
+    totalTransactions: bigint;
+    uniqueAccounts: bigint; 
+  }>
   getTokenPrice: (symbol: string) => Promise<bigint>;
   getPriceDecimals: (symbol: string) => Promise<bigint>;
   getProtocolFeeInUSD: (
@@ -170,7 +175,6 @@ export interface ChainFactory {
 
 export interface Transaction {
   txHash: string;
-  nonce: bigint;
   sentAmount: bigint;
   receivedAmount: bigint;
   fromChainId: bigint;

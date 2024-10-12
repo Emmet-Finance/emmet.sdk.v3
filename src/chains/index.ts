@@ -74,22 +74,18 @@ export interface GetTokenBalance {
 }
 
 export type AddressBookKeys =
-  | "GasFees"
-  | "EmmetTokenVault"
+  | "Consensus"
+  | "CrossChainMessenger"
   | "EmmetData"
-  | "CCTPHelper"
-  | "HashHelper"
-  | "SignatureVerifier"
-  | "LiquidityPoolHelper"
+  | "EmmetDataAdmin"
   | "EmmetBridge"
-  | "AddressStorageHelper"
   | "WTON" // Wrapped Token
   | "EMMET" // Token
   | "BERA/USD" // price feed
   | "BNB/USD" // price feed
   | "MATIC/USD" // Price Feed
   | "TON/USD" // price feed
-  | "EmmetMultisig"
+  | "Explorer"
   | `elp${string}`;
 
 export interface AddressBook {

@@ -16,7 +16,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@emmet-contracts/web3": "git+https://github.com/Emmet-Finance/emmet-types#f65f37fb21734d9d7cb9fabf71a86823a88c92de",
+    "@emmet-contracts/web3": "git+https://github.com/Emmet-Finance/emmet-types#8fda03a86fec45a69e12efba9f861c476483563e",
     "@ston-fi/api": "^0.9.0",
     "@ston-fi/sdk": "^2.0.0-rc.3",
     "@ton/core": "^0.56.3",
