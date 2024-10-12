@@ -1,10 +1,30 @@
 import { ethers } from "ethers";
-import { TestNetRpcUri } from "./rpcs";
+import { MainnetRPCUri, TestNetRpcUri } from "./rpcs";
 import { Address } from "@ton/core";
 import { sha256_sync } from "@ton/crypto";
 import type { ChainParams } from "./types";
 
 export namespace ChainFactoryConfigs {
+  export function MainNet() {
+    return {
+      avaxParams: {
+        chainName: "avalanche",
+        addressBook: ethers.getAddress(
+          "0xcCa50e985e4e9a2a9668fA3aA8EbC2568E6a6060",
+        ),
+        nativeCoin: "AVAX",
+        rpcs: MainnetRPCUri.AVALANCHE
+      },
+      polygonParams: {
+        chainName: "polygon",
+        addressBook: ethers.getAddress(
+          "0xaCADE1aBb88C13403b22b1f7EAB70A8062bcA374",
+        ),
+        nativeCoin: "MATIC",
+        rpcs: MainnetRPCUri.POLYGON
+      }
+    } satisfies Partial<ChainParams>;
+  } 
   export function TestNet() {
     return {
       tonParams: {
