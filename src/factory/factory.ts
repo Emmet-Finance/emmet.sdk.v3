@@ -1,14 +1,13 @@
 import {
   EmmetAddressBook__factory,
-  EmmetData__factory,
-  EmmetMultisig__factory,
+  Consensus__factory,
+  Consensus,
+  // EmmetData,
+  // EmmetData__factory
 } from "@emmet-contracts/web3";
-import { tonHandler } from "../chains/ton";
-import { web3Helper } from "../chains/web3";
 import { Chain, type ChainFactory } from "./types";
 
 import type {
-  ChainInfo,
   ChainNonce,
   ChainParams,
   HelperMap,
@@ -16,6 +15,9 @@ import type {
 } from "./types";
 import { ChainIDToDomain, type SupportedChainID } from "../explorer-utils";
 import { JsonRpcProvider } from "ethers";
+import { CHAIN_INFO } from "../chains/ChainInfo";
+import { Explorer } from "@emmet-contracts/web3/dist/contracts/BridgeExplorer";
+import { Explorer__factory } from "@emmet-contracts/web3/dist/factories/contracts/BridgeExplorer";
 
 function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   const cToP: ParamMap = new Map();
@@ -28,57 +30,16 @@ function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   return cToP;
 }
 
-export const CHAIN_INFO: ChainInfo = new Map();
-
-CHAIN_INFO.set(Chain.POLYGON, {
-  constructor: web3Helper,
-  decimals: 18,
-  name: "Polygon",
-  nonce: Chain.POLYGON,
-});
-
-CHAIN_INFO.set(Chain.BSC, {
-  constructor: web3Helper,
-  decimals: 18,
-  name: "BSC",
-  nonce: Chain.BSC,
-});
-
-CHAIN_INFO.set(Chain.ETHEREUM, {
-  constructor: web3Helper,
-  decimals: 18,
-  name: "Ethereum",
-  nonce: Chain.ETHEREUM,
-});
-
-CHAIN_INFO.set(Chain.ONLYLAYER, {
-  constructor: web3Helper,
-  decimals: 18,
-  name: "Only Layer",
-  nonce: Chain.ONLYLAYER,
-});
-
-CHAIN_INFO.set(Chain.BERACHAIN, {
-  constructor: web3Helper,
-  decimals: 18,
-  name: "Berachain",
-  nonce: Chain.BERACHAIN,
-});
-
-CHAIN_INFO.set(Chain.TON, {
-  decimals: 18,
-  name: "Ton",
-  nonce: Chain.TON,
-  constructor: async (...args) => tonHandler(...args),
-});
-
 export async function ChainFactoryBuilder(
   chainParams: Partial<ChainParams>,
 ): Promise<ChainFactory> {
+
   const helpers: HelperMap<ChainNonce> = new Map();
+
   const multisigProviders = chainParams.multisigParams!.rpcs.map(
     (e) => new JsonRpcProvider(e),
   );
+
   const getMultisigProvider = () => {
     const randomRpcIndex = Math.floor(
       Math.random() * chainParams.multisigParams!.rpcs.length,
@@ -87,14 +48,35 @@ export async function ChainFactoryBuilder(
   };
 
   const cToP = mapNonceToParams(chainParams);
+
+  // =============  C O N T R A C T S  =============
+
+  // AddressBook
   const ab = EmmetAddressBook__factory.connect(
     chainParams.multisigParams!.ab,
     getMultisigProvider(),
   );
-  const msig = await ab.get("EmmetMultisig");
-  const mData = await ab.get("EmmetData");
-  const multisig = EmmetMultisig__factory.connect(msig, getMultisigProvider());
-  const emmetData = EmmetData__factory.connect(mData, getMultisigProvider());
+
+  // Consensus
+  const consensusAddress: string = await ab.get("Consensus");
+  const consensus: Consensus = Consensus__factory.connect(
+    consensusAddress,
+    getMultisigProvider()
+  );
+
+  // EmmetData
+  // const dataAddress: string = await ab.get("EmmetData");
+  // const emmetData: EmmetData = EmmetData__factory.connect(
+  //   dataAddress,
+  //   getMultisigProvider()
+  // );
+
+  // Explorer
+  const explorerAddress: string = await ab.get("Explorer");
+  const explorer: Explorer = Explorer__factory.connect(
+    explorerAddress,
+    getMultisigProvider()
+  );
 
   const inner = async <T extends ChainNonce>(chain: T) => {
     let helper = helpers.get(chain);
@@ -163,16 +145,15 @@ export async function ChainFactoryBuilder(
       const pt = await chain.preTransfer(signer, tid, spender, amt, ga);
       return pt;
     },
-    getTxCount() {
-      return multisig.nonce();
+    getStats: async () => {
+      return await explorer.getStats();
     },
     async getTransactions(batch, offset) {
-      const txs = await multisig.getTransactions(batch, offset);
+      const txs = await explorer.getTransactions(batch, offset);
       return txs.map((e) => {
         return {
-          nonce: e.nonce,
           sentAmount: e.sentAmount,
-          receivedAmount: e.receivedAmount,
+          receivedAmount: e.receiveAmount,
           fromChainId: e.fromChainId,
           toChainId: e.toChainId,
           fromToken: e.fromToken,
@@ -180,14 +161,14 @@ export async function ChainFactoryBuilder(
           recipient: e.recipient,
           originalHash: e.originalHash,
           destinationHash: e.destinationHash,
-          started: e.started,
-          finished: e.finished,
+          started: e.start,
+          finished: e.finish,
           txHash: e.txHash,
         };
       });
     },
     async getTransaction(hash) {
-      const tx = await multisig.getTransaction(hash);
+      const tx = await explorer.getTransaction(hash);
       const fcNonce: ChainNonce =
         ChainIDToDomain[Number(tx.fromChainId) as SupportedChainID];
       const tcNonce: ChainNonce =
@@ -202,9 +183,8 @@ export async function ChainFactoryBuilder(
         targetChainFees: tcInfo.value,
         targetChainTimestamp: tcInfo.timestamp,
         protocolFee: await fcHandler.protocolFee(),
-        nonce: tx.nonce,
         sentAmount: tx.sentAmount,
-        receivedAmount: tx.receivedAmount,
+        receivedAmount: tx.receiveAmount,
         fromChainId: tx.fromChainId,
         toChainId: tx.toChainId,
         fromToken: tx.fromToken,
@@ -212,18 +192,19 @@ export async function ChainFactoryBuilder(
         recipient: tx.recipient,
         originalHash: tx.originalHash,
         destinationHash: tx.destinationHash,
-        started: tx.started,
-        finished: tx.finished,
+        started: tx.start,
+        finished: tx.finish,
         txHash: tx.txHash,
       };
     },
     async getExplorerStats() {
-      const tx = await multisig.getStats();
+      const tx = await consensus.getStats();
       return {
-        totalTransactions: tx.totalTransactions,
-        totalFees: tx.totalFees,
-        totalVolume: tx.totalVolume,
-        uniqueUser: tx.uniqueUsers,
+        totalTransactions: tx.txCount,
+        // TODO: implement in the contract
+        totalFees: 0n, //tx.totalFees,
+        totalVolume: 0n, // tx.totalVolume,
+        uniqueUser: 0n,// tx.uniqueUsers,
       };
     },
     // async stakeTokenForPool(chain, signer, tokenSymbol, amount) {},
@@ -262,15 +243,17 @@ export async function ChainFactoryBuilder(
       );
     },
     getTokenPrice(symbol) {
-      return emmetData.getTokenPrice(symbol);
+      return explorer.getTokenPrice(symbol);
     },
     getPriceDecimals(symbol) {
-      return emmetData.getPriceDecimals(symbol);
+      return explorer.getPriceDecimals(symbol);
     },
     async getProtocolFeeInUSD(chain) {
-      const tp = Number(await emmetData.getTokenPrice(chain.nativeCoin()));
-      const td = Number(await emmetData.getPriceDecimals(chain.nativeCoin()));
-      const pf = Number(await chain.protocolFee());
+      const provider = getMultisigProvider();
+      const network = await provider.getNetwork();
+      const tp = Number(await explorer.getTokenPrice(chain.nativeCoin()));
+      const td = Number(await explorer.getPriceDecimals(chain.nativeCoin()));
+      const pf = Number(await explorer.protocolFee(network.chainId));
       const cd = await chain.decimals();
       return Number(((pf * tp) / 10 ** (cd + td)).toFixed(2));
     },
