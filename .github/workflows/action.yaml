@@ -1,0 +1,18 @@
+# .github/workflows/test-action.yml
+name: Test Workflow
+
+on:
+  push:
+    branches:
+      - "**"  # Trigger on all branches, including branches with slashes in their names
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Run a Test
+        run: echo "GitHub Actions is working!"
