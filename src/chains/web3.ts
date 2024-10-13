@@ -6,7 +6,7 @@ import {
   type Provider,
   type Signer,
 } from "ethers";
-import type {
+import {
   AddressBook,
   ChainID,
   ChainName,
@@ -40,14 +40,17 @@ import type {
   GetLpFeeDecimals,
   IsTransferFromLp,
   GetCrossChainStrategy,
-  Strategy,
+  EStrategy,
+  TStrategy,
   GetSwapResultAmount,
+  strategyMap,
+  SendParams,
 } from ".";
 import {
   EmmetAddressBook__factory,
   EmmetBridge__factory,
   EmmetData__factory,
-  EmmetLPV2__factory,
+  EmmetLP__factory,
   ERC20__factory,
   WrappedERC20__factory,
 } from "@emmet-contracts/web3";
@@ -133,7 +136,7 @@ export async function web3Helper({
   return {
     id: async () => (await (await fetchProvider()).getNetwork()).chainId,
     stakeLiquidity: async (signer, pool, amt, ga) => {
-      const lp = EmmetLPV2__factory.connect(pool, signer);
+      const lp = EmmetLP__factory.connect(pool, signer);
       const deposit = await lp.deposit(amt, { ...ga });
       return {
         hash: deposit.hash,
@@ -144,44 +147,39 @@ export async function web3Helper({
       return amount;
     },
     async crossChainStrategy(targetChain, fromSymbol, targetSymbol) {
-      const ccts = await data.getCrossChainTokenStrategy(
+      const ccts = await data.getStrategy(
         targetChain,
         fromSymbol,
         targetSymbol,
       );
-      const local: Strategy[] = [];
-      for (const strat of ccts.localSteps) {
-        if (strat === 0n) local.push("nothing");
-        if (strat === 1n) local.push("cctp_burn");
-        if (strat === 2n) local.push("cctp_claim");
-        if (strat === 3n) local.push("lock");
-        if (strat === 4n) local.push("mint");
-        if (strat === 5n) local.push("burn");
-        if (strat === 6n) local.push("pass_to_lp");
-        if (strat === 7n) local.push("transfer_from_lp");
-        if (strat === 8n) local.push("swap");
-        if (strat === 13n) local.push("unlock");
+
+      const outgoing: TStrategy[] = [];
+      const incoming: TStrategy[] = [];
+      const foreign: TStrategy[] = [];
+
+      const map = [
+        { strategies: ccts.outgoing, targetArray: outgoing },
+        { strategies: ccts.incoming, targetArray: incoming },
+        { strategies: ccts.foreign, targetArray: foreign }
+      ]
+
+      for (const { strategies, targetArray } of map) {
+        for (const strat of strategies) {
+          const strategyName: TStrategy = strategyMap[BigInt(strat).toString()] as TStrategy;
+          if (strategyName) {
+            targetArray.push(strategyName);
+          }
+        }
       }
-      const foreign: Strategy[] = [];
-      for (const strat of ccts.foreignSteps) {
-        if (strat === 0n) foreign.push("nothing");
-        if (strat === 1n) foreign.push("cctp_burn");
-        if (strat === 2n) foreign.push("cctp_claim");
-        if (strat === 3n) foreign.push("lock");
-        if (strat === 4n) foreign.push("mint");
-        if (strat === 5n) foreign.push("burn");
-        if (strat === 6n) foreign.push("pass_to_lp");
-        if (strat === 7n) foreign.push("transfer_from_lp");
-        if (strat === 8n) foreign.push("swap");
-        if (strat === 13n) foreign.push("unlock");
-      }
+
       return {
-        local,
+        outgoing,
+        incoming,
         foreign,
       };
     },
     withdrawLiquidity: async (signer, pool, amt, ga) => {
-      const lp = EmmetLPV2__factory.connect(pool, signer);
+      const lp = EmmetLP__factory.connect(pool, signer);
       const withdraw = await lp.withdrawTokens(amt, { ...ga });
       return {
         hash: withdraw.hash,
@@ -189,7 +187,7 @@ export async function web3Helper({
       };
     },
     withdrawFees: async (signer, pool, ga) => {
-      const lp = EmmetLPV2__factory.connect(pool, signer);
+      const lp = EmmetLP__factory.connect(pool, signer);
       const withdraw = await lp.withdrawFees({ ...ga });
       return {
         hash: withdraw.hash,
@@ -197,42 +195,42 @@ export async function web3Helper({
       };
     },
     getLpCurrentAPY: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const apy = await lp.currentAPY();
       return apy;
     },
     getLpTotalSupply: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const totalSupply = await lp.totalSupply();
       return totalSupply;
     },
     getLpTokenFee: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const tokenFee = await lp.tokenFee();
       return tokenFee;
     },
     getLpProtocolFee: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const protocolFee = await lp.protocolFee();
       return protocolFee;
     },
     getLpProtocolFeeAmount: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const protocolFeeAmount = await lp.protocolFeeAmount();
       return protocolFeeAmount;
     },
     getLpProviderRewards: async (pool, address) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const providerRewards = await lp.getProviderRewards(address);
       return providerRewards;
     },
     getLpFeeGrowthGlobal: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const feeGrowthGlobal = await lp.feeGrowthGlobal();
       return feeGrowthGlobal;
     },
     getLpFeeDecimals: async (pool) => {
-      const lp = EmmetLPV2__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const feeDecimals = await lp.feeDecimals();
       return feeDecimals;
     },
@@ -243,13 +241,14 @@ export async function web3Helper({
       return await bridge.getAddress();
     },
     async txFee(targetChainId, fromToken, targetToken) {
-      const protocolFee = await data.getProtocolFee();
-      const ffc = await data.getForeignFeeCompensation(
+      const isFeeERC20: boolean = false;
+      const protocolFee = await bridge.estimateFee(
         targetChainId,
         fromToken,
         targetToken,
+        isFeeERC20
       );
-      return protocolFee + ffc;
+      return protocolFee;
     },
     async txInfo(hash) {
       const provider = await fetchProvider();
@@ -284,7 +283,7 @@ export async function web3Helper({
       if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
       const log = receipt.logs.find((e) =>
         e.topics.includes(
-          bridge.interface.getEvent("SendInstallment").topicHash,
+          bridge.interface.getEvent("SentInstallment").topicHash,
         ),
       );
       if (!log)
@@ -293,18 +292,11 @@ export async function web3Helper({
       return decode?.args.txHash;
     },
     protocolFee() {
-      return data.getProtocolFee();
+      return 50n; // data.getProtocolFee();
     },
     async token(symbol) {
       const token = await data.getToken(symbol);
-      return {
-        address: token.addr,
-        swap: token.swap,
-        decimals: token.decimals,
-        fee: token.fee,
-        feeDecimals: token.feeDecimals,
-        symbol: token.symbol,
-      };
+      return token;
     },
     decimals: async (pool) => {
       if (!pool) return 18;
@@ -333,27 +325,35 @@ export async function web3Helper({
     balance: async (addr) => (await fetchProvider()).getBalance(addr),
     provider: async () => await fetchProvider(),
     async estimateTime(targetChain, fromToken, targetToken) {
-      const ts = await data.getCrossChainTokenStrategy(
+
+      const ts = await data.getStrategy(
         targetChain,
         fromToken,
         targetToken,
       );
-      const localSteps = ts[0];
-      const foreignSteps = ts[1];
+
+      const outgoing = ts[0];
+      const foreign = ts[1];
+
+      const cctpBurn: bigint = BigInt(EStrategy.CCTPClaim);
+      const cctpClaim: bigint = BigInt(EStrategy.CCTPClaim);
+
       const isCCTP =
-        foreignSteps.includes(1n) ||
-        foreignSteps.includes(2n) ||
-        localSteps.includes(1n) ||
-        localSteps.includes(2n);
+        foreign.includes(cctpBurn) ||
+        foreign.includes(cctpClaim) ||
+        outgoing.includes(cctpBurn) ||
+        outgoing.includes(cctpClaim);
+
       if (isCCTP) {
-        const time = await data.getCCTPChain(targetChain);
-        const timeInMs = (time.awaitMinutes * 60n + time.awaitSeconds) * 1000n;
+        // 2 minutes
+        const timeInMs = (2n * 60n) * 1000n;
         return timeInMs;
       }
       return undefined;
     },
+
     async isTransferFromLp(targetChain, fromToken, targetToken) {
-      const ts = await data.getCrossChainTokenStrategy(
+      const ts = await data.getStrategy(
         targetChain,
         fromToken,
         targetToken,
@@ -361,26 +361,42 @@ export async function web3Helper({
       const _isTransferFromLp = ts[1].includes(7n);
       return _isTransferFromLp;
     },
-    protocolFeeInUSD: async () => {
-      const fee = await data.protocolFee();
-      return fee.usdEquivalent;
+    protocolFeeInUSD:  () => {
+      // const fee = await data.protocolFee();
+      // return fee.usdEquivalent;
+      return 50n;
     },
     validateAddress: (addr) => Promise.resolve(isAddress(addr)),
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, fee, gasArgs) => {
+
+      const params: SendParams = {
+        blockNumber: 0n, // populated by the contract
+        isFeeERC20: false, // will add support later
+        sentAmount: amt,
+        receiveAmount: amt,
+        toChainId: cid,
+        fromToken: fs,
+        toToken: ts,
+        to: da,
+        isSuccess: true
+      }
+
       const sendGas = await bridge
         .connect(signer)
-        .sendInstallment.estimateGas(cid, amt, fs, ts, da, {
+        .sendInstallment.estimateGas(params, {
           value: fee,
         });
+        
       const tx = await bridge
         .connect(signer)
-        .sendInstallment(cid, amt, fs, ts, da, {
+        .sendInstallment(params, {
           ...gasArgs,
           value: fee,
           gasLimit: sendGas,
         });
+
       return {
         hash: tx.hash,
         tx: tx,
