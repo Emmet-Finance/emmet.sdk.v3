@@ -25,6 +25,4 @@ export interface TonParams {
     pTonAddress: string;
 }
 export declare function tonHandler({ rpcs, nativeTokenId, chainName, chainId, stonApiUrl, addressBook, stonRouterAddress, pTonAddress, }: TonParams): Promise<TonHelper>;
-export declare function raise(msg: string): never;
-export declare function assertNotNull<T>(t: T | null | undefined): t is T;
 //# sourceMappingURL=ton.d.ts.map

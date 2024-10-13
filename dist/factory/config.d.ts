@@ -1,5 +1,19 @@
 import { Address } from "@ton/core";
 export declare namespace ChainFactoryConfigs {
+    function MainNet(): {
+        avaxParams: {
+            chainName: string;
+            addressBook: string;
+            nativeCoin: string;
+            rpcs: readonly ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc", "https://avalanche.public-rpc.com", "https://avalanche-c-chain-rpc.publicnode.com", "https://avalanche.blockpi.network/v1/rpc/public", "https://avax-pokt.nodies.app/ext/bc/C/rpc", "https://avalanche.drpc.org"];
+        };
+        polygonParams: {
+            chainName: string;
+            addressBook: string;
+            nativeCoin: string;
+            rpcs: readonly ["https://polygon-bor-rpc.publicnode.com", "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic", "https://polygon.blockpi.network/v1/rpc/public"];
+        };
+    };
     function TestNet(): {
         tonParams: {
             addressBook: Address;

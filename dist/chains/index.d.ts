@@ -1,3 +1,4 @@
+import { BigNumberish } from "ethers";
 import type { ChainNonce } from "../factory/types";
 /**
  * Represents an interface for getting the balance of an address.
@@ -26,6 +27,17 @@ export interface GetProvider<T> {
 export interface ChainID {
     id: () => Promise<bigint>;
 }
+export type SendParams = {
+    blockNumber: BigNumberish;
+    isFeeERC20: boolean;
+    sentAmount: BigNumberish;
+    receiveAmount: BigNumberish;
+    toChainId: BigNumberish;
+    fromToken: string;
+    toToken: string;
+    to: string;
+    isSuccess: boolean;
+};
 /**
  * Represents a function that sends an installment.
  * @template Signer The type of the signer.
@@ -61,18 +73,15 @@ export interface GetTokenBalance {
      */
     tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
-export type AddressBookKeys = "GasFees" | "EmmetTokenVault" | "EmmetData" | "CCTPHelper" | "HashHelper" | "SignatureVerifier" | "LiquidityPoolHelper" | "EmmetBridge" | "AddressStorageHelper" | "WTON" | "EMMET" | "BERA/USD" | "BNB/USD" | "MATIC/USD" | "TON/USD" | "EmmetMultisig" | `elp${string}`;
+export type AddressBookKeys = "Consensus" | "CrossChainMessenger" | "EmmetData" | "EmmetDataAdmin" | "EmmetBridge" | "WTON" | "EMMET" | "BERA/USD" | "BNB/USD" | "MATIC/USD" | "TON/USD" | "Explorer" | `elp${string}`;
 export interface AddressBook {
     address: (contr: AddressBookKeys) => Promise<string>;
 }
 export interface TokenInfo {
     token: (symbol: string) => Promise<{
-        address: string;
-        swap?: string;
+        token: string;
+        priceFeed: string;
         decimals: bigint;
-        symbol: string;
-        fee: bigint;
-        feeDecimals: bigint;
     }>;
 }
 /**
@@ -101,7 +110,7 @@ export interface PreTransfer<Signer, GasArgs> {
     preTransfer: (signer: Signer, token: string, spender: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
 }
 export interface GetProtocolFeeInUSD {
-    protocolFeeInUSD: () => Promise<bigint>;
+    protocolFeeInUSD: () => bigint;
 }
 export interface Decimals {
     decimals: (pool?: string) => Promise<number>;
@@ -128,7 +137,7 @@ export interface NativeCoinName {
     nativeCoin: () => string;
 }
 export interface ProtocolFee {
-    protocolFee: () => Promise<bigint>;
+    protocolFee: () => bigint;
 }
 export interface FetchTxInfo {
     txInfo: (hash: string) => Promise<TxInfo>;
@@ -191,17 +200,38 @@ export interface GetLpFeeGrowthGlobal {
 export interface GetLpFeeDecimals {
     getLpFeeDecimals: (pool: string) => Promise<bigint>;
 }
-export type Strategy = "nothing" | "cctp_burn" | "cctp_claim" | "lock" | "mint" | "burn" | "pass_to_lp" | "transfer_from_lp" | "swap" | "unlock";
+export type TStrategy = "None" | "CCTPBurn" | "CCTPClaim" | "Lock" | "Mint" | "Burn" | "Unlock" | "LPStake" | "LPRelease" | "Swap1" | "Swap2" | "Swap3" | "Swap4" | "Swap5" | "Swap6";
+export declare enum EStrategy {
+    None = 0,
+    CCTPBurn = 1,
+    CCTPClaim = 2,
+    Lock = 3,
+    Mint = 4,
+    Burn = 5,
+    Unlock = 6,
+    LPStake = 7,
+    LPRelease = 8,
+    Swap1 = 9,
+    Swap2 = 10,
+    Swap3 = 11,
+    Swap4 = 12,
+    Swap5 = 13,
+    Swap6 = 14
+}
+export declare const strategyMap: {
+    [x: string]: string;
+};
 export interface GetIncomingStrategy {
-    incomingStrategy: (fromChain: ChainNonce, fromSymbol: string, targetSymbol: string) => Promise<Strategy[]>;
+    incomingStrategy: (fromChain: ChainNonce, fromSymbol: string, targetSymbol: string) => Promise<TStrategy[]>;
 }
 export interface SwapTokens<Signer, RetTx> {
     swapTokens: (sender: Signer, fromSymbol: string, targetSymbol: string, amount: bigint, slippage: number) => Promise<RetTx>;
 }
 export interface GetCrossChainStrategy {
     crossChainStrategy: (targetChain: bigint, fromSymbol: string, targetSymbol: string) => Promise<{
-        local: Strategy[];
-        foreign: Strategy[];
+        outgoing: TStrategy[];
+        incoming: TStrategy[];
+        foreign: TStrategy[];
     }>;
 }
 export interface GetSwapResultAmount {

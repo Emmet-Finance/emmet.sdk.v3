@@ -8,16 +8,24 @@ type MetaMapAssert = {
 };
 export type MetaMap = {
     0: EvmMeta;
-    7: EvmMeta;
+    1: EvmMeta;
+    2: EvmMeta;
+    3: EvmMeta;
     4: EvmMeta;
+    6: EvmMeta;
+    7: EvmMeta;
+    65535: TonMeta;
     728696: EvmMeta;
     80084: EvmMeta;
-    65535: TonMeta;
 } & MetaMapAssert;
 export declare namespace Chain {
-    const POLYGON = 7;
-    const BSC = 4;
     const ETHEREUM = 0;
+    const AVALANCHE = 1;
+    const OPTIMISM = 2;
+    const ARBITRUM = 3;
+    const BSC = 4;
+    const BASE = 6;
+    const POLYGON = 7;
     const TON = 65535;
     const ONLYLAYER = 728696;
     const BERACHAIN = 80084;
@@ -32,12 +40,16 @@ export type InferChainH<K extends ChainNonce> = MetaMap[K][0];
 export type InferSigner<K> = K extends SendInstallment<infer S, unknown, unknown> ? S : never;
 export type InferRet<K> = K extends SendInstallment<unknown, infer R, unknown> ? R : never;
 export interface ChainParams {
-    bscParams: Web3Params;
     ethParams: Web3Params;
+    avaxParams: Web3Params;
+    opParams: Web3Params;
+    arbParams: Web3Params;
+    bscParams: Web3Params;
+    baseParams: Web3Params;
     polygonParams: Web3Params;
+    tonParams: TonParams;
     onlylayerParams: Web3Params;
     berachainParams: Web3Params;
-    tonParams: TonParams;
     multisigParams: {
         rpcs: readonly string[];
         ab: string;
@@ -76,7 +88,12 @@ export interface ChainFactory {
     getTransactions: (batch: bigint | number, offset: bigint | number) => Promise<Transaction[]>;
     getTransaction: (hash: string) => Promise<DetailedTx>;
     getExplorerStats: () => Promise<ExplorerMeta>;
-    getTxCount: () => Promise<bigint>;
+    getStats: () => Promise<[bigint, bigint, bigint, bigint] & {
+        bridgedInUSD: bigint;
+        collectedFees: bigint;
+        totalTransactions: bigint;
+        uniqueAccounts: bigint;
+    }>;
     getTokenPrice: (symbol: string) => Promise<bigint>;
     getPriceDecimals: (symbol: string) => Promise<bigint>;
     getProtocolFeeInUSD: (chain: ProtocolFee & NativeCoinName & Decimals) => Promise<number>;
@@ -84,7 +101,6 @@ export interface ChainFactory {
 }
 export interface Transaction {
     txHash: string;
-    nonce: bigint;
     sentAmount: bigint;
     receivedAmount: bigint;
     fromChainId: bigint;
