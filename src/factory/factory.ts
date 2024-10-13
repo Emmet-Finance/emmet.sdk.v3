@@ -110,16 +110,23 @@ export async function ChainFactoryBuilder(
       );
       for (let i = 0; i < ccs.foreign.length; i++) {
         const cc = ccs.foreign[i];
-        if (cc === "mint") {
+        if (cc === "Mint") {
           return sourceAmount;
         }
-        if (cc === "transfer_from_lp") {
+        if (cc === "LPRelease") {
           const pool = await tc.address(`elp${fromToken}`);
           const lp = await tc.getLpTokenFee(pool);
           // Reduce the source amount by lp token fee
           amount -= lp;
         }
-        if (cc === "swap") {
+        if (
+          cc === "Swap1"
+          || cc === "Swap2"
+          || cc === "Swap3"
+          || cc === "Swap4"
+          || cc === "Swap5"
+          || cc === "Swap6"
+        ) {
           const pool = await tc.getSwapResultAmount(
             fromToken,
             targetToken,
