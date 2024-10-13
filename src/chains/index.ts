@@ -1,3 +1,4 @@
+import { BigNumberish } from "ethers";
 import type { ChainNonce } from "../factory/types";
 
 /**
@@ -28,6 +29,19 @@ export interface GetProvider<T> {
 
 export interface ChainID {
   id: () => Promise<bigint>;
+}
+
+export type SendParams = {
+  blockNumber: BigNumberish,
+  isFeeERC20: boolean,
+  sentAmount: BigNumberish,
+  receiveAmount: BigNumberish,
+  toChainId: BigNumberish,
+  fromToken: string,
+  toToken: string,
+  to: string,
+  isSuccess: boolean
+
 }
 
 /**
@@ -94,12 +108,9 @@ export interface AddressBook {
 
 export interface TokenInfo {
   token: (symbol: string) => Promise<{
-    address: string;
-    swap?: string;
+    token: string;
+    priceFeed: string;
     decimals: bigint;
-    symbol: string;
-    fee: bigint;
-    feeDecimals: bigint;
   }>;
 }
 
@@ -137,7 +148,8 @@ export interface PreTransfer<Signer, GasArgs> {
 }
 
 export interface GetProtocolFeeInUSD {
-  protocolFeeInUSD: () => Promise<bigint>;
+  protocolFeeInUSD: () => bigint;
+  // protocolFeeInUSD: () => Promise<bigint>;
 }
 
 export interface Decimals {
@@ -178,7 +190,8 @@ export interface NativeCoinName {
 }
 
 export interface ProtocolFee {
-  protocolFee: () => Promise<bigint>;
+  // protocolFee: () => Promise<bigint>;
+  protocolFee: () => bigint;
 }
 
 export interface FetchTxInfo {
@@ -272,24 +285,66 @@ export interface GetLpFeeDecimals {
   getLpFeeDecimals: (pool: string) => Promise<bigint>;
 }
 
-export type Strategy =
-  | "nothing"
-  | "cctp_burn"
-  | "cctp_claim"
-  | "lock"
-  | "mint"
-  | "burn"
-  | "pass_to_lp"
-  | "transfer_from_lp"
-  | "swap"
-  | "unlock";
+export type TStrategy =
+  | "None"
+  | "CCTPBurn"
+  | "CCTPClaim"
+  | "Lock"
+  | "Mint"
+  | "Burn"
+  | "Unlock"
+  | "LPStake"
+  | "LPRelease"
+  | "Swap1"
+  | "Swap2"
+  | "Swap3"
+  | "Swap4"
+  | "Swap5"
+  | "Swap6"
+  ;
+
+export enum EStrategy {
+  None,
+  CCTPBurn,
+  CCTPClaim,
+  Lock,
+  Mint,
+  Burn,
+  Unlock,
+  LPStake,
+  LPRelease,
+  Swap1,
+  Swap2,
+  Swap3,
+  Swap4,
+  Swap5,
+  Swap6,
+};
+
+export const strategyMap = {
+  [BigInt(EStrategy.None).toString()]: "None",
+  [BigInt(EStrategy.CCTPBurn).toString()]: "CCTPBurn",
+  [BigInt(EStrategy.CCTPClaim).toString()]: "CCTPClaim",
+  [BigInt(EStrategy.Lock).toString()]: "Lock",
+  [BigInt(EStrategy.Mint).toString()]: "Mint",
+  [BigInt(EStrategy.Burn).toString()]: "Burn",
+  [BigInt(EStrategy.Unlock).toString()]: "Unlock",
+  [BigInt(EStrategy.LPStake).toString()]: "LPStake",
+  [BigInt(EStrategy.LPRelease).toString()]: "LPRelease",
+  [BigInt(EStrategy.Swap1).toString()]: "Swap1",
+  [BigInt(EStrategy.Swap2).toString()]: "Swap2",
+  [BigInt(EStrategy.Swap3).toString()]: "Swap3",
+  [BigInt(EStrategy.Swap4).toString()]: "Swap4",
+  [BigInt(EStrategy.Swap5).toString()]: "Swap5",
+  [BigInt(EStrategy.Swap6).toString()]: "Swap6",
+};
 
 export interface GetIncomingStrategy {
   incomingStrategy: (
     fromChain: ChainNonce,
     fromSymbol: string,
     targetSymbol: string,
-  ) => Promise<Strategy[]>;
+  ) => Promise<TStrategy[]>;
 }
 
 export interface SwapTokens<Signer, RetTx> {
@@ -308,8 +363,9 @@ export interface GetCrossChainStrategy {
     fromSymbol: string,
     targetSymbol: string,
   ) => Promise<{
-    local: Strategy[];
-    foreign: Strategy[];
+    outgoing: TStrategy[];
+    incoming: TStrategy[];
+    foreign: TStrategy[];
   }>;
 }
 
