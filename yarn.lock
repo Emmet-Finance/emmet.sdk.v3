@@ -61,9 +61,9 @@
   resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-x64/-/cli-win32-x64-1.6.4.tgz#317fed21b863d43778665d42a41cbd0f94351051"
   integrity sha512-mz183Di5hTSGP7KjNWEhivcP1wnHLGmOxEROvoFsIxMYtDhzJDad4k5gI/1JbmA0xe4n52vsgqo09tBhrMT/Zg==
 
-"@emmet-contracts/web3@git+https://github.com/Emmet-Finance/emmet-types#8fda03a86fec45a69e12efba9f861c476483563e":
+"@emmet-contracts/web3@git+https://github.com/Emmet-Finance/emmet-types#6344ec6c620bc8c57f952252a537f5d66430456a":
   version "0.1.0"
-  resolved "git+https://github.com/Emmet-Finance/emmet-types#8fda03a86fec45a69e12efba9f861c476483563e"
+  resolved "git+https://github.com/Emmet-Finance/emmet-types#6344ec6c620bc8c57f952252a537f5d66430456a"
   dependencies:
     ethers "=6.13.0"
 
