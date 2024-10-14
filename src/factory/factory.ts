@@ -18,15 +18,19 @@ import { JsonRpcProvider } from "ethers";
 import { CHAIN_INFO } from "../chains/ChainInfo";
 import { Explorer } from "@emmet-contracts/web3/dist/contracts/BridgeExplorer";
 import { Explorer__factory } from "@emmet-contracts/web3/dist/factories/contracts/BridgeExplorer";
+import { libName, version } from "./config";
 
 function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   const cToP: ParamMap = new Map();
-  cToP.set(Chain.TON, chainParams.tonParams);
-  cToP.set(Chain.POLYGON, chainParams.polygonParams);
+  cToP.set(Chain.ARBITRUM, chainParams.arbParams);
+  cToP.set(Chain.AVALANCHE, chainParams.avaxParams);
+  cToP.set(Chain.BERACHAIN, chainParams.berachainParams);
   cToP.set(Chain.BSC, chainParams.bscParams);
   cToP.set(Chain.ETHEREUM, chainParams.ethParams);
   cToP.set(Chain.ONLYLAYER, chainParams.onlylayerParams);
-  cToP.set(Chain.BERACHAIN, chainParams.berachainParams);
+  cToP.set(Chain.OPTIMISM, chainParams.opParams);
+  cToP.set(Chain.POLYGON, chainParams.polygonParams);
+  cToP.set(Chain.TON, chainParams.tonParams);
   return cToP;
 }
 
@@ -36,15 +40,25 @@ export async function ChainFactoryBuilder(
 
   const helpers: HelperMap<ChainNonce> = new Map();
 
-  const multisigProviders = chainParams.multisigParams!.rpcs.map(
-    (e) => new JsonRpcProvider(e),
-  );
+  const consensusProviders = chainParams
+    && chainParams.multisigParams
+    && chainParams.multisigParams!.rpcs
+    && chainParams.multisigParams!.rpcs.map(
+      (e) => new JsonRpcProvider(e),
+    );
 
-  const getMultisigProvider = () => {
+  const getConsensusProvider = (): JsonRpcProvider | undefined => {
     const randomRpcIndex = Math.floor(
       Math.random() * chainParams.multisigParams!.rpcs.length,
     );
-    return multisigProviders[randomRpcIndex];
+    if (consensusProviders) {
+      return consensusProviders![randomRpcIndex];
+    }
+    console.warn(
+      `${libName} v${version} in 'getConsensusProvider' Warning: Providers not found`
+    );
+
+    return undefined;
   };
 
   const cToP = mapNonceToParams(chainParams);
@@ -54,28 +68,28 @@ export async function ChainFactoryBuilder(
   // AddressBook
   const ab = EmmetAddressBook__factory.connect(
     chainParams.multisigParams!.ab,
-    getMultisigProvider(),
+    getConsensusProvider(),
   );
 
   // Consensus
   const consensusAddress: string = await ab.get("Consensus");
   const consensus: Consensus = Consensus__factory.connect(
     consensusAddress,
-    getMultisigProvider()
+    getConsensusProvider()
   );
 
   // EmmetData
   // const dataAddress: string = await ab.get("EmmetData");
   // const emmetData: EmmetData = EmmetData__factory.connect(
   //   dataAddress,
-  //   getMultisigProvider()
+  //   getConsensusProvider()
   // );
 
   // Explorer
   const explorerAddress: string = await ab.get("Explorer");
   const explorer: Explorer = Explorer__factory.connect(
     explorerAddress,
-    getMultisigProvider()
+    getConsensusProvider()
   );
 
   const inner = async <T extends ChainNonce>(chain: T) => {
@@ -205,13 +219,12 @@ export async function ChainFactoryBuilder(
       };
     },
     async getExplorerStats() {
-      const tx = await consensus.getStats();
+      const tx = await explorer.getStats();
       return {
-        totalTransactions: tx.txCount,
-        // TODO: implement in the contract
-        totalFees: 0n, //tx.totalFees,
-        totalVolume: 0n, // tx.totalVolume,
-        uniqueUser: 0n,// tx.uniqueUsers,
+        totalTransactions: tx.totalTransactions,
+        totalFees: tx.collectedFees,
+        totalVolume: tx.bridgedInUSD,
+        uniqueUser: tx.uniqueAccounts,
       };
     },
     // async stakeTokenForPool(chain, signer, tokenSymbol, amount) {},
@@ -256,13 +269,17 @@ export async function ChainFactoryBuilder(
       return explorer.getPriceDecimals(symbol);
     },
     async getProtocolFeeInUSD(chain) {
-      const provider = getMultisigProvider();
-      const network = await provider.getNetwork();
-      const tp = Number(await explorer.getTokenPrice(chain.nativeCoin()));
-      const td = Number(await explorer.getPriceDecimals(chain.nativeCoin()));
-      const pf = Number(await explorer.protocolFee(network.chainId));
-      const cd = await chain.decimals();
-      return Number(((pf * tp) / 10 ** (cd + td)).toFixed(2));
+      const provider = getConsensusProvider();
+      const network = provider && await provider!.getNetwork();
+      if (network) {
+        const tp = Number(await explorer.getTokenPrice(chain.nativeCoin()));
+        const td = Number(await explorer.getPriceDecimals(chain.nativeCoin()));
+        const pf = Number(await explorer.protocolFee(network!.chainId));
+        const cd = await chain.decimals();
+        return Number(((pf * tp) / 10 ** (cd + td)).toFixed(2));
+      }
+      console.warn(`${libName} v${version} in 'getProtocolFeeInUSD' Warning: 'network' not found.`)
+      return 0;
     },
   };
 }
