@@ -1,9 +1,5 @@
 import {
   EmmetAddressBook__factory,
-  Consensus__factory,
-  Consensus,
-  // EmmetData,
-  // EmmetData__factory
 } from "@emmet-contracts/web3";
 import { Chain, type ChainFactory } from "./types";
 
@@ -70,20 +66,6 @@ export async function ChainFactoryBuilder(
     chainParams.multisigParams!.ab,
     getConsensusProvider(),
   );
-
-  // Consensus
-  const consensusAddress: string = await ab.get("Consensus");
-  const consensus: Consensus = Consensus__factory.connect(
-    consensusAddress,
-    getConsensusProvider()
-  );
-
-  // EmmetData
-  // const dataAddress: string = await ab.get("EmmetData");
-  // const emmetData: EmmetData = EmmetData__factory.connect(
-  //   dataAddress,
-  //   getConsensusProvider()
-  // );
 
   // Explorer
   const explorerAddress: string = await ab.get("Explorer");
