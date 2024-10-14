@@ -1,4 +1,3 @@
-import { BigNumberish } from "ethers";
 import type { ChainNonce } from "../factory/types";
 /**
  * Represents an interface for getting the balance of an address.
@@ -28,11 +27,11 @@ export interface ChainID {
     id: () => Promise<bigint>;
 }
 export type SendParams = {
-    blockNumber: BigNumberish;
+    blockNumber: bigint;
     isFeeERC20: boolean;
-    sentAmount: BigNumberish;
-    receiveAmount: BigNumberish;
-    toChainId: BigNumberish;
+    sentAmount: bigint;
+    receiveAmount: bigint;
+    toChainId: bigint;
     fromToken: string;
     toToken: string;
     to: string;
@@ -137,7 +136,7 @@ export interface NativeCoinName {
     nativeCoin: () => string;
 }
 export interface ProtocolFee {
-    protocolFee: () => bigint;
+    protocolFee: () => Promise<bigint>;
 }
 export interface FetchTxInfo {
     txInfo: (hash: string) => Promise<TxInfo>;
@@ -219,7 +218,7 @@ export declare enum EStrategy {
     Swap6 = 14
 }
 export declare const strategyMap: {
-    [x: string]: string;
+    readonly [x: string]: "None" | "CCTPBurn" | "CCTPClaim" | "Lock" | "Mint" | "Burn" | "Unlock" | "LPStake" | "LPRelease" | "Swap1" | "Swap2" | "Swap3" | "Swap4" | "Swap5" | "Swap6";
 };
 export interface GetIncomingStrategy {
     incomingStrategy: (fromChain: ChainNonce, fromSymbol: string, targetSymbol: string) => Promise<TStrategy[]>;
