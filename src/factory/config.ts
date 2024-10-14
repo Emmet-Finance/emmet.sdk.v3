@@ -4,27 +4,36 @@ import { Address } from "@ton/core";
 import { sha256_sync } from "@ton/crypto";
 import type { ChainParams } from "./types";
 
+export const libName: string = "Emmet.SDK"
+export const version: number = 3;
+
 export namespace ChainFactoryConfigs {
   export function MainNet() {
     return {
       avaxParams: {
-        chainName: "avalanche",
         addressBook: ethers.getAddress(
           "0xcCa50e985e4e9a2a9668fA3aA8EbC2568E6a6060",
         ),
+        chainId: 43114,
+        chainName: "avalanche",
         nativeCoin: "AVAX",
         rpcs: MainnetRPCUri.AVALANCHE
       },
       polygonParams: {
-        chainName: "polygon",
         addressBook: ethers.getAddress(
           "0xaCADE1aBb88C13403b22b1f7EAB70A8062bcA374",
         ),
+        chainId: 137,
+        chainName: "polygon",
         nativeCoin: "MATIC",
         rpcs: MainnetRPCUri.POLYGON
+      },
+      multisigParams: {
+        rpcs: MainnetRPCUri.POLYGON,
+        ab: ethers.getAddress("0xaCADE1aBb88C13403b22b1f7EAB70A8062bcA374"),
       }
     } satisfies Partial<ChainParams>;
-  } 
+  }
   export function TestNet() {
     return {
       tonParams: {

@@ -1,4 +1,5 @@
 import {
+  BigNumberish,
   type ContractTransactionResponse,
   isAddress,
   JsonRpcProvider,
@@ -92,10 +93,11 @@ export type Web3Helper = GetBalance &
   GetSwapResultAmount;
 
 export interface Web3Params {
-  rpcs: readonly string[];
   addressBook: string;
+  chainId?: BigNumberish,
   chainName: string;
   nativeCoin: string;
+  rpcs: readonly string[];
 }
 
 export async function web3Helper({
