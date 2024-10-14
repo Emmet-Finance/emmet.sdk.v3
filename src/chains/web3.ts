@@ -1,5 +1,5 @@
 import {
-  BigNumberish,
+  type BigNumberish,
   type ContractTransactionResponse,
   isAddress,
   JsonRpcProvider,
@@ -7,7 +7,7 @@ import {
   type Provider,
   type Signer,
 } from "ethers";
-import {
+import type {
   AddressBook,
   ChainID,
   ChainName,
@@ -41,12 +41,11 @@ import {
   GetLpFeeDecimals,
   IsTransferFromLp,
   GetCrossChainStrategy,
-  EStrategy,
   TStrategy,
   GetSwapResultAmount,
-  strategyMap,
   SendParams,
 } from ".";
+import { strategyMap, EStrategy } from ".";
 import {
   EmmetAddressBook__factory,
   EmmetBridge__factory,
@@ -294,7 +293,7 @@ export async function web3Helper({
       return decode?.args.txHash;
     },
     protocolFee() {
-      return 50n; // data.getProtocolFee();
+      return Promise.resolve(50n); // data.getProtocolFee();
     },
     async token(symbol) {
       const token = await data.getToken(symbol);

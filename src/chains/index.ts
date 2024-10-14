@@ -1,4 +1,3 @@
-import { BigNumberish } from "ethers";
 import type { ChainNonce } from "../factory/types";
 
 /**
@@ -32,11 +31,11 @@ export interface ChainID {
 }
 
 export type SendParams = {
-  blockNumber: BigNumberish,
+  blockNumber: bigint,
   isFeeERC20: boolean,
-  sentAmount: BigNumberish,
-  receiveAmount: BigNumberish,
-  toChainId: BigNumberish,
+  sentAmount: bigint,
+  receiveAmount: bigint,
+  toChainId: bigint,
   fromToken: string,
   toToken: string,
   to: string,
@@ -190,8 +189,7 @@ export interface NativeCoinName {
 }
 
 export interface ProtocolFee {
-  // protocolFee: () => Promise<bigint>;
-  protocolFee: () => bigint;
+  protocolFee: () => Promise<bigint>;
 }
 
 export interface FetchTxInfo {
@@ -304,21 +302,21 @@ export type TStrategy =
   ;
 
 export enum EStrategy {
-  None,
-  CCTPBurn,
-  CCTPClaim,
-  Lock,
-  Mint,
-  Burn,
-  Unlock,
-  LPStake,
-  LPRelease,
-  Swap1,
-  Swap2,
-  Swap3,
-  Swap4,
-  Swap5,
-  Swap6,
+  None = 0,
+  CCTPBurn = 1,
+  CCTPClaim = 2,
+  Lock = 3,
+  Mint = 4,
+  Burn = 5,
+  Unlock = 6,
+  LPStake = 7,
+  LPRelease = 8,
+  Swap1 = 9,
+  Swap2 = 10,
+  Swap3 = 11,
+  Swap4 = 12,
+  Swap5 = 13,
+  Swap6 = 14,
 };
 
 export const strategyMap = {
@@ -337,7 +335,7 @@ export const strategyMap = {
   [BigInt(EStrategy.Swap4).toString()]: "Swap4",
   [BigInt(EStrategy.Swap5).toString()]: "Swap5",
   [BigInt(EStrategy.Swap6).toString()]: "Swap6",
-};
+} as const;
 
 export interface GetIncomingStrategy {
   incomingStrategy: (
