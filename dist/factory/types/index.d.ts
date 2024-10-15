@@ -12,6 +12,7 @@ export type MetaMap = {
     2: EvmMeta;
     3: EvmMeta;
     4: EvmMeta;
+    5: EvmMeta;
     6: EvmMeta;
     7: EvmMeta;
     65535: TonMeta;
@@ -24,6 +25,7 @@ export declare namespace Chain {
     const OPTIMISM = 2;
     const ARBITRUM = 3;
     const BSC = 4;
+    const SOLANA = 5;
     const BASE = 6;
     const POLYGON = 7;
     const TON = 65535;
