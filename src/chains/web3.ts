@@ -1,4 +1,5 @@
 import {
+  AbiCoder,
   type BigNumberish,
   type ContractTransactionResponse,
   isAddress,
@@ -45,6 +46,7 @@ import type {
   GetSwapResultAmount,
   SendParams,
   ReadConsensus,
+  ParceCallData,
 } from ".";
 import { strategyMap, EStrategy } from ".";
 import {
@@ -59,6 +61,8 @@ import {
 } from "@emmet-contracts/web3";
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
 import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
+
+const coder = new AbiCoder();
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -94,6 +98,7 @@ export type Web3Helper = GetBalance &
   GetLpFeeDecimals &
   IsTransferFromLp &
   GetCrossChainStrategy &
+  ParceCallData &
   GetSwapResultAmount;
 
 export interface Web3Params {
@@ -155,6 +160,24 @@ export async function web3Helper({
 
   return {
     id: async () => (await (await fetchProvider()).getNetwork()).chainId,
+    parseCallData: (data: string) => {
+      if (data.slice(0, 10).toLowerCase() == "0x3ba81aee") {
+        try {
+          const result = coder.decode(
+            [
+              "bytes32", 
+              "tuple(uint256,uint256,uint256,uint256,uint256,uint256,uint128,uint128,string,string,string,bytes)"
+            ],
+            "0x" + data.slice(10,)
+          );
+          console.log(result)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      return undefined;
+
+    },
     stakeLiquidity: async (signer, pool, amt, ga) => {
       const lp = EmmetLP__factory.connect(pool, signer);
       const deposit = await lp.deposit(amt, { ...ga });
@@ -201,7 +224,7 @@ export async function web3Helper({
     findTransactionByFromHash: async (hash: string) => {
       try {
         const TXs: CrossChainTransaction.CCTStructOutput[] = await consensus.getTransactions(100, 0);
-        const filtered: CrossChainTransaction.CCTStructOutput[] | undefined = 
+        const filtered: CrossChainTransaction.CCTStructOutput[] | undefined =
           TXs.filter(tx => tx.originalHash == hash.replace('0x', ''));
         return filtered[0];
       } catch (error) {

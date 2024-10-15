@@ -1,5 +1,20 @@
+import { BigNumberish } from "ethers";
 import type { ChainNonce } from "../factory/types";
 import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
+
+export type ReceiveParams = {
+  ccmHash: string,
+  blockNumber: BigNumberish,
+  foreignIndexOut: BigNumberish
+  sentAmount: BigNumberish,
+  receiveAmount: BigNumberish,
+  fromChainId: number,
+  toChainId: number,
+  to: string,
+  fromToken: string,
+  toToken: string,
+  data: string
+}
 
 /**
  * Represents an interface for getting the balance of an address.
@@ -42,6 +57,10 @@ export type SendParams = {
   to: string,
   isSuccess: boolean
 
+}
+
+export interface ParceCallData {
+  parseCallData: (data: string) => ReceiveParams | undefined
 }
 
 /**
@@ -197,8 +216,8 @@ export interface FetchTxInfo {
 }
 
 export interface ReadConsensus {
-  findTransactionByFromHash: (hash: string) => Promise<CrossChainTransaction.CCTStructOutput|undefined>;
-  getConsensusTransaction: (hash: string) => Promise<CrossChainTransaction.CCTStructOutput|undefined>;
+  findTransactionByFromHash: (hash: string) => Promise<CrossChainTransaction.CCTStructOutput | undefined>;
+  getConsensusTransaction: (hash: string) => Promise<CrossChainTransaction.CCTStructOutput | undefined>;
 }
 
 export interface TxInfo {
