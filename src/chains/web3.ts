@@ -160,17 +160,24 @@ export async function web3Helper({
 
   return {
     id: async () => (await (await fetchProvider()).getNetwork()).chainId,
-    parseCallData: (data: string) => {
-      if (data.slice(0, 10).toLowerCase() == "0x3ba81aee") {
+    parseCallData: (encoded: string) => {
+      if (encoded.slice(0, 10).toLowerCase() == "0x3ba81aee") {
         try {
           const result = coder.decode(
             [
-              "bytes32", 
+              "bytes32",
               "tuple(uint256,uint256,uint256,uint256,uint256,uint256,uint128,uint128,string,string,string,bytes)"
             ],
-            "0x" + data.slice(10,)
+            "0x" + encoded.slice(10,)
           );
-          console.log(result)
+
+          const {
+            blockNumber, foreignIndexOut, value, timestamp, sentAmount, receiveAmount, fromChainId, toChainId, to, fromToken, toToken, data
+          } = result[1];
+
+          return {
+            blockNumber, foreignIndexOut, value, timestamp, sentAmount, receiveAmount, fromChainId, toChainId, to, fromToken, toToken, data
+          };
         } catch (error) {
           console.log(error)
         }

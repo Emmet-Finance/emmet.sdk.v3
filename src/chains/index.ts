@@ -3,13 +3,14 @@ import type { ChainNonce } from "../factory/types";
 import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
 
 export type ReceiveParams = {
-  ccmHash: string,
   blockNumber: BigNumberish,
-  foreignIndexOut: BigNumberish
+  foreignIndexOut: BigNumberish,
+  value: BigNumberish,
+  timestamp: BigNumberish,
   sentAmount: BigNumberish,
   receiveAmount: BigNumberish,
-  fromChainId: number,
-  toChainId: number,
+  fromChainId: BigNumberish,
+  toChainId: BigNumberish,
   to: string,
   fromToken: string,
   toToken: string,
