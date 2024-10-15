@@ -370,9 +370,9 @@ export async function web3Helper({
       }
     },
     async emmetHashFromtx(hash) {
-      console.log("inside emmetHashFromtx")
+
       const receipt = await (await fetchProvider()).waitForTransaction(hash);
-      console.log("After receipt")
+
       if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
       const log = receipt.logs.find((e) =>
         e.topics.includes(
