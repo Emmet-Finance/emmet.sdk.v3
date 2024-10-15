@@ -18,4 +18,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("buffer");
 __exportStar(require("./chains"), exports);
 __exportStar(require("./factory"), exports);
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7OztBQUFBLGlFQUFpRTtBQUNqRSxrQkFBZ0I7QUFDaEIsMkNBQXlCO0FBQ3pCLDRDQUEwQiJ9
+__exportStar(require("@emmet-contracts/web3"), exports);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7OztBQUFBLGlFQUFpRTtBQUNqRSxrQkFBZ0I7QUFDaEIsMkNBQXlCO0FBQ3pCLDRDQUEwQjtBQUMxQix3REFBc0MifQ==
