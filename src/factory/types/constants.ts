@@ -1,4 +1,4 @@
-import { Chain } from ".";
+import { Chain } from "./index";
 
 export type TChainName = "arbitrum"
     | "avalanche"
