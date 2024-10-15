@@ -172,11 +172,33 @@ export async function web3Helper({
           );
 
           const {
-            blockNumber, foreignIndexOut, value, timestamp, sentAmount, receiveAmount, fromChainId, toChainId, to, fromToken, toToken, data
+            0: blockNumber,
+            1: foreignIndexOut,
+            2: value,
+            3: timestamp,    // Assuming timestamp is the 4th parameter
+            4: sentAmount,
+            5: receiveAmount,
+            6: fromChainId,
+            7: toChainId,
+            8: to,
+            9: fromToken,
+            10: toToken,
+            11: data
           } = result[1];
 
           return {
-            blockNumber, foreignIndexOut, value, timestamp, sentAmount, receiveAmount, fromChainId, toChainId, to, fromToken, toToken, data
+            blockNumber,
+            foreignIndexOut,
+            value,
+            timestamp,
+            sentAmount,
+            receiveAmount,
+            fromChainId,
+            toChainId,
+            to,
+            fromToken,
+            toToken,
+            data
           };
         } catch (error) {
           console.log(error)
