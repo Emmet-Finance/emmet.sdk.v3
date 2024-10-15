@@ -6,8 +6,7 @@ export const MainnetRPCUri = {
     "https://avalanche.public-rpc.com",
     "https://avalanche-c-chain-rpc.publicnode.com",
     "https://avalanche.blockpi.network/v1/rpc/public",
-    "https://avax-pokt.nodies.app/ext/bc/C/rpc",
-    "https://avalanche.drpc.org",
+    // "https://avax-pokt.nodies.app/ext/bc/C/rpc",
   ],
   POLYGON: [
     "https://polygon-bor-rpc.publicnode.com",

@@ -44,9 +44,12 @@ import type {
   TStrategy,
   GetSwapResultAmount,
   SendParams,
+  ReadConsensus,
 } from ".";
 import { strategyMap, EStrategy } from ".";
 import {
+  Consensus,
+  Consensus__factory,
   EmmetAddressBook__factory,
   EmmetBridge__factory,
   EmmetData__factory,
@@ -55,6 +58,7 @@ import {
   WrappedERC20__factory,
 } from "@emmet-contracts/web3";
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
+import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
 
 export type Web3Helper = GetBalance &
   GetProvider<Provider> &
@@ -70,6 +74,7 @@ export type Web3Helper = GetBalance &
   ChainID &
   GetTxFee &
   FetchTxInfo &
+  ReadConsensus &
   ProtocolFee &
   GetEmmetHashFromTx &
   GetEstimatedTime &
@@ -108,32 +113,46 @@ export async function web3Helper({
   const initializedProviders = rpcs.map((e) => new JsonRpcProvider(e));
   const cache: Record<number, Provider> = {};
 
+  /**
+   * @returns a random RPC provider
+   */
   const fetchProvider = async (): Promise<Provider> => {
     const randomRpcIndex = Math.floor(Math.random() * rpcs.length);
     if (cache[randomRpcIndex]) {
       return cache[randomRpcIndex];
     }
     const provider = initializedProviders[randomRpcIndex];
+    // Liveliness check
     try {
       await provider.getNetwork();
       cache[randomRpcIndex] = provider;
       return provider;
     } catch {
-      return fetchProvider();
+      return await fetchProvider();
     }
   };
 
+  // ADDRESS BOOK
   const addrBook = EmmetAddressBook__factory.connect(
     addressBook,
     await fetchProvider(),
   );
+  // BRIDGE
   const bridgeAddr = await addrBook.get("EmmetBridge");
-  const emmetData = await addrBook.get("EmmetData");
   const bridge = EmmetBridge__factory.connect(
     bridgeAddr,
     await fetchProvider(),
   );
+  //  CONSENSUS
+  const consAddress: string = await addrBook.get("Consensus");
+  const consensus: Consensus = Consensus__factory.connect(
+    consAddress,
+    await fetchProvider(),
+  );
+  // DATA
+  const emmetData = await addrBook.get("EmmetData");
   const data = EmmetData__factory.connect(emmetData, await fetchProvider());
+
   return {
     id: async () => (await (await fetchProvider()).getNetwork()).chainId,
     stakeLiquidity: async (signer, pool, amt, ga) => {
@@ -178,6 +197,25 @@ export async function web3Helper({
         incoming,
         foreign,
       };
+    },
+    findTransactionByFromHash: async (hash: string) => {
+      try {
+        const TXs: CrossChainTransaction.CCTStructOutput[] = await consensus.getTransactions(100, 0);
+        const filtered: CrossChainTransaction.CCTStructOutput[] | undefined = 
+          TXs.filter(tx => tx.originalHash == hash.replace('0x', ''));
+        return filtered[0];
+      } catch (error) {
+        return undefined;
+      }
+    },
+    getConsensusTransaction: async (hash: string) => {
+      try {
+        const TX: CrossChainTransaction.CCTStructOutput = await consensus.getTransaction(hash);
+        return TX;
+      } catch (error) {
+        return undefined;
+      }
+
     },
     withdrawLiquidity: async (signer, pool, amt, ga) => {
       const lp = EmmetLP__factory.connect(pool, signer);
@@ -349,6 +387,10 @@ export async function web3Helper({
         // 2 minutes
         const timeInMs = (2n * 60n) * 1000n;
         return timeInMs;
+      } else {
+        // 1 minute
+        const timeInMs = (1n * 60n) * 1000n;
+        return timeInMs;
       }
       return undefined;
     },
@@ -362,7 +404,7 @@ export async function web3Helper({
       const _isTransferFromLp = ts[1].includes(7n);
       return _isTransferFromLp;
     },
-    protocolFeeInUSD:  () => {
+    protocolFeeInUSD: () => {
       // const fee = await data.protocolFee();
       // return fee.usdEquivalent;
       return 50n;
@@ -389,7 +431,7 @@ export async function web3Helper({
         .sendInstallment.estimateGas(params, {
           value: fee,
         });
-        
+
       const tx = await bridge
         .connect(signer)
         .sendInstallment(params, {

@@ -233,6 +233,7 @@ export async function ChainFactoryBuilder(
         );
       }
       const fee = await chain.txFee(targetChainId, fromSymbol, tokenSymbol);
+      
       return await chain.sendInstallment(
         signer,
         amount,
