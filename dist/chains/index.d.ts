@@ -1,5 +1,19 @@
+import { BigNumberish } from "ethers";
 import type { ChainNonce } from "../factory/types";
 import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
+export type ReceiveParams = {
+    ccmHash: string;
+    blockNumber: BigNumberish;
+    foreignIndexOut: BigNumberish;
+    sentAmount: BigNumberish;
+    receiveAmount: BigNumberish;
+    fromChainId: number;
+    toChainId: number;
+    to: string;
+    fromToken: string;
+    toToken: string;
+    data: string;
+};
 /**
  * Represents an interface for getting the balance of an address.
  *
@@ -38,6 +52,9 @@ export type SendParams = {
     to: string;
     isSuccess: boolean;
 };
+export interface ParceCallData {
+    parseCallData: (data: string) => ReceiveParams | undefined;
+}
 /**
  * Represents a function that sends an installment.
  * @template Signer The type of the signer.
