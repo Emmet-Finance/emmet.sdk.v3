@@ -1,4 +1,5 @@
 import type { ChainNonce } from "../factory/types";
+import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
 /**
  * Represents an interface for getting the balance of an address.
  *
@@ -72,7 +73,7 @@ export interface GetTokenBalance {
      */
     tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
-export type AddressBookKeys = "Consensus" | "CrossChainMessenger" | "EmmetData" | "EmmetDataAdmin" | "EmmetBridge" | "WTON" | "EMMET" | "BERA/USD" | "BNB/USD" | "MATIC/USD" | "TON/USD" | "Explorer" | `elp${string}`;
+export type AddressBookKeys = "Consensus" | "CrossChainMessenger" | "EmmetData" | "EmmetDataAdmin" | "EmmetBridge" | "WTON" | "EMMET" | "BNB/USD" | "MATIC/USD" | "TON/USD" | "Explorer" | `elp${string}`;
 export interface AddressBook {
     address: (contr: AddressBookKeys) => Promise<string>;
 }
@@ -140,6 +141,10 @@ export interface ProtocolFee {
 }
 export interface FetchTxInfo {
     txInfo: (hash: string) => Promise<TxInfo>;
+}
+export interface ReadConsensus {
+    findTransactionByFromHash: (hash: string) => Promise<CrossChainTransaction.CCTStructOutput | undefined>;
+    getConsensusTransaction: (hash: string) => Promise<CrossChainTransaction.CCTStructOutput | undefined>;
 }
 export interface TxInfo {
     timestamp: bigint;
