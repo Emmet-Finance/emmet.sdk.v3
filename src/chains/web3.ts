@@ -219,31 +219,38 @@ export async function web3Helper({
       return amount;
     },
     async crossChainStrategy(targetChain, fromSymbol, targetSymbol) {
-      const ccts = await data.getStrategy(
-        targetChain,
-        fromSymbol,
-        targetSymbol,
-      );
-
+      
       const outgoing: TStrategy[] = [];
       const incoming: TStrategy[] = [];
       const foreign: TStrategy[] = [];
 
-      const map = [
-        { strategies: ccts.outgoing, targetArray: outgoing },
-        { strategies: ccts.incoming, targetArray: incoming },
-        { strategies: ccts.foreign, targetArray: foreign }
-      ]
+      try {
 
-      for (const { strategies, targetArray } of map) {
-        for (const strat of strategies) {
-          const strategyName: TStrategy = strategyMap[BigInt(strat).toString()] as TStrategy;
-          if (strategyName) {
-            targetArray.push(strategyName);
+        const ccts = await data.getStrategy(
+          targetChain,
+          fromSymbol,
+          targetSymbol,
+        );
+
+        const map = [
+          { strategies: ccts.outgoing, targetArray: outgoing },
+          { strategies: ccts.incoming, targetArray: incoming },
+          { strategies: ccts.foreign, targetArray: foreign }
+        ];
+
+        for (const { strategies, targetArray } of map) {
+          for (const strat of strategies) {
+            const strategyName: TStrategy = strategyMap[BigInt(strat).toString()] as TStrategy;
+            if (strategyName) {
+              targetArray.push(strategyName);
+            }
           }
         }
+        
+      } catch (error) {
+        
       }
-
+      
       return {
         outgoing,
         incoming,
@@ -418,35 +425,42 @@ export async function web3Helper({
     balance: async (addr) => (await fetchProvider()).getBalance(addr),
     provider: async () => await fetchProvider(),
     async estimateTime(targetChain, fromToken, targetToken) {
+      // Default time
+      let estimation: bigint = 2n * 60n * 1000n;
 
-      const ts = await data.getStrategy(
-        targetChain,
-        fromToken,
-        targetToken,
-      );
+      try {
 
-      const outgoing = ts[0];
-      const foreign = ts[1];
-
-      const cctpBurn: bigint = BigInt(EStrategy.CCTPClaim);
-      const cctpClaim: bigint = BigInt(EStrategy.CCTPClaim);
-
-      const isCCTP =
-        foreign.includes(cctpBurn) ||
-        foreign.includes(cctpClaim) ||
-        outgoing.includes(cctpBurn) ||
-        outgoing.includes(cctpClaim);
-
-      if (isCCTP) {
-        // 2 minutes
-        const timeInMs = (2n * 60n) * 1000n;
-        return timeInMs;
-      } else {
-        // 1 minute
-        const timeInMs = (1n * 60n) * 1000n;
-        return timeInMs;
+        const ts = await data.getStrategy(
+          targetChain,
+          fromToken,
+          targetToken,
+        );
+  
+        const outgoing = ts[0];
+        const foreign = ts[1];
+  
+        const cctpBurn: bigint = BigInt(EStrategy.CCTPClaim);
+        const cctpClaim: bigint = BigInt(EStrategy.CCTPClaim);
+  
+        const isCCTP =
+          foreign.includes(cctpBurn) ||
+          foreign.includes(cctpClaim) ||
+          outgoing.includes(cctpBurn) ||
+          outgoing.includes(cctpClaim);
+  
+        if (isCCTP) {
+          // 3 minutes
+          estimation = (3n * 60n) * 1000n;
+        } else {
+          // 1 minute
+          estimation = (1n * 60n) * 1000n;
+        }
+        
+      } catch (error) {
+        console.warn(error)
       }
-      return undefined;
+
+      return estimation;
     },
 
     async isTransferFromLp(targetChain, fromToken, targetToken) {

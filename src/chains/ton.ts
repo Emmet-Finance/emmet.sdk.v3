@@ -39,6 +39,7 @@ import {
   type GetLpFeeGrowthGlobal,
   type GetLpProviderRewards,
   type IsTransferFromLp,
+  type GetProtocolFeeInUSD,
   type GetSwapResultAmount,
   type GetCrossChainStrategy,
   type SwapTokens,
@@ -88,6 +89,7 @@ export type TonHelper = GetBalance &
   GetLpFeeDecimals &
   IsTransferFromLp &
   GetSwapResultAmount &
+  GetProtocolFeeInUSD &
   // GetIncomingStrategy &
   GetCrossChainStrategy &
   SwapTokens<Sender, undefined>;
@@ -569,7 +571,7 @@ export async function tonHandler({
         );
       return address.toString();
     },
-    estimateTime: () => Promise.resolve(undefined),
+    estimateTime: () => Promise.resolve(2n * 60n * 1000n), // 2 minutes
     isTransferFromLp: () => Promise.resolve(false), // TODO: update it
     async emmetHashFromtx(hash) {
       const b64 = Buffer.from(hash, "hex").toString("base64");
@@ -656,6 +658,9 @@ export async function tonHandler({
       const jwa = await jc.getWalletAddress(Address.parse(addr));
       const jw = fetchClient().open(JettonWallet.create(jwa));
       return jw.getBalance();
+    },
+    protocolFeeInUSD: () => {
+      return 50n;
     },
     sendInstallment: async (
       signer,

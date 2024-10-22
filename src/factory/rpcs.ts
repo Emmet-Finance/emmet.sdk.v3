@@ -12,7 +12,7 @@ export const MainnetRPCUri = {
     "https://polygon-bor-rpc.publicnode.com",
     "https://polygon-bor-rpc.publicnode.com",
     "https://1rpc.io/matic",
-    "https://polygon.blockpi.network/v1/rpc/public",
+    // "https://polygon.blockpi.network/v1/rpc/public",
   ]
 
 } as const;
