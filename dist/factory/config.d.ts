@@ -17,6 +17,16 @@ export declare namespace ChainFactoryConfigs {
             nativeCoin: string;
             rpcs: readonly ["https://polygon-bor-rpc.publicnode.com", "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic", "https://polygon.blockpi.network/v1/rpc/public"];
         };
+        tonParams: {
+            addressBook: Address;
+            rpcs: string[];
+            nativeTokenId: bigint;
+            chainId: bigint;
+            chainName: string;
+            stonApiUrl: string;
+            stonRouterAddress: string;
+            pTonAddress: string;
+        };
         multisigParams: {
             rpcs: readonly ["https://polygon-bor-rpc.publicnode.com", "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic", "https://polygon.blockpi.network/v1/rpc/public"];
             ab: string;

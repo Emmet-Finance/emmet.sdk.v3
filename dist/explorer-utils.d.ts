@@ -6,11 +6,11 @@ export declare const ChainIDToDomain: {
     readonly 56: 4;
     readonly 8453: 6;
     readonly 137: 7;
-    readonly 65534: 65535;
+    readonly 65534: 65534;
     readonly 80002: 7;
     readonly 97: 4;
     readonly 11155111: 0;
-    readonly 65535: 65535;
+    readonly 65535: 65534;
     readonly 728696: 728696;
     readonly 80084: 80084;
 };
