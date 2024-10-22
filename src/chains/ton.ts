@@ -56,6 +56,7 @@ import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
 import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
 import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
 import { sha256_sync } from "@ton/crypto";
+import { warn } from "console";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -104,6 +105,13 @@ export interface TonParams {
   stonRouterAddress: string;
   pTonAddress: string;
 }
+
+/**
+ *
+ * @param ms number of milliseconds to wait
+ * @returns halts the program execution for the `ms` milliseconds
+ */
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function tonHandler({
   rpcs,
@@ -385,19 +393,19 @@ export async function tonHandler({
         const strat = strategy.local_steps.steps.get(BigInt(i));
         if (strat) {
           const strategyName: TStrategy = strategyMap[
-           BigInt(strat).toString()
-         ];
-         local.push(strategyName)
+            BigInt(strat).toString()
+          ];
+          local.push(strategyName)
         }
       }
       const foreign: TStrategy[] = [];
       for (let i = 0; i < strategy.foreign_steps.size; i++) {
-          const strat = strategy.local_steps.steps.get(BigInt(i));
-          if (strat) {
-            const strategyName: TStrategy =
-              strategyMap[BigInt(strat).toString()];
-            local.push(strategyName);
-          }
+        const strat = strategy.local_steps.steps.get(BigInt(i));
+        if (strat) {
+          const strategyName: TStrategy =
+            strategyMap[BigInt(strat).toString()];
+          local.push(strategyName);
+        }
       }
       return {
         foreign,
@@ -619,7 +627,21 @@ export async function tonHandler({
         token: qToken.address.toString()
       };
     },
-    balance: (addr) => fetchClient().getBalance(Address.parse(addr)),
+    balance: async (addr) => {
+
+      let bal: bigint = 0n;
+
+      try {
+        bal = await fetchClient().getBalance(Address.parse(addr));
+      } catch (error) {
+        warn(error)
+        await sleep(1000);
+        return await fetchClient().getBalance(Address.parse(addr));
+      }
+
+      return bal;
+
+    },
     provider: () => Promise.resolve(fetchClient()),
     validateAddress: (addr) => {
       try {
@@ -654,10 +676,22 @@ export async function tonHandler({
       }
     },
     tokenBalance: async (token, addr) => {
-      const jc = fetchClient().open(JettonMaster.create(Address.parse(token)));
-      const jwa = await jc.getWalletAddress(Address.parse(addr));
-      const jw = fetchClient().open(JettonWallet.create(jwa));
-      return jw.getBalance();
+
+      let tokenBal: bigint = 0n;
+
+      try {
+        const jc = fetchClient().open(JettonMaster.create(Address.parse(token)));
+        const jwa = await jc.getWalletAddress(Address.parse(addr));
+        const jw = await fetchClient().open(JettonWallet.create(jwa));
+        tokenBal = await jw.getBalance();
+      } catch (error) {
+        warn(error)
+        // @ts-ignore
+        return await this.tokenBalance(token, addr);
+      }
+
+      return tokenBal;
+
     },
     protocolFeeInUSD: () => {
       return 50n;
@@ -679,14 +713,14 @@ export async function tonHandler({
       const gs =
         fee !== undefined
           ? {
-              value: fee,
-            }
+            value: fee,
+          }
           : {
-              value:
-                (await bridgeReader.getProtocolFee()) +
-                ((await bridgeReader.getChainFees()).get(cid) ??
-                  raise("Chain fees not configured for this chain")),
-            };
+            value:
+              (await bridgeReader.getProtocolFee()) +
+              ((await bridgeReader.getChainFees()).get(cid) ??
+                raise("Chain fees not configured for this chain")),
+          };
       if (fsid === nativeTokenId) {
         await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
       } else if (isWrapped) {
