@@ -28,6 +28,16 @@ export namespace ChainFactoryConfigs {
         nativeCoin: "MATIC",
         rpcs: MainnetRPCUri.POLYGON
       },
+      tonParams:{
+        addressBook: Address.parse("EQB_pf7BP7jobq2QEbhVsXxU4pGsQVdqx-X5F8YU4jGlyCIQ"),
+        rpcs: ["https://toncenter.com/api/v2/jsonRPC"],
+        nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
+        chainId: 65534n, // TON Mainnet
+        chainName: "ton",
+        stonApiUrl: "https://api.ston.fi/",
+        stonRouterAddress: "EQBjM7B2PKa82IPKrUFbMFaKeQDFGTMRnrvY1TmptC7Kxz7B",
+        pTonAddress: "EQBnGWMCf3-FZZq1W4IWcWiGAc3PHuZ0_H-7sad2oY00o83S"
+      },
       multisigParams: {
         rpcs: MainnetRPCUri.POLYGON,
         ab: ethers.getAddress("0xaCADE1aBb88C13403b22b1f7EAB70A8062bcA374"),

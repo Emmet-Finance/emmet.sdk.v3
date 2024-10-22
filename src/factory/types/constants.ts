@@ -9,6 +9,7 @@ export type TChainName = "arbitrum"
     | "polygon"
     | "solana"
     | "ton"
+    | "tontestnet"
     ;
 
 export const CHAIN_NAME_TO_INNER_ID: { [key in TChainName]: number } = {
@@ -16,10 +17,11 @@ export const CHAIN_NAME_TO_INNER_ID: { [key in TChainName]: number } = {
     arbitrum: Chain.ARBITRUM,
     avalanche: Chain.AVALANCHE,
     base: Chain.BASE,
+    bsc: Chain.BSC,
     ethereum: Chain.ETHEREUM,
     optimism: Chain.OPTIMISM,
     polygon: Chain.POLYGON,
-    ton: Chain.TON,
     solana: Chain.SOLANA,
-    bsc: Chain.BSC
+    ton: Chain.TON,
+    tontestnet: Chain.TONTESTNET
   };

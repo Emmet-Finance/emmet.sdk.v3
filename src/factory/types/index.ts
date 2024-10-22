@@ -31,6 +31,7 @@ export type MetaMap = {
   5: EvmMeta; // TODO: fix temp
   6: EvmMeta;
   7: EvmMeta;
+  65534: TonMeta;
   65535: TonMeta;
   728696: EvmMeta;
   80084: EvmMeta;
@@ -45,7 +46,8 @@ export namespace Chain {
   export const SOLANA = 5;
   export const BASE = 6;
   export const POLYGON = 7;
-  export const TON = 65535;
+  export const TON = 65534;
+  export const TONTESTNET = 65535;
   export const ONLYLAYER = 728696;
   export const BERACHAIN = 80084;
 }

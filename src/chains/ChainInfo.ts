@@ -73,3 +73,10 @@ CHAIN_INFO.set(Chain.TON, {
   nonce: Chain.TON,
   constructor: async (...args) => tonHandler(...args),
 });
+
+CHAIN_INFO.set(Chain.TONTESTNET, {
+  decimals: 18,
+  name: "Ton",
+  nonce: Chain.TONTESTNET,
+  constructor: async (...args) => tonHandler(...args),
+});
