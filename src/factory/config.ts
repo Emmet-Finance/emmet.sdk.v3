@@ -31,9 +31,8 @@ export namespace ChainFactoryConfigs {
       tonParams:{
         addressBook: Address.parse("EQB_pf7BP7jobq2QEbhVsXxU4pGsQVdqx-X5F8YU4jGlyCIQ"),
         rpcs: [
-          "https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0",
-          "https://ton-mainnet.core.chainstack.com/5100b867ed6644ea5e9c5e689baaf6fb/api/v2",
-          "https://ton-mainnet.core.chainstack.com/5100b867ed6644ea5e9c5e689baaf6fb/api/v3" ],
+          "https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0", 
+        ],
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
         chainId: 65534n, // TON Mainnet
         chainName: "ton",
