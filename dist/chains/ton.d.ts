@@ -1,5 +1,5 @@
 import { Address, type Sender, TonClient } from "@ton/ton";
-import { type ChainID, type ChainName, type Decimals, type FetchTxInfo, type GetBalance, type GetBridgeAddress, type GetEmmetHashFromTx, type GetEstimatedTime, type GetProvider, type GetTokenBalance, type GetTxFee, type NativeCoinName, type ProtocolFee, type SendInstallment, type TokenInfo, type ValidateAddress, type AddressBook, type StakeLiquidity, type GetLpCurrentAPY, type GetLpProtocolFee, type GetLpProtocolFeeAmount, type GetLpTokenFee, type GetLpTotalSupply, type WithdrawFees, type WithdrawLiquidity, type GetLpFeeDecimals, type GetLpFeeGrowthGlobal, type GetLpProviderRewards, type IsTransferFromLp, type GetSwapResultAmount, type GetCrossChainStrategy, type SwapTokens } from ".";
+import { type ChainID, type ChainName, type Decimals, type FetchTxInfo, type GetBalance, type GetBridgeAddress, type GetEmmetHashFromTx, type GetEstimatedTime, type GetProvider, type GetTokenBalance, type GetTxFee, type NativeCoinName, type ProtocolFee, type SendInstallment, type TokenInfo, type ValidateAddress, type AddressBook, type StakeLiquidity, type GetLpCurrentAPY, type GetLpProtocolFee, type GetLpProtocolFeeAmount, type GetLpTokenFee, type GetLpTotalSupply, type WithdrawFees, type WithdrawLiquidity, type GetLpFeeDecimals, type GetLpFeeGrowthGlobal, type GetLpProviderRewards, type IsTransferFromLp, type GetProtocolFeeInUSD, type GetSwapResultAmount, type GetCrossChainStrategy, type SwapTokens } from ".";
 export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
@@ -13,7 +13,7 @@ export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Se
 }> & WithdrawFees<Sender, string, {
     value: bigint;
     bounce?: boolean;
-}> & GetLpCurrentAPY & GetLpTotalSupply & GetLpTokenFee & GetLpProtocolFee & GetLpProtocolFeeAmount & GetLpProviderRewards & GetLpFeeGrowthGlobal & GetLpFeeDecimals & IsTransferFromLp & GetSwapResultAmount & GetCrossChainStrategy & SwapTokens<Sender, undefined>;
+}> & GetLpCurrentAPY & GetLpTotalSupply & GetLpTokenFee & GetLpProtocolFee & GetLpProtocolFeeAmount & GetLpProviderRewards & GetLpFeeGrowthGlobal & GetLpFeeDecimals & IsTransferFromLp & GetSwapResultAmount & GetProtocolFeeInUSD & GetCrossChainStrategy & SwapTokens<Sender, undefined>;
 export interface TonParams {
     rpcs: readonly string[];
     nativeTokenId: bigint;
