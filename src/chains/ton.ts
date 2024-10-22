@@ -321,49 +321,60 @@ export async function tonHandler({
   const ston = new StonApiClient({
     baseURL: stonApiUrl,
   });
-  const stonRouter = fetchClient().open(new DEX.v2.Router(stonRouterAddress));
-
-  const proxyTon = pTON.v2.create(pTonAddress);
 
   return {
     async swapTokens(sender, fromSymbol, targetSymbol, amount, _slippage) {
-      if (!sender.address) throw new Error("Sender address not passed");
-      const tokens = await bridgeReader.getTokens();
-      const ft = tokens.get(toKey(fromSymbol));
-      if (!ft) throw new Error("From Token not found");
-      const tt = tokens.get(toKey(targetSymbol));
-      if (!tt) throw new Error("Target Token not found");
-      if (fromSymbol === targetSymbol) {
-        throw new Error("From and Target tokens are the same");
-      }
-      if (fromSymbol === "TON") {
-        await stonRouter.sendSwapTonToJetton(sender, {
+
+      try {
+
+        const stonRouter = fetchClient().open(new DEX!.v2_2!.Router(stonRouterAddress));
+        const proxyTon = pTON.v2_1.create(pTonAddress);
+
+        if (!sender.address) throw new Error("Sender address not passed");
+        
+        const tokens = await bridgeReader.getTokens();
+        const ft = tokens.get(toKey(fromSymbol));
+
+        if (!ft) throw new Error("From Token not found");
+        const tt = tokens.get(toKey(targetSymbol));
+        if (!tt) throw new Error("Target Token not found");
+
+        if (fromSymbol === targetSymbol) {
+          throw new Error("From and Target tokens are the same");
+        }
+        if (fromSymbol === "TON") {
+          await stonRouter.sendSwapTonToJetton(sender, {
+            askJettonAddress: tt.address,
+            minAskAmount: 0,
+            offerAmount: amount,
+            proxyTon,
+            userWalletAddress: sender.address,
+          });
+          return;
+        }
+        if (targetSymbol === "TON") {
+          await stonRouter.sendSwapJettonToTon(sender, {
+            minAskAmount: 0,
+            offerAmount: amount,
+            proxyTon,
+            userWalletAddress: sender.address,
+            offerJettonAddress: ft.address,
+          });
+          return;
+        }
+        await stonRouter.sendSwapJettonToJetton(sender, {
           askJettonAddress: tt.address,
           minAskAmount: 0,
           offerAmount: amount,
-          proxyTon,
-          userWalletAddress: sender.address,
-        });
-        return;
-      }
-      if (targetSymbol === "TON") {
-        await stonRouter.sendSwapJettonToTon(sender, {
-          minAskAmount: 0,
-          offerAmount: amount,
-          proxyTon,
-          userWalletAddress: sender.address,
           offerJettonAddress: ft.address,
+          userWalletAddress: sender.address,
         });
         return;
+
+      } catch (error) {
+        console.warn(error);
       }
-      await stonRouter.sendSwapJettonToJetton(sender, {
-        askJettonAddress: tt.address,
-        minAskAmount: 0,
-        offerAmount: amount,
-        offerJettonAddress: ft.address,
-        userWalletAddress: sender.address,
-      });
-      return;
+
     },
     async getSwapResultAmount(fromSymbol, targetSymbol, amount, slippage) {
       const tokens = await bridgeReader.getTokens();
