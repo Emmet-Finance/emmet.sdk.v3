@@ -56,7 +56,6 @@ import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
 import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
 import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
 import { sha256_sync } from "@ton/crypto";
-import { warn } from "console";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -634,7 +633,7 @@ export async function tonHandler({
       try {
         bal = await fetchClient().getBalance(Address.parse(addr));
       } catch (error) {
-        warn(error)
+        console.warn(error)
         await sleep(1000);
         return await fetchClient().getBalance(Address.parse(addr));
       }
@@ -685,7 +684,7 @@ export async function tonHandler({
         const jw = await fetchClient().open(JettonWallet.create(jwa));
         tokenBal = await jw.getBalance();
       } catch (error) {
-        warn(error)
+        console.warn(error)
         // @ts-ignore
         return await this.tokenBalance(token, addr);
       }
