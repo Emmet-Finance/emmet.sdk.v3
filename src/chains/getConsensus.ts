@@ -107,6 +107,11 @@ export function decodeCalldata(calldata: string): ReceiveParams | undefined {
     } as ReceiveParams;
 }
 
+/**
+ * Deserialized a CCM transaction
+ * @param tx a CCM transaction from the Consensus
+ * @returns a deserialized CCM transaction
+ */
 export function decodeCCMTransaction(
     tx: CrossChainTransaction.CCTStructOutput
 ): CrossChainTransaction.CCTStructOutput {
@@ -147,6 +152,13 @@ export function decodeCCMTransaction(
     } as CrossChainTransaction.CCTStructOutput;
 }
 
+/**
+ * Fetches a CCM `txHash` by the original chain hash
+ * @param consensus a consensus instance
+ * @param originalHash the original chain hash
+ * @param batch batch of searched txs
+ * @returns a CCM hash
+ */
 export async function ccmHashByOriginalHash(
     consensus: Consensus,
     originalHash: string,
@@ -168,12 +180,44 @@ export async function ccmHashByOriginalHash(
 
 }
 
+/**
+ * Fetches a single CCM Transaction
+ * @param consensus the consensus instance
+ * @param ccmHash a Cross-Chain Messaging ID
+ * @returns a CCM txHash
+ */
 export async function getTransaction(
     consensus: Consensus,
     ccmHash: string
-): Promise<CrossChainTransaction.CCTStructOutput> {
+): Promise<CrossChainTransaction.CCTStructOutput & {decoded?:ReceiveParams}> {
     // Fetch the transaction by hash
     const tx = await consensus.getTransaction(ccmHash);
     // Decode & return
-    return decodeCCMTransaction(tx);
+    return {...decodeCCMTransaction(tx), decoded: decodeCalldata(tx.data) as ReceiveParams};
+}
+
+/**
+ * Fetches the `batch` of transactions
+ * @param consensus the consensus instance
+ * @param batch batch of searched txs
+ * @param skip the number of ommited txs
+ * @returns the `batch` or an available number of txs
+ */
+export async function getTransactions(
+    consensus: Consensus,
+    batch: BigNumberish = 100n,
+    skip: BigNumberish = 0n,
+): Promise<(CrossChainTransaction.CCTStructOutput & {decoded?:any})[]> {
+    let decoded: (CrossChainTransaction.CCTStructOutput & {decoded?:ReceiveParams})[] = [];
+
+    const txs: (CrossChainTransaction.CCTStructOutput & {decoded?:any})[] = await consensus.getTransactions(
+        batch, skip
+    );
+
+    for (const tx of txs!){
+        
+        decoded.push({...decodeCCMTransaction(tx), decoded: decodeCalldata(tx.data) as ReceiveParams});
+    }
+
+    return decoded;
 }
