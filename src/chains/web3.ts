@@ -51,7 +51,6 @@ import type {
 import { strategyMap, EStrategy } from ".";
 import {
   Consensus,
-  Consensus__factory,
   EmmetAddressBook__factory,
   EmmetBridge__factory,
   EmmetData__factory,
@@ -61,6 +60,7 @@ import {
 } from "@emmet-contracts/web3";
 import type { PayableOverrides } from "@emmet-contracts/web3/dist/common";
 import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
+import { getConsensus } from "./getConsensus";
 
 const coder = new AbiCoder();
 
@@ -149,11 +149,7 @@ export async function web3Helper({
     await fetchProvider(),
   );
   //  CONSENSUS
-  const consAddress: string = await addrBook.get("Consensus");
-  const consensus: Consensus = Consensus__factory.connect(
-    consAddress,
-    await fetchProvider(),
-  );
+  const consensus: Consensus = await getConsensus();
   // DATA
   const emmetData = await addrBook.get("EmmetData");
   const data = EmmetData__factory.connect(emmetData, await fetchProvider());

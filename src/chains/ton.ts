@@ -56,6 +56,8 @@ import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
 import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
 import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
 import { sha256_sync } from "@ton/crypto";
+// import { Consensus } from "@emmet-contracts/web3";
+// import { getConsensus } from "./getConsensus";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -129,15 +131,25 @@ export async function tonHandler({
     return clients[randomRpcIndex];
   };
 
+  //  C O N T R A C T S
   const ab = fetchClient().open(TonAddressBook.fromAddress(addressBook));
+
   const bridge =
     (await ab.getGet("EmmetBridge")) ??
     raise("Failed to fetch bridge from addressbook");
+
   const bridgeReader = fetchClient().open(Bridge.fromAddress(bridge));
+
+  //  CONSENSUS
+  // const consensus: Consensus = await getConsensus();
+
+
+  //  F U N C T I O N S
   async function getLastTxHashInBase64ForAddress(addr: Address) {
     const txns = await fetchClient().getTransactions(addr, { limit: 1 });
     return txns[0].hash().toString("base64");
   }
+
   async function transferTon(
     bridge: OpenedContract<Bridge>,
     sender: Sender,
@@ -325,13 +337,13 @@ export async function tonHandler({
   return {
     async swapTokens(sender, fromSymbol, targetSymbol, amount, _slippage) {
 
-      try {
+      try { // https://docs.ston.fi/docs/developer-section/sdk/dex-v2/swap
 
         const stonRouter = fetchClient().open(new DEX!.v2_2!.Router(stonRouterAddress));
         const proxyTon = pTON.v2_1.create(pTonAddress);
 
         if (!sender.address) throw new Error("Sender address not passed");
-        
+
         const tokens = await bridgeReader.getTokens();
         const ft = tokens.get(toKey(fromSymbol));
 
