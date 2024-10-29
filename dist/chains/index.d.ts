@@ -259,4 +259,8 @@ export interface GetCrossChainStrategy {
 export interface GetSwapResultAmount {
     getSwapResultAmount: (fromSymbol: string, targetSymbol: string, amount: bigint, slippage: number) => Promise<bigint>;
 }
+export * from "./ChainInfo";
+export * from "./getConsensus";
+export * from "./ton";
+export * from "./web3";
 //# sourceMappingURL=index.d.ts.map
