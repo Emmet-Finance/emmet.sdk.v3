@@ -401,6 +401,12 @@ export interface GetSwapResultAmount {
   ) => Promise<bigint>;
 }
 
+export interface GetTokenAddress {
+  getTokenAddress: (
+    symbol: string
+  ) => Promise<string>;
+}
+
 export * from "./ChainInfo"
 export * from "./getConsensus";
 export * from "./ton";

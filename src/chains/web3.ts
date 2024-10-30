@@ -47,6 +47,7 @@ import type {
   SendParams,
   ReadConsensus,
   ParceCallData,
+  GetTokenAddress,
 } from ".";
 import { strategyMap, EStrategy } from ".";
 import {
@@ -99,6 +100,7 @@ export type Web3Helper = GetBalance &
   IsTransferFromLp &
   GetCrossChainStrategy &
   ParceCallData &
+  GetTokenAddress &
   GetSwapResultAmount;
 
 export interface Web3Params {
@@ -474,6 +476,10 @@ export async function web3Helper({
       return 50n;
     },
     validateAddress: (addr) => Promise.resolve(isAddress(addr)),
+    getTokenAddress: async (symbol: string): Promise<string> => {
+      const address = await addrBook.get(symbol);
+      return address ? address : "";
+    },
     tokenBalance: async (tkn, addr) =>
       WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr),
     sendInstallment: async (signer, amt, cid, fs, ts, da, fee, gasArgs) => {

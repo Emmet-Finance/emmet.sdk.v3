@@ -42,6 +42,7 @@ import {
   type GetProtocolFeeInUSD,
   type GetSwapResultAmount,
   type GetCrossChainStrategy,
+  type GetTokenAddress,
   type SwapTokens,
   strategyMap,
   type TStrategy,
@@ -94,6 +95,7 @@ export type TonHelper = GetBalance &
   GetProtocolFeeInUSD &
   // GetIncomingStrategy &
   GetCrossChainStrategy &
+  GetTokenAddress &
   SwapTokens<Sender, undefined>;
 
 export interface TonParams {
@@ -696,6 +698,10 @@ export async function tonHandler({
           value: 0n,
         };
       }
+    },
+    getTokenAddress: async (symbol: string): Promise<string> => {
+      const address: Address | null = await ab.getGet(symbol);
+      return address ? address.toString() : "";
     },
     tokenBalance: async (token, addr) => {
 
