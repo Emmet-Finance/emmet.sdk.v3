@@ -761,7 +761,7 @@ export async function tonHandler({
           signer,
           amt,
           destAddress,
-          chainId,
+          cid,
           gs,
         );
       } else {
