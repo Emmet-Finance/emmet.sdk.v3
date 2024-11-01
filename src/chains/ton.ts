@@ -202,6 +202,8 @@ export async function tonHandler({
       ),
     );
 
+    console.log("Destination chainId:", cid);
+
     return (await jtw.send(
       signer,
       { value: gasArgs.value + toNano("0.08") },
