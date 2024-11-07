@@ -499,14 +499,14 @@ export async function web3Helper({
       const sendGas = await bridge
         .connect(signer)
         .sendInstallment.estimateGas(params, {
-          value: fee,
+          value: fee! * 11n / 10n,
         });
 
       const tx = await bridge
         .connect(signer)
         .sendInstallment(params, {
           ...gasArgs,
-          value: fee,
+          value: fee! * 11n / 10n,
           gasLimit: sendGas,
         });
 
