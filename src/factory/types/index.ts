@@ -27,14 +27,14 @@ export type MetaMap = {
   1: EvmMeta;
   2: EvmMeta;
   3: EvmMeta;
-  4: EvmMeta;
   5: EvmMeta; // TODO: fix temp
   6: EvmMeta;
-  7: EvmMeta;
-  65534: TonMeta;
-  65535: TonMeta;
+  7: EvmMeta; // Polygon
+  56: EvmMeta; // BSC
+  65534: TonMeta; // TON Mainnet
+  65535: TonMeta; // TON Testnet
   728696: EvmMeta;
-  80084: EvmMeta;
+  80084: EvmMeta; // Amoy (Polygon)
 } & MetaMapAssert;
 
 export namespace Chain {
@@ -42,10 +42,10 @@ export namespace Chain {
   export const AVALANCHE = 1;
   export const OPTIMISM = 2;
   export const ARBITRUM = 3;
-  export const BSC = 4;
   export const SOLANA = 5;
   export const BASE = 6;
   export const POLYGON = 7;
+  export const BSC = 56;
   export const TON = 65534;
   export const TONTESTNET = 65535;
   export const ONLYLAYER = 728696;

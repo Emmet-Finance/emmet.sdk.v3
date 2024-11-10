@@ -8,6 +8,18 @@ export const MainnetRPCUri = {
     "https://avalanche.blockpi.network/v1/rpc/public",
     // "https://avax-pokt.nodies.app/ext/bc/C/rpc",
   ],
+  BSC: [
+    "https://bsc.drpc.org",
+    "https://rpc.ankr.com/bsc",
+    "https://bsc-dataseed.bnbchain.org",
+    "https://bscrpc.com",
+    "https://bsc-rpc.publicnode.com",
+    "https://bsc-dataseed.bnbchain.org",
+    "https://bsc-dataseed1.defibit.io",
+    "https://bsc-dataseed1.ninicoin.io",
+    "https://bsc-dataseed2.defibit.io",
+    "https://bsc-dataseed3.defibit.io"
+  ],
   POLYGON: [
     "https://polygon-bor-rpc.publicnode.com",
     "https://polygon-bor-rpc.publicnode.com",

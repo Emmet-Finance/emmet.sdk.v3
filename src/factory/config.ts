@@ -19,6 +19,15 @@ export namespace ChainFactoryConfigs {
         nativeCoin: "AVAX",
         rpcs: MainnetRPCUri.AVALANCHE
       },
+      bscParams: {
+        addressBook: ethers.getAddress(
+          "0xE5A2Ecb9995d42A1CC545F9fab101517866b3C9e"
+        ),
+        chainId: 56,
+        chainName:"bsc",
+        nativeCoin: "BNB",
+        rpcs: MainnetRPCUri.BSC
+      },
       polygonParams: {
         addressBook: ethers.getAddress(
           "0xaCADE1aBb88C13403b22b1f7EAB70A8062bcA374",
