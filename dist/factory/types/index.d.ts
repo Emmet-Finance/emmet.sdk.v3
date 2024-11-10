@@ -11,10 +11,10 @@ export type MetaMap = {
     1: EvmMeta;
     2: EvmMeta;
     3: EvmMeta;
-    4: EvmMeta;
     5: EvmMeta;
     6: EvmMeta;
     7: EvmMeta;
+    56: EvmMeta;
     65534: TonMeta;
     65535: TonMeta;
     728696: EvmMeta;
@@ -25,10 +25,10 @@ export declare namespace Chain {
     const AVALANCHE = 1;
     const OPTIMISM = 2;
     const ARBITRUM = 3;
-    const BSC = 4;
     const SOLANA = 5;
     const BASE = 6;
     const POLYGON = 7;
+    const BSC = 56;
     const TON = 65534;
     const TONTESTNET = 65535;
     const ONLYLAYER = 728696;

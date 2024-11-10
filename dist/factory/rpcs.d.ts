@@ -1,5 +1,6 @@
 export declare const MainnetRPCUri: {
     readonly AVALANCHE: readonly ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc", "https://avalanche.public-rpc.com", "https://avalanche-c-chain-rpc.publicnode.com", "https://avalanche.blockpi.network/v1/rpc/public"];
+    readonly BSC: readonly ["https://bsc.drpc.org", "https://rpc.ankr.com/bsc", "https://bsc-dataseed.bnbchain.org", "https://bscrpc.com", "https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-dataseed2.defibit.io", "https://bsc-dataseed3.defibit.io"];
     readonly POLYGON: readonly ["https://polygon-bor-rpc.publicnode.com", "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic"];
 };
 export declare const TestNetRpcUri: {
