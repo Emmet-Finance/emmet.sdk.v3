@@ -1,17 +1,21 @@
+const AL_KEY: string = "sXEn3HrcMdXyp-UJApfoDmDDA5KSuZKJ";
+
 export const MainnetRPCUri = {
 
   AVALANCHE:[
+    `https://avax-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://avalanche-c-chain-rpc.publicnode.com",
     "https://api.avax.network/ext/bc/C/rpc",
     "https://avalanche.public-rpc.com",
     "https://avalanche-c-chain-rpc.publicnode.com",
-    "https://avax.meowrpc.com",
     "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc",
     "https://avax-pokt.nodies.app/ext/bc/C/rpc",
+    // "https://avax.meowrpc.com",
     //"https://avalanche.blockpi.network/v1/rpc/public",
     // "https://avax-pokt.nodies.app/ext/bc/C/rpc",
   ],
   BSC: [
+    `https://bnb-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://bsc.drpc.org",
     "https://rpc.ankr.com/bsc",
     "https://bsc-dataseed.bnbchain.org",
@@ -24,10 +28,11 @@ export const MainnetRPCUri = {
     "https://bsc-dataseed3.defibit.io"
   ],
   POLYGON: [
+    `https://polygon-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://polygon-bor-rpc.publicnode.com",
     "https://1rpc.io/matic",
-    "https://rpc.ankr.com/polygon",
-    "https://polygon.drpc.org"
+    // "https://rpc.ankr.com/polygon",
+    // "https://polygon.drpc.org"
     // "https://polygon.blockpi.network/v1/rpc/public",
   ]
 
