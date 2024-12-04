@@ -57,8 +57,6 @@ import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
 import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
 import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
 import { sha256_sync } from "@ton/crypto";
-// import { Consensus } from "@emmet-contracts/web3";
-// import { getConsensus } from "./getConsensus";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -141,9 +139,6 @@ export async function tonHandler({
     raise("Failed to fetch bridge from addressbook");
 
   const bridgeReader = fetchClient().open(Bridge.fromAddress(bridge));
-
-  //  CONSENSUS
-  // const consensus: Consensus = await getConsensus();
 
 
   //  F U N C T I O N S
