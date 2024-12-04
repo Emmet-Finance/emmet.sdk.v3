@@ -8,7 +8,7 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc", "https://avalanche.public-rpc.com", "https://avalanche-c-chain-rpc.publicnode.com", "https://avalanche.blockpi.network/v1/rpc/public"];
+            rpcs: readonly ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc", "https://avalanche.public-rpc.com", "https://avalanche-c-chain-rpc.publicnode.com", "https://avax.meowrpc.com", "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc", "https://avax-pokt.nodies.app/ext/bc/C/rpc"];
         };
         bscParams: {
             addressBook: string;
@@ -22,7 +22,7 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly ["https://polygon-bor-rpc.publicnode.com", "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic"];
+            rpcs: readonly ["https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic", "https://rpc.ankr.com/polygon", "https://polygon.drpc.org"];
         };
         tonParams: {
             addressBook: Address;
@@ -35,7 +35,7 @@ export declare namespace ChainFactoryConfigs {
             pTonAddress: string;
         };
         multisigParams: {
-            rpcs: readonly ["https://polygon-bor-rpc.publicnode.com", "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic"];
+            rpcs: readonly ["https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic", "https://rpc.ankr.com/polygon", "https://polygon.drpc.org"];
             ab: string;
         };
     };
