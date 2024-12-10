@@ -22,7 +22,7 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic"];
+            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
         };
         tonParams: {
             addressBook: Address;
@@ -35,7 +35,7 @@ export declare namespace ChainFactoryConfigs {
             pTonAddress: string;
         };
         multisigParams: {
-            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://polygon-bor-rpc.publicnode.com", "https://1rpc.io/matic"];
+            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
             ab: string;
         };
     };
