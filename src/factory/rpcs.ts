@@ -29,8 +29,10 @@ export const MainnetRPCUri = {
   ],
   POLYGON: [
     `https://polygon-mainnet.g.alchemy.com/v2/${AL_KEY}`,
-    "https://polygon-bor-rpc.publicnode.com",
-    "https://1rpc.io/matic",
+    "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079",
+    "https://polygon-rpc.com",
+    // "https://polygon-bor-rpc.publicnode.com",
+    // "https://1rpc.io/matic",
     // "https://rpc.ankr.com/polygon",
     // "https://polygon.drpc.org"
     // "https://polygon.blockpi.network/v1/rpc/public",
