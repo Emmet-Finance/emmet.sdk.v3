@@ -1,6 +1,4 @@
 const AL_KEY: string = "sXEn3HrcMdXyp-UJApfoDmDDA5KSuZKJ";
-const TATUM: string = "t-67589fecd04074ce31f008a6-4f245e464661445caaea26d0";
-
 
 export const MainnetRPCUri = {
 
