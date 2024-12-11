@@ -26,7 +26,7 @@ export declare namespace ChainFactoryConfigs {
         };
         tonParams: {
             addressBook: Address;
-            rpcs: readonly ["https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0", "https://go.getblock.io/9cbe9ae971fb4d6e93cd2003075c63e0", "https://ton-mainnet.core.chainstack.com/5100b867ed6644ea5e9c5e689baaf6fb/api/v2"];
+            rpcs: readonly ["https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0"];
             nativeTokenId: bigint;
             chainId: bigint;
             chainName: string;
