@@ -44,8 +44,6 @@ export const MainnetRPCUri = {
     "https://go.getblock.io/690db4c466e7410e9a6746f873ae9fa2",
     "https://go.getblock.io/685d2dcf891741da97c007a54972bede",
     "https://ton-mainnet.core.chainstack.com/5100b867ed6644ea5e9c5e689baaf6fb/api/v3",
-    "https://toncenter.com/api/v2/jsonRPC",
-    "https://ton-mainnet.gateway.tatum.io",
   ],
 
 } as const;
