@@ -22,11 +22,11 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
+            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com", "https://polygon-mainnet.g.allthatnode.com/full/evm/e95e54a182194638b7ba5f4598270b44"];
         };
         tonParams: {
             addressBook: Address;
-            rpcs: string[];
+            rpcs: readonly ["https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0", "https://go.getblock.io/9cbe9ae971fb4d6e93cd2003075c63e0", "https://go.getblock.io/690db4c466e7410e9a6746f873ae9fa2", "https://go.getblock.io/685d2dcf891741da97c007a54972bede", "https://ton-mainnet.core.chainstack.com/5100b867ed6644ea5e9c5e689baaf6fb/api/v3", "https://toncenter.com/api/v2/jsonRPC", "https://ton-mainnet.gateway.tatum.io"];
             nativeTokenId: bigint;
             chainId: bigint;
             chainName: string;
@@ -35,7 +35,7 @@ export declare namespace ChainFactoryConfigs {
             pTonAddress: string;
         };
         multisigParams: {
-            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
+            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com", "https://polygon-mainnet.g.allthatnode.com/full/evm/e95e54a182194638b7ba5f4598270b44"];
             ab: string;
         };
     };
