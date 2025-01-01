@@ -113,13 +113,19 @@ export type AddressBookKeys =
   | "EmmetData"
   | "EmmetDataAdmin"
   | "EmmetBridge"
-  | "WTON" // Wrapped Token
-  | "EMMET" // Token
   | "BNB/USD" // price feed
   | "MATIC/USD" // Price Feed
   | "TON/USD" // price feed
   | "Explorer"
-  | `elp${string}`;
+  | `elp${string}` // LP tokens
+  //       T O K E N S
+  | "Bolgur"
+  | "GrabClub"
+  | "EMMET"
+  | "TON"
+  | "USDC"
+  | "USDT"
+  ;
 
 export interface AddressBook {
   address: (contr: AddressBookKeys) => Promise<string>;
@@ -193,6 +199,13 @@ export interface GetApprovedTokenAmount {
 }
 
 export interface GetTxFee {
+  /**
+   * Fetches the gas + protocol fee estimation
+   * @param targetChain Destination EIP-155-like chain ID
+   * @param fromToken The deposited token name
+   * @param targetToken The expected token name
+   * @returns The gas + protocol fee estimation
+   */
   txFee: (
     targetChain: bigint,
     fromToken: string,
@@ -201,18 +214,35 @@ export interface GetTxFee {
 }
 
 export interface ChainName {
+  /**
+   * Fetches the chain name
+   * @returns The chain name
+   */
   chainName: () => string;
 }
 
 export interface NativeCoinName {
+  /**
+   * Fetches the native coin name
+   * @returns The native coin name
+   */
   nativeCoin: () => string;
 }
 
 export interface ProtocolFee {
+  /**
+   * Fetches the current Emmet.Community fee
+   * @returns The current Emmet.Community fee
+   */
   protocolFee: () => Promise<bigint>;
 }
 
 export interface FetchTxInfo {
+  /**
+   * Fetches the transaction data
+   * @param hash The bridge TX hash
+   * @returns \{timestamp: bigint; value: bigint;}
+   */
   txInfo: (hash: string) => Promise<TxInfo>;
 }
 
@@ -227,10 +257,22 @@ export interface TxInfo {
 }
 
 export interface GetEmmetHashFromTx {
+  /**
+   * Finds the bridge hash by the transaction hash
+   * @param hash a chain transaction hash
+   * @returns the bridge hash
+   */
   emmetHashFromtx: (hash: string) => Promise<string>;
 }
 
 export interface GetEstimatedTime {
+  /**
+   * Fetches the transaction time estimation
+   * @param targetChain Destination EIP-155-like chain ID
+   * @param fromToken The deposited token name
+   * @param targetToken The expected token name
+   * @returns The transaction time estimation
+   */
   estimateTime(
     targetChain: bigint,
     fromToken: string,
@@ -247,10 +289,22 @@ export interface IsTransferFromLp {
 }
 
 export interface GetBridgeAddress {
+  /**
+   * Fetches the bridge address
+   * @returns The bridge address
+   */
   bridge: () => Promise<string>;
 }
 
 export interface StakeLiquidity<Signer, RetTx, GasArgs> {
+  /**
+   * Stakes the underlying asset
+   * @param signer the relevant chain signer
+   * @param pool The address of the Liquidity Pool
+   * @param amount the number of staked asset units
+   * @param ga gas arguments
+   * @returns \{ hash: string; tx: RetTx }
+   */
   stakeLiquidity: (
     signer: Signer,
     pool: string,
@@ -260,6 +314,14 @@ export interface StakeLiquidity<Signer, RetTx, GasArgs> {
 }
 
 export interface WithdrawLiquidity<Signer, RetTx, GasArgs> {
+  /**
+   * Unstakes the underlying asset
+   * @param signer the relevant chain signer
+   * @param pool The address of the Liquidity Pool
+   * @param amount the number of unstaked asset units
+   * @param ga gas arguments
+   * @returns \{ hash: string; tx: RetTx }
+   */
   withdrawLiquidity: (
     signer: Signer,
     pool: string,
@@ -269,6 +331,13 @@ export interface WithdrawLiquidity<Signer, RetTx, GasArgs> {
 }
 
 export interface WithdrawFees<Signer, RetTx, GasArgs> {
+  /**
+   * Sends the earned rewards to the staker
+   * @param signer the relevant chain signer
+   * @param pool The address of the Liquidity Pool
+   * @param ga gas arguments
+   * @returns \{ hash: string; tx: RetTx;}
+   */
   withdrawFees: (
     signer: Signer,
     pool: string,
@@ -277,34 +346,75 @@ export interface WithdrawFees<Signer, RetTx, GasArgs> {
 }
 
 export interface GetLpCurrentAPY {
+  /**
+   * Fetches the most recent APY
+   * @param pool The address of the Liquidity Pool
+   * @returns % with 4 decimals, ex.: 1000n means 10.00% APY
+   */
   getLpCurrentAPY: (pool: string) => Promise<bigint>;
 }
 
 export interface GetLpTotalSupply {
+  /**
+   * Fetches the number of minted LP tokens
+   * @param pool The address of the Liquidity Pool
+   * @returns the number of minted LP tokens
+   */
   getLpTotalSupply: (pool: string) => Promise<bigint>;
 }
 
 export interface GetLpTokenFee {
+  /**
+   * Fetches the current token fee % an LP user pays
+   * @param pool The address of the Liquidity Pool
+   * @returns % with 4 decimals, ex.: 300n means 3.00%
+   */
   getLpTokenFee: (pool: string) => Promise<bigint>;
 }
 
 export interface GetLpProtocolFee {
+  /**
+   * Fetches the Emmmet.Community fee share of the amount
+   * @param pool The address of the Liquidity Pool
+   * @returns % with 4 decimals, ex.: 100n means 1.00%
+   */
   getLpProtocolFee: (pool: string) => Promise<bigint>;
 }
 
 export interface GetLpProtocolFeeAmount {
+  /**
+   * Fetches the Emmet.Community fee amount of tokens
+   * @param pool The address of the Liquidity Pool
+   * @returns the number of the tokens avalable as Emmet.Community fee
+   */
   getLpProtocolFeeAmount: (pool: string) => Promise<bigint>;
 }
 
 export interface GetLpProviderRewards {
+  /**
+   * Fetches the number of asset units available as staker rewards
+   * @param pool The address of the Liquidity Pool
+   * @param address staker address
+   * @returns The number of available tokens
+   */
   getLpProviderRewards: (pool: string, address: string) => Promise<bigint>;
 }
 
 export interface GetLpFeeGrowthGlobal {
+  /**
+   * Fetches the total earned unwithdrawn rewards
+   * @param pool The address of the Liquidity Pool
+   * @returns The total earned unwithdrawn rewards
+   */
   getLpFeeGrowthGlobal: (pool: string) => Promise<bigint>;
 }
 
 export interface GetLpFeeDecimals {
+  /**
+   * Fetches the number of the underlying & LP asset's decimal points
+   * @param pool The address of the Liquidity Pool
+   * @returns The number of the underlying & LP asset's decimal points
+   */
   getLpFeeDecimals: (pool: string) => Promise<bigint>;
 }
 
@@ -363,6 +473,13 @@ export const strategyMap = {
 } as const;
 
 export interface GetIncomingStrategy {
+  /**
+   * Fetches the incoming strategy steps
+   * @param targetChain Destination EIP-155-like chain ID
+   * @param fromToken The deposited token name
+   * @param targetToken The expected token name
+   * @returns The incoming strategy steps
+   */
   incomingStrategy: (
     fromChain: ChainNonce,
     fromSymbol: string,
@@ -381,6 +498,13 @@ export interface SwapTokens<Signer, RetTx> {
 }
 
 export interface GetCrossChainStrategy {
+  /**
+   * Fetches the cross-chain strategies' steps
+   * @param targetChain Destination EIP-155-like chain ID
+   * @param fromToken The deposited token name
+   * @param targetToken The expected token name
+   * @returns The cross-chain strategies' steps
+   */
   crossChainStrategy: (
     targetChain: bigint,
     fromSymbol: string,
@@ -393,6 +517,14 @@ export interface GetCrossChainStrategy {
 }
 
 export interface GetSwapResultAmount {
+  /**
+   * Fetches the swap output token amount
+   * @param fromSymbol 
+   * @param targetSymbol 
+   * @param amount 
+   * @param slippage 
+   * @returns The swap output token amount
+   */
   getSwapResultAmount: (
     fromSymbol: string,
     targetSymbol: string,
@@ -402,6 +534,11 @@ export interface GetSwapResultAmount {
 }
 
 export interface GetTokenAddress {
+  /**
+   * Fetches the token address by the `symbol`
+   * @param symbol a short token identifier, ex. USDT
+   * @returns The token address
+   */
   getTokenAddress: (
     symbol: string
   ) => Promise<string>;
