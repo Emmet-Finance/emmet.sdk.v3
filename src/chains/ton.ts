@@ -54,8 +54,9 @@ import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
 import { StonApiClient } from "@ston-fi/api";
 import { DEX, pTON } from "@ston-fi/sdk";
 import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
+import { JettonLP } from "../contracts/ton/pools/tact_JettonLP";
 import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
-import { EmmetJettonLPWallet } from "../contracts/ton/pools/tact_EmmetJettonLPWallet";
+import { LPWallet } from "../contracts/ton/pools/ton/tact_LPWallet";
 import { sha256_sync } from "@ton/crypto";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
@@ -145,6 +146,12 @@ export async function tonHandler({
   async function getLastTxHashInBase64ForAddress(addr: Address) {
     const txns = await fetchClient().getTransactions(addr, { limit: 1 });
     return txns[0].hash().toString("base64");
+  }
+
+  function getJettonLp(pool: string): OpenedContract<JettonLP> {
+    return fetchClient().open(
+      JettonLP.fromAddress(Address.parse(pool)),
+    );
   }
 
   async function transferTon(
@@ -283,15 +290,19 @@ export async function tonHandler({
     targetTokenId: bigint,
   ) {
     const steps = await bridgeReader.getCrossChainStrategy();
+
     const strategy = steps
       .get(targetChain)
       ?.i.get(fromTokenId)
       ?.i.get(targetTokenId);
+
     if (!strategy) return false;
+
     for (let i = 0; i < strategy.local_steps.size; i++) {
       const strat = strategy.local_steps.steps.get(BigInt(i));
       if (strat === 5n) return true;
     }
+
     return false;
   }
 
@@ -300,19 +311,25 @@ export async function tonHandler({
     addr: Address,
     op: number,
   ): Promise<{ hash: string; tx: string }> {
+
     let foundTx = false;
     let hash = "";
     let retries = 0;
+
     while (!foundTx && retries < 10) {
+
       const latestTx = (
         await fetchClient().getTransactions(addr, { limit: 1 })
       )[0];
+
       if (latestTx.hash().toString("base64") === last) {
         await new Promise((e) => setTimeout(e, 10000));
         retries++;
         continue;
       }
+
       const txs = await fetchClient().getTransactions(addr, { limit: 25 });
+
       for (const tx of txs) {
         for (let i = 0; i < tx.outMessages.size; i++) {
           const msg = tx.outMessages.get(i) ?? raise("Unreachable");
@@ -322,8 +339,10 @@ export async function tonHandler({
           }
         }
       }
+
       retries++;
     }
+
     return {
       hash,
       tx: hash,
@@ -334,6 +353,10 @@ export async function tonHandler({
   });
 
   return {
+
+    // -----------------------------------------------------------------
+    //                    S W A P - R E L A T E D
+    // -----------------------------------------------------------------
     async swapTokens(sender, fromSymbol, targetSymbol, amount, _slippage) {
 
       try { // https://docs.ston.fi/docs/developer-section/sdk/dex-v2/swap
@@ -387,6 +410,7 @@ export async function tonHandler({
       }
 
     },
+    // -----------------------------------------------------------------
     async getSwapResultAmount(fromSymbol, targetSymbol, amount, slippage) {
       const tokens = await bridgeReader.getTokens();
       const ft = tokens.get(toKey(fromSymbol));
@@ -401,6 +425,202 @@ export async function tonHandler({
       });
       return BigInt(simulation.minAskUnits);
     },
+
+
+    
+    // -----------------------------------------------------------------
+    //                  L I Q U D I T Y  P O O L
+    // -----------------------------------------------------------------
+
+    async getLpCurrentAPY(pool) {
+      const pc = getJettonLp(pool);
+      const apy = await pc.getCurrentApy();
+      return apy;
+    },
+    // -----------------------------------------------------------------
+    async getLpProtocolFee(pool) {
+      const pc = getJettonLp(pool);
+      const pf = await pc.getProtocolFee();
+      return pf;
+    },
+    // -----------------------------------------------------------------
+    async getLpTokenFee(pool) {
+      const pc = getJettonLp(pool);
+      const pf = await pc.getTokenFee();
+      return pf;
+    },
+    // -----------------------------------------------------------------
+    async getLpTotalSupply(pool) {
+      const pc = getJettonLp(pool);
+      const jet = await pc.getGetJettonData();
+      return jet.total_supply;
+    },
+    // -----------------------------------------------------------------
+    async getLpProtocolFeeAmount(pool) {
+      const pc = getJettonLp(pool);
+      const pf = await pc.getProtocolFeeAmount();
+      return pf;
+    },
+    // -----------------------------------------------------------------
+    async getLpFeeDecimals(pool) {
+      const pc = getJettonLp(pool);
+      const pf = await pc.getDecimals();
+      return pf;
+    },
+    // -----------------------------------------------------------------
+    async getLpFeeGrowthGlobal(pool) {
+      const pc = getJettonLp(pool);
+      const fgg = pc.getFeeGrowthGlobal();
+      return fgg;
+    },
+    // -----------------------------------------------------------------
+    async getLpProviderRewards(pool, user) {
+      const pc = getJettonLp(pool);
+      return await pc.getRewards(Address.parse(user));
+    },
+    // -----------------------------------------------------------------
+    async stakeLiquidity(signer, pool, amount, ga) {
+      if (!signer.address)
+        throw new Error(`Signer address not passed: ${signer}`);
+
+      const pa = Address.parse(pool); // Pool address
+
+      const tonLp = await ab.getGet("elpTON");
+      const isTonLp = tonLp?.equals(pa) ?? false;
+
+      // ----------------- If TON is deposited -----------------
+      if (isTonLp) {
+        const tonLp = fetchClient().open(EmmetTonLP.fromAddress(pa));
+        const last = await getLastTxHashInBase64ForAddress(tonLp.address);
+        await tonLp.send(
+          signer,
+          {
+            value: amount + toNano("0.04"),
+          },
+          {
+            $$type: "Deposit",
+            amount,
+          },
+        );
+        return await getNewTxAfterHash(last, tonLp.address, 923309543);
+      }
+
+      // ----------------- If Jetton is deposited -----------------
+      const lp = getJettonLp(pool);
+      
+      const underlyingWalletAddress = await lp.getGetUnderlyingWallet();
+      const underlying_wallet = fetchClient().open(LPWallet.fromAddress(underlyingWalletAddress));
+
+      const tokenAddress = (await underlying_wallet.getGetWalletData()).master;
+      const token = fetchClient().open(JettonMaster.create(tokenAddress));
+
+      const wallet = await token.getWalletAddress(isTonLp ? lp.address : signer.address);
+
+      const wc = fetchClient().open(LPWallet.fromAddress(wallet));
+      const last = await getLastTxHashInBase64ForAddress(wc.address);
+
+      await wc.send(
+        signer,
+        {
+          value: toNano("0.4"),
+          ...ga,
+        },
+        {
+          $$type: "TokenTransfer",
+          amount: amount,
+          custom_payload: null,
+          sender: lp.address,
+          forward_payload: beginCell().storeUint(2, 8).endCell().beginParse(),
+          forward_ton_amount: toNano("0.2"),
+          query_id: 0n,
+          response_destination: lp.address,
+        },
+      );
+      return await getNewTxAfterHash(last, lp.address, 923309543);
+    },
+    // -----------------------------------------------------------------
+    async withdrawFees(signer, pool, ga) {
+
+      if (!signer.address)
+        throw new Error(`Signer address not passed: ${signer}`);
+
+      const lp = getJettonLp(pool);
+      const last = await getLastTxHashInBase64ForAddress(lp.address);
+
+      await lp.send(
+        signer, 
+        { value: toNano("0.5"), ...ga },
+         {$$type: "WithdrawRewards"}
+      );
+
+      return await getNewTxAfterHash(last, lp.address, 0);
+    },
+    // -----------------------------------------------------------------
+    async withdrawLiquidity(signer, pool, amount, ga) {
+
+      if (!signer.address)
+        throw new Error(`Signer address not passed: ${signer}`);
+
+      const lp = getJettonLp(pool);
+      const last = await getLastTxHashInBase64ForAddress(lp.address);
+
+      await lp.send(
+        signer,
+        { value: toNano("0.5"), ...ga },
+        {
+          $$type: "Withdraw",
+          amount
+        },
+      );
+
+      return await getNewTxAfterHash(last, lp.address, 1814330430);
+    },
+    // -----------------------------------------------------------------
+    decimals: async (pool) => {
+      if (!pool) return 9;
+      const lp = fetchClient().open(
+        EmmetJettonLP.fromAddress(Address.parse(pool)),
+      );
+      const dec = await lp.getDecimals();
+      return Number(dec);
+    },
+    async address(contr) {
+      const address =
+        (await ab.getGet(contr)) ??
+        raise(
+          `Failed to fetch address for ${contr} in ${addressBook.toString()}`,
+        );
+      return address.toString();
+    },
+    // -----------------------------------------------------------------
+    isTransferFromLp: () => Promise.resolve(false), // TODO: update it
+    async emmetHashFromtx(hash) {
+      const b64 = Buffer.from(hash, "hex").toString("base64");
+      const txs = await fetchClient().getTransactions(bridge, {
+        hash: b64,
+        limit: 10,
+      });
+      for (const tx of txs) {
+        for (let i = 0; i < tx.outMessagesCount; i++) {
+          const om = tx.outMessages.get(i)!;
+          const code = om.body.asSlice().loadUint(32);
+          if (code === 1673830231) {
+            return `0x${om.body.hash().toString("hex")}`;
+          }
+        }
+      }
+      throw new Error("No send installment found");
+    },
+    id: () => Promise.resolve(chainId),
+    async bridge() {
+      return await bridge.toString();
+    },
+
+
+
+    // -----------------------------------------------------------------
+    //                          C O M M O N
+    // -----------------------------------------------------------------
     async crossChainStrategy(targetChain, fromSymbol, targetSymbol) {
       const ccs = await bridgeReader.getCrossChainStrategy();
       const strategy = ccs
@@ -434,196 +654,11 @@ export async function tonHandler({
         incoming: foreign
       };
     },
-    async getLpCurrentAPY(pool) {
-      const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const apy = await pc.getCurrentApy();
-      return apy;
-    },
-    async getLpProtocolFee(pool) {
-      const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const pf = await pc.getProtocolFee();
-      return pf;
-    },
-    async getLpTokenFee(pool) {
-      const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const pf = await pc.getTokenFee();
-      return pf;
-    },
-    async getLpTotalSupply(pool) {
-      const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const jet = await pc.getGetJettonData();
-      return jet.total_supply;
-    },
-    async getLpProtocolFeeAmount(pool) {
-      const pc = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const pf = await pc.getProtocolFeeAmount();
-      return pf;
-    },
-    async getLpFeeDecimals(pool) {
-      const pc = fetchClient().open(EmmetJettonLP.fromAddress(address(pool)));
-      const pf = await pc.getDecimals();
-      return pf;
-    },
-    async getLpFeeGrowthGlobal(pool) {
-      const pc = fetchClient().open(EmmetJettonLP.fromAddress(address(pool)));
-      const fgg = pc.getFeeGrowthGlobal();
-      return fgg;
-    },
-    async getLpProviderRewards(pool, user) {
-      const pc = fetchClient().open(EmmetJettonLP.fromAddress(address(pool)));
-      const depositAddress = await pc.getGetWalletAddress(address(user));
-      const deposit = fetchClient().open(
-        EmmetJettonLPWallet.fromAddress(depositAddress),
-      );
-      const rewards = await deposit.getLastInternalFeeGrowth();
-      const fgg = await pc.getFeeGrowthGlobal();
-      const feeGrowthInside = fgg - rewards;
-      if (feeGrowthInside === 0n) {
-        if (rewards > 0) {
-          return rewards;
-        }
-        return 0n;
-      }
-      return (
-        ((await deposit.getGetWalletData()).balance * feeGrowthInside) /
-        (await pc.getGetJettonData()).total_supply
-      );
-    },
-    async stakeLiquidity(signer, pool, amount, ga) {
-      const pa = Address.parse(pool);
-      if (!signer.address)
-        throw new Error(`Signer address not passed: ${signer}`);
-      const lp = fetchClient().open(EmmetJettonLP.fromAddress(pa));
-      const tonLp = await ab.getGet("elpTON");
-      const isTonLp = tonLp?.equals(pa) ?? false;
-      if (isTonLp) {
-        const tonLp = fetchClient().open(EmmetTonLP.fromAddress(pa));
-        const last = await getLastTxHashInBase64ForAddress(tonLp.address);
-        await tonLp.send(
-          signer,
-          {
-            value: amount + toNano("0.1"),
-          },
-          {
-            $$type: "Deposit",
-            amount,
-          },
-        );
-        return await getNewTxAfterHash(last, tonLp.address, 923309543);
-      }
-      const payload = beginCell().storeUint(2, 8);
-      const ta = await lp.getStakeToken();
-      const token = fetchClient().open(JettonMaster.create(ta));
-      const wallet = await token.getWalletAddress(
-        isTonLp ? lp.address : signer.address,
-      );
-      const wc = fetchClient().open(EmmetJettonLPWallet.fromAddress(wallet));
-      const last = await getLastTxHashInBase64ForAddress(wc.address);
-      await wc.send(
-        signer,
-        {
-          value: toNano("0.4"),
-          ...ga,
-        },
-        {
-          $$type: "JettonTransfer",
-          amount: amount,
-          custom_payload: null,
-          destination: lp.address,
-          forward_payload: payload.endCell(),
-          forward_ton_amount: toNano("0.2"),
-          query_id: 0n,
-          response_destination: lp.address,
-        },
-      );
-      return await getNewTxAfterHash(last, lp.address, 923309543);
-    },
-    async withdrawFees(signer, pool, ga) {
-      if (!signer.address)
-        throw new Error(`Signer address not passed: ${signer}`);
-      const lp = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const deposit = await lp.getGetWalletAddress(signer.address);
-      const da = fetchClient().open(EmmetJettonLPWallet.fromAddress(deposit));
-      const last = await getLastTxHashInBase64ForAddress(da.address);
-      await da.send(signer, { value: toNano("0.5"), ...ga }, "WithdrawFees");
-      return await getNewTxAfterHash(last, da.address, 0);
-    },
-    async withdrawLiquidity(signer, pool, amount, ga) {
-      if (!signer.address)
-        throw new Error(`Signer address not passed: ${signer}`);
-      const lp = await fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const deposit = await lp.getGetWalletAddress(signer.address);
-      const da = fetchClient().open(EmmetJettonLPWallet.fromAddress(deposit));
-      const last = await getLastTxHashInBase64ForAddress(da.address);
-      await da.send(
-        signer,
-        { value: toNano("0.5"), ...ga },
-        {
-          $$type: "JettonBurn",
-          amount,
-          custom_payload: null,
-          forward_payload: beginCell().endCell(),
-          forward_ton_amount: 0n,
-          query_id: 0n,
-          response_destination: signer.address,
-        },
-      );
-      return await getNewTxAfterHash(last, da.address, 1814330430);
-    },
-    decimals: async (pool) => {
-      if (!pool) return 9;
-      const lp = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
-      const dec = await lp.getDecimals();
-      return Number(dec);
-    },
-    async address(contr) {
-      const address =
-        (await ab.getGet(contr)) ??
-        raise(
-          `Failed to fetch address for ${contr} in ${addressBook.toString()}`,
-        );
-      return address.toString();
-    },
+    // -----------------------------------------------------------------
     estimateTime: () => Promise.resolve(2n * 60n * 1000n), // 2 minutes
-    isTransferFromLp: () => Promise.resolve(false), // TODO: update it
-    async emmetHashFromtx(hash) {
-      const b64 = Buffer.from(hash, "hex").toString("base64");
-      const txs = await fetchClient().getTransactions(bridge, {
-        hash: b64,
-        limit: 10,
-      });
-      for (const tx of txs) {
-        for (let i = 0; i < tx.outMessagesCount; i++) {
-          const om = tx.outMessages.get(i)!;
-          const code = om.body.asSlice().loadUint(32);
-          if (code === 1673830231) {
-            return `0x${om.body.hash().toString("hex")}`;
-          }
-        }
-      }
-      throw new Error("No send installment found");
-    },
-    id: () => Promise.resolve(chainId),
-    async bridge() {
-      return await bridge.toString();
-    },
+    // -----------------------------------------------------------------
     nativeCoin: () => "TON",
+    // -----------------------------------------------------------------
     chainName: () => chainName,
     async txFee(tc) {
       const fee =
@@ -648,6 +683,7 @@ export async function tonHandler({
         token: qToken.address.toString()
       };
     },
+    // -----------------------------------------------------------------
     balance: async (addr) => {
 
       let bal: bigint = 0n;
@@ -663,7 +699,9 @@ export async function tonHandler({
       return bal;
 
     },
+    // -----------------------------------------------------------------
     provider: () => Promise.resolve(fetchClient()),
+    // -----------------------------------------------------------------
     validateAddress: (addr) => {
       try {
         Address.parse(addr);
@@ -672,9 +710,11 @@ export async function tonHandler({
         return Promise.resolve(false);
       }
     },
+    // -----------------------------------------------------------------
     async protocolFee() {
       return await bridgeReader.getProtocolFee();
     },
+    // -----------------------------------------------------------------
     async txInfo(hash) {
       const bs64 = Buffer.from(hash.replace("0x", ""), "hex").toString(
         "base64",
@@ -696,10 +736,12 @@ export async function tonHandler({
         };
       }
     },
+    // -----------------------------------------------------------------
     getTokenAddress: async (symbol: string): Promise<string> => {
       const address: Address | null = await ab.getGet(symbol);
       return address ? address.toString() : "";
     },
+    // -----------------------------------------------------------------
     tokenBalance: async (token, addr) => {
 
       let tokenBal: bigint = 0n;
@@ -718,9 +760,13 @@ export async function tonHandler({
       return tokenBal;
 
     },
+    // -----------------------------------------------------------------
     protocolFeeInUSD: () => {
       return 50n;
     },
+    // -----------------------------------------------------------------
+    //                  B R I D G E   T R A N S F E R
+    // -----------------------------------------------------------------
     sendInstallment: async (
       signer,
       amt,
@@ -817,19 +863,20 @@ export async function tonHandler({
   };
 }
 
+
+// -----------------------------------------------------------------
+//                        U T I L I T I E S
+// -----------------------------------------------------------------
 const toKey = (key: string) => {
   return BigInt(`0x${sha256_sync(key).toString("hex")}`);
 };
+// -----------------------------------------------------------------
 export function raise(msg: string): never {
   throw new Error(msg);
 }
-
+// -----------------------------------------------------------------
 export function assertNotNull<T>(t: T | null | undefined): t is T {
-  if (t === null) {
+  if (t === null || t === undefined)
     throw new Error(`Failed to unwrap value: ${t}`);
-  }
-  if (t === undefined) {
-    throw new Error(`Failed to unwrap value: ${t}`);
-  }
   return true;
 }
