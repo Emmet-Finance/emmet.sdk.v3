@@ -49,7 +49,7 @@ export async function ChainFactoryBuilder(
       Math.random() * chainParams.multisigParams!.rpcs.length,
     );
     if (consensusProviders) {
-      return consensusProviders![randomRpcIndex];
+      return consensusProviders[randomRpcIndex];
     }
     console.warn(
       `${libName} v${version} in 'getConsensusProvider' Warning: Providers not found`

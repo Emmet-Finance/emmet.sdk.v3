@@ -1,5 +1,4 @@
 import {
-  address,
   Address,
   beginCell,
   JettonMaster,
@@ -53,9 +52,8 @@ import { WrappedJettonWallet } from "../contracts/ton/jetton-wallet";
 import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
 import { StonApiClient } from "@ston-fi/api";
 import { DEX, pTON } from "@ston-fi/sdk";
-import { EmmetJettonLP } from "../contracts/ton/pools/tact_EmmetJettonLP";
 import { JettonLP } from "../contracts/ton/pools/tact_JettonLP";
-import { EmmetTonLP } from "../contracts/ton/pools/ton/tact_EmmetTonLP";
+import { TonLP } from "../contracts/ton/pools/ton/tact_TonLP";
 import { LPWallet } from "../contracts/ton/pools/ton/tact_LPWallet";
 import { sha256_sync } from "@ton/crypto";
 
@@ -488,9 +486,11 @@ export async function tonHandler({
       const tonLp = await ab.getGet("elpTON");
       const isTonLp = tonLp?.equals(pa) ?? false;
 
+      const payload = beginCell().storeUint(2, 8).endCell().beginParse();
+
       // ----------------- If TON is deposited -----------------
       if (isTonLp) {
-        const tonLp = fetchClient().open(EmmetTonLP.fromAddress(pa));
+        const tonLp = fetchClient().open(TonLP.fromAddress(pa));
         const last = await getLastTxHashInBase64ForAddress(tonLp.address);
         await tonLp.send(
           signer,
@@ -500,6 +500,7 @@ export async function tonHandler({
           {
             $$type: "Deposit",
             amount,
+            forward_payload: payload
           },
         );
         return await getNewTxAfterHash(last, tonLp.address, 923309543);
@@ -530,7 +531,7 @@ export async function tonHandler({
           amount: amount,
           custom_payload: null,
           sender: lp.address,
-          forward_payload: beginCell().storeUint(2, 8).endCell().beginParse(),
+          forward_payload: payload,
           forward_ton_amount: toNano("0.2"),
           query_id: 0n,
           response_destination: lp.address,
@@ -578,9 +579,7 @@ export async function tonHandler({
     // -----------------------------------------------------------------
     decimals: async (pool) => {
       if (!pool) return 9;
-      const lp = fetchClient().open(
-        EmmetJettonLP.fromAddress(Address.parse(pool)),
-      );
+      const lp = getJettonLp(pool);
       const dec = await lp.getDecimals();
       return Number(dec);
     },

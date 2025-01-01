@@ -208,7 +208,7 @@ export async function getTransactions(
     batch: BigNumberish = 100n,
     skip: BigNumberish = 0n,
 ): Promise<(CrossChainTransaction.CCTStructOutput & {decoded?:any})[]> {
-    let decoded: (CrossChainTransaction.CCTStructOutput & {decoded?:ReceiveParams})[] = [];
+    const decoded: (CrossChainTransaction.CCTStructOutput & {decoded?:ReceiveParams})[] = [];
 
     const txs: (CrossChainTransaction.CCTStructOutput & {decoded?:any})[] = await consensus.getTransactions(
         batch, skip
