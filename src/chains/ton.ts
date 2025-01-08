@@ -27,16 +27,8 @@ import {
   type ValidateAddress,
   type AddressBook,
   type StakeLiquidity,
-  type GetLpCurrentAPY,
-  type GetLpProtocolFee,
-  type GetLpProtocolFeeAmount,
-  type GetLpTokenFee,
-  type GetLpTotalSupply,
   type WithdrawFees,
   type WithdrawLiquidity,
-  type GetLpFeeDecimals,
-  type GetLpFeeGrowthGlobal,
-  type GetLpProviderRewards,
   type IsTransferFromLp,
   type GetProtocolFeeInUSD,
   type GetSwapResultAmount,
@@ -45,6 +37,9 @@ import {
   type SwapTokens,
   strategyMap,
   type TStrategy,
+  ILiquidityPool,
+  TLPData,
+  TLPPosition,
 } from ".";
 import { Bridge, loadOutgoingTransaction } from "../contracts/ton";
 import { WrappedJetton } from "../contracts/ton/jetton-master";
@@ -59,40 +54,41 @@ import { sha256_sync } from "@ton/crypto";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
-export type TonHelper = GetBalance &
+export type TonHelper = AddressBook &
+  // G E N E R A L  P U R P O S E
+  ChainID &
+  ChainName &
+  Decimals &
+  GetBridgeAddress &
+  GetBalance &
+  GetCrossChainStrategy &
+  GetEmmetHashFromTx &
+  GetEstimatedTime &
+  GetProtocolFeeInUSD &
   GetProvider<TonClient> &
-  SendInstallment<Sender, string, TonGasArgs> &
-  ValidateAddress &
+  GetTokenAddress &
   GetTokenBalance &
   GetTxFee &
-  ChainName &
   NativeCoinName &
-  ChainID &
-  FetchTxInfo &
   ProtocolFee &
-  GetEmmetHashFromTx &
   TokenInfo &
-  GetEstimatedTime &
-  GetBridgeAddress &
-  Decimals &
-  AddressBook &
+  ValidateAddress &
+
+  // B R I D G E
+  FetchTxInfo &
+  SendInstallment<Sender, string, TonGasArgs> &
+
+  // L I Q U I D I T Y   P O O L
+  ILiquidityPool
+    // <Sender, string, { value: bigint; bounce?: boolean }> 
+    &
   StakeLiquidity<Sender, string, { value: bigint; bounce?: boolean }> &
   WithdrawLiquidity<Sender, string, { value: bigint; bounce?: boolean }> &
   WithdrawFees<Sender, string, { value: bigint; bounce?: boolean }> &
-  GetLpCurrentAPY &
-  GetLpTotalSupply &
-  GetLpTokenFee &
-  GetLpProtocolFee &
-  GetLpProtocolFeeAmount &
-  GetLpProviderRewards &
-  GetLpFeeGrowthGlobal &
-  GetLpFeeDecimals &
   IsTransferFromLp &
+
+  // S W A P
   GetSwapResultAmount &
-  GetProtocolFeeInUSD &
-  // GetIncomingStrategy &
-  GetCrossChainStrategy &
-  GetTokenAddress &
   SwapTokens<Sender, undefined>;
 
 export interface TonParams {
@@ -107,7 +103,7 @@ export interface TonParams {
 }
 
 /**
- *
+ * Holds the code execution for a number of `ms` milliseconds
  * @param ms number of milliseconds to wait
  * @returns halts the program execution for the `ms` milliseconds
  */
@@ -133,23 +129,45 @@ export async function tonHandler({
   //  C O N T R A C T S
   const ab = fetchClient().open(TonAddressBook.fromAddress(addressBook));
 
-  const bridge =
-    (await ab.getGet("EmmetBridge")) ??
-    raise("Failed to fetch bridge from addressbook");
-
+  const bridge = await getAddressByName("EmmetBridge");
   const bridgeReader = fetchClient().open(Bridge.fromAddress(bridge));
 
-
   //  F U N C T I O N S
-  async function getLastTxHashInBase64ForAddress(addr: Address) {
-    const txns = await fetchClient().getTransactions(addr, { limit: 1 });
-    return txns[0].hash().toString("base64");
+
+  async function getAddressByName(name: string): Promise<Address> {
+    try {
+      const poolAddress: Address = await ab.getGet(name) ??
+        raise(`Failed to fetch the ${name} address from the addressbook`);
+      return poolAddress;
+    } catch (error: { message: string } | any) {
+      throw new Error(error.message);
+    }
   }
 
   function getJettonLp(pool: string): OpenedContract<JettonLP> {
-    return fetchClient().open(
-      JettonLP.fromAddress(Address.parse(pool)),
-    );
+    try {
+      return fetchClient().open(
+        JettonLP.fromAddress(Address.parse(pool)),
+      );
+    } catch {
+      throw new Error("Error getting JettonLP");
+    }
+  }
+
+  async function getJettonLpByName(poolName: string): Promise<OpenedContract<JettonLP>> {
+    try {
+      const poolAddress: Address = await getAddressByName(`elp${poolName}`)
+      return fetchClient().open(
+        JettonLP.fromAddress(poolAddress),
+      );
+    } catch (error: { message: string } | any) {
+      throw new Error("Emmet.SDK getJettonLpByName: " + error.message);
+    }
+  }
+
+  async function getLastTxHashInBase64ForAddress(addr: Address) {
+    const txns = await fetchClient().getTransactions(addr, { limit: 1 });
+    return txns[0].hash().toString("base64");
   }
 
   async function transferTon(
@@ -202,7 +220,7 @@ export async function tonHandler({
       ),
     );
 
-    console.log("Destination chainId:", cid);
+    // console.log("Destination chainId:", cid);
 
     return (await jtw.send(
       signer,
@@ -425,57 +443,73 @@ export async function tonHandler({
     },
 
 
-    
+
     // -----------------------------------------------------------------
     //                  L I Q U D I T Y  P O O L
     // -----------------------------------------------------------------
 
-    async getLpCurrentAPY(pool) {
-      const pc = getJettonLp(pool);
-      const apy = await pc.getCurrentApy();
-      return apy;
+    async getLpData(poolName) {
+      try {
+        const lp = await getJettonLpByName(poolName);
+        const data: TLPData = await lp.getGetData();
+        return data;
+      } catch {
+        return {
+          '$$type': 'LPData',
+          apy: 0n,
+          available_underlying: 0n,
+          decimals: 0n,
+          fee_growth_global: 0n,
+          fee_decimals: 0n,
+          protocol_fee: 0n,
+          protocol_fee_amount: 0n,
+          token_fee: 0n,
+          total_supply: 0n
+        } as TLPData;
+      }
     },
     // -----------------------------------------------------------------
-    async getLpProtocolFee(pool) {
-      const pc = getJettonLp(pool);
-      const pf = await pc.getProtocolFee();
-      return pf;
+    async getPosition(poolName, staker) {
+      try {
+        const lp = await getJettonLpByName(poolName);
+        const position: TLPPosition = await lp.getGetPosition(Address.parse(staker));
+        return position;
+      } catch {
+        return {
+          "$$type": "Position",
+          balance: 0n,
+          last_fee_growth: 0n,
+          rewards: 0n
+        } as TLPPosition;
+      }
     },
     // -----------------------------------------------------------------
-    async getLpTokenFee(pool) {
-      const pc = getJettonLp(pool);
-      const pf = await pc.getTokenFee();
-      return pf;
+    async getRewards(poolName, staker) {
+      try {
+        const lp = await getJettonLpByName(poolName);
+        return await lp.getRewards(Address.parse(staker));
+      } catch {
+        return 0n;
+      }
     },
     // -----------------------------------------------------------------
-    async getLpTotalSupply(pool) {
-      const pc = getJettonLp(pool);
-      const jet = await pc.getGetJettonData();
-      return jet.total_supply;
-    },
-    // -----------------------------------------------------------------
-    async getLpProtocolFeeAmount(pool) {
-      const pc = getJettonLp(pool);
-      const pf = await pc.getProtocolFeeAmount();
-      return pf;
-    },
-    // -----------------------------------------------------------------
-    async getLpFeeDecimals(pool) {
-      const pc = getJettonLp(pool);
-      const pf = await pc.getDecimals();
-      return pf;
-    },
-    // -----------------------------------------------------------------
-    async getLpFeeGrowthGlobal(pool) {
-      const pc = getJettonLp(pool);
-      const fgg = pc.getFeeGrowthGlobal();
-      return fgg;
-    },
-    // -----------------------------------------------------------------
-    async getLpProviderRewards(pool, user) {
-      const pc = getJettonLp(pool);
-      return await pc.getRewards(Address.parse(user));
-    },
+    // async stakeJetton(poolName, signer, amount, gasArgs) {
+    //   try {
+    //     const lp = await getJettonLpByName(poolName);
+    //     const result = await lp.send(
+    //       signer,
+    //       {
+    //         value: toNano("0.2"),
+    //         ...gasArgs
+    //       },
+    //       {
+    //         $$type: 
+    //       }
+    //     )
+    //   } catch {
+        
+    //   }
+    // },
     // -----------------------------------------------------------------
     async stakeLiquidity(signer, pool, amount, ga) {
       if (!signer.address)
@@ -508,7 +542,7 @@ export async function tonHandler({
 
       // ----------------- If Jetton is deposited -----------------
       const lp = getJettonLp(pool);
-      
+
       const underlyingWalletAddress = await lp.getGetUnderlyingWallet();
       const underlying_wallet = fetchClient().open(LPWallet.fromAddress(underlyingWalletAddress));
 
@@ -549,9 +583,9 @@ export async function tonHandler({
       const last = await getLastTxHashInBase64ForAddress(lp.address);
 
       await lp.send(
-        signer, 
+        signer,
         { value: toNano("0.5"), ...ga },
-         {$$type: "WithdrawRewards"}
+        { $$type: "WithdrawRewards" }
       );
 
       return await getNewTxAfterHash(last, lp.address, 0);
