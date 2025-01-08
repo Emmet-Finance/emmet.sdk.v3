@@ -272,6 +272,15 @@ export declare function loadBridgeBoilerplate(slice: Slice): {
     amount: bigint;
     payload: Cell;
 };
+export type Boost = {
+    $$type: 'Boost';
+    amount: bigint;
+};
+export declare function storeBoost(src: Boost): (builder: Builder) => void;
+export declare function loadBoost(slice: Slice): {
+    $$type: "Boost";
+    amount: bigint;
+};
 export type InternalWithdrawDeposit = {
     $$type: 'InternalWithdrawDeposit';
     amount: bigint;
@@ -297,6 +306,31 @@ export declare function loadInternalWithdrawFee(slice: Slice): {
     lastFeeGrowth: bigint;
     owner: Address;
     balance: bigint;
+};
+export type LPData = {
+    $$type: 'LPData';
+    apy: bigint;
+    available_underlying: bigint;
+    decimals: bigint;
+    fee_growth_global: bigint;
+    fee_decimals: bigint;
+    protocol_fee: bigint;
+    protocol_fee_amount: bigint;
+    token_fee: bigint;
+    total_supply: bigint;
+};
+export declare function storeLPData(src: LPData): (builder: Builder) => void;
+export declare function loadLPData(slice: Slice): {
+    $$type: "LPData";
+    apy: bigint;
+    available_underlying: bigint;
+    decimals: bigint;
+    fee_growth_global: bigint;
+    fee_decimals: bigint;
+    protocol_fee: bigint;
+    protocol_fee_amount: bigint;
+    token_fee: bigint;
+    total_supply: bigint;
 };
 export type ReleaseTokens = {
     $$type: 'ReleaseTokens';
@@ -446,6 +480,13 @@ export declare function loadWithdrawCallback(slice: Slice): {
     $$type: "WithdrawCallback";
     feeGrowthGlobal: bigint;
     rewards: bigint;
+};
+export type WithdrawProtocolFee = {
+    $$type: 'WithdrawProtocolFee';
+};
+export declare function storeWithdrawProtocolFee(): (builder: Builder) => void;
+export declare function loadWithdrawProtocolFee(slice: Slice): {
+    $$type: "WithdrawProtocolFee";
 };
 export type WithdrawStake = {
     $$type: 'WithdrawStake';
@@ -626,6 +667,7 @@ export type JettonLP$Data = {
     admin: Address;
     available_underlying: bigint;
     bridge: Address;
+    boost_query_id: bigint;
     cfo: Address;
     content: Cell;
     decimals: bigint;
@@ -650,6 +692,7 @@ export declare function loadJettonLP$Data(slice: Slice): {
     admin: Address;
     available_underlying: bigint;
     bridge: Address;
+    boost_query_id: bigint;
     cfo: Address;
     content: Cell;
     decimals: bigint;
@@ -688,13 +731,26 @@ export declare class JettonLP implements Contract {
     send(provider: ContractProvider, via: Sender, args: {
         value: bigint;
         bounce?: boolean | null | undefined;
-    }, message: WithdrawGas | TokenNotification | ReleaseTokens | TokenBurnNotification | WithdrawRewards | UpdateDeposits | Withdraw | SetAdmin | SetCFO | SetBridge | SetWalletAddress | UpdateFees | UpdateGasCost | Deploy | null | TokenUpdateContent | ProvideWalletAddress | GrantRole | RevokeRole | RenounceRole | UpdateRoleAdmin): Promise<void>;
+    }, message: null | Boost | WithdrawGas | WithdrawProtocolFee | TokenNotification | ReleaseTokens | TokenBurnNotification | WithdrawRewards | TokenExcesses | UpdateDeposits | Withdraw | SetAdmin | SetCFO | SetBridge | SetWalletAddress | UpdateFees | UpdateGasCost | Deploy | TokenUpdateContent | ProvideWalletAddress | GrantRole | RevokeRole | RenounceRole | UpdateRoleAdmin): Promise<void>;
+    getUnderlying(provider: ContractProvider): Promise<Address>;
     getCurrentApy(provider: ContractProvider): Promise<bigint>;
     getDecimals(provider: ContractProvider): Promise<bigint>;
     getFeeGrowthGlobal(provider: ContractProvider): Promise<bigint>;
     getGetAdmin(provider: ContractProvider): Promise<Address>;
     getGetAvailableUnderlying(provider: ContractProvider): Promise<bigint>;
     getGetCfo(provider: ContractProvider): Promise<Address>;
+    getGetData(provider: ContractProvider): Promise<{
+        $$type: "LPData";
+        apy: bigint;
+        available_underlying: bigint;
+        decimals: bigint;
+        fee_growth_global: bigint;
+        fee_decimals: bigint;
+        protocol_fee: bigint;
+        protocol_fee_amount: bigint;
+        token_fee: bigint;
+        total_supply: bigint;
+    }>;
     getGetQueryId(provider: ContractProvider): Promise<bigint>;
     getGetPosition(provider: ContractProvider, staker: Address): Promise<{
         $$type: "Position";
