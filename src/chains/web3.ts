@@ -5,7 +5,9 @@ import {
   ContractRunner,
   isAddress,
   JsonRpcProvider,
+  Overrides,
   type Provider,
+  Signer,
 } from "ethers";
 import type {
   TStrategy,
@@ -122,24 +124,29 @@ export async function web3Helper({
       return undefined;
 
     },
-    stakeLiquidity: async (signer:any, pool:string, amt:BigNumberish, ga:any) => {
+    stakeLiquidity: async (
+      signer: Signer, 
+      pool: string, 
+      amount: bigint, 
+      ga: Overrides | undefined
+    ) => {
       const lp = EmmetLP__factory.connect(pool, signer);
-      const deposit = await lp.deposit(amt, { ...ga });
+      const deposit = await lp.deposit(amount, { ...ga });
       return {
         hash: deposit.hash,
         tx: deposit,
       };
     },
     async getSwapResultAmount(
-      _fromSymbol:any, 
-      _targetSymbol:any, 
-      amount:BigNumberish, 
-      _slippage:any
+      _fromSymbol: any,
+      _targetSymbol: any,
+      amount: BigNumberish,
+      _slippage: any
     ) {
       return BigInt(amount);
     },
-    async crossChainStrategy(targetChain:BigNumberish, fromSymbol:string, targetSymbol:string) {
-      
+    async crossChainStrategy(targetChain: BigNumberish, fromSymbol: string, targetSymbol: string) {
+
       const outgoing: TStrategy[] = [];
       const incoming: TStrategy[] = [];
       const foreign: TStrategy[] = [];
@@ -166,11 +173,11 @@ export async function web3Helper({
             }
           }
         }
-        
+
       } catch (error) {
-        
+
       }
-      
+
       return {
         outgoing,
         incoming,
@@ -196,7 +203,7 @@ export async function web3Helper({
       }
 
     },
-    withdrawLiquidity: async (signer:any, pool:string, amt:BigNumberish, ga:any) => {
+    withdrawLiquidity: async (signer: any, pool: string, amt: BigNumberish, ga: any) => {
       const lp = EmmetLP__factory.connect(pool, signer);
       const withdraw = await lp.withdrawTokens(amt, { ...ga });
       return {
@@ -204,7 +211,7 @@ export async function web3Helper({
         tx: withdraw,
       };
     },
-    withdrawFees: async (signer:any, pool:string, ga:any) => {
+    withdrawFees: async (signer: any, pool: string, ga: any) => {
       const lp = EmmetLP__factory.connect(pool, signer);
       const withdraw = await lp.withdrawFees({ ...ga });
       return {
@@ -212,48 +219,48 @@ export async function web3Helper({
         tx: withdraw,
       };
     },
-    getLpCurrentAPY: async (pool:string) => {
+    getLpCurrentAPY: async (pool: string) => {
       const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const apy = await lp.currentAPY();
       return apy;
     },
-    getLpTotalSupply: async(pool:string) => {
+    getLpTotalSupply: async (pool: string) => {
       const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const totalSupply = await lp.totalSupply();
       return totalSupply;
     },
-    getLpTokenFee: async(pool:string) => {
+    getLpTokenFee: async (pool: string) => {
       const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const tokenFee = await lp.tokenFee();
       return tokenFee;
     },
-    getLpProtocolFee: async(pool:string) => {
+    getLpProtocolFee: async (pool: string) => {
       const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const protocolFee = await lp.protocolFee();
       return protocolFee;
     },
-    getLpProtocolFeeAmount: async(pool:string) => {
+    getLpProtocolFeeAmount: async (pool: string) => {
       const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const protocolFeeAmount = await lp.protocolFeeAmount();
       return protocolFeeAmount;
     },
-    getLpFeeGrowthGlobal: async(pool:string) => {
+    getLpFeeGrowthGlobal: async (pool: string) => {
       const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const feeGrowthGlobal = await lp.feeGrowthGlobal();
       return feeGrowthGlobal;
     },
-    getLpFeeDecimals: async(pool:string) => {
+    getLpFeeDecimals: async (pool: string) => {
       const lp = EmmetLP__factory.connect(pool, await fetchProvider());
       const feeDecimals = await lp.feeDecimals();
       return feeDecimals;
     },
-    async address(contr:string) {
+    async address(contr: string) {
       return await addrBook.get(contr);
     },
     async bridge() {
       return await bridge.getAddress();
     },
-    async txFee(targetChainId:BigNumberish, fromToken:string, targetToken:string) {
+    async txFee(targetChainId: BigNumberish, fromToken: string, targetToken: string) {
       const isFeeERC20: boolean = false;
       const protocolFee = await bridge.estimateFee(
         targetChainId,
@@ -263,7 +270,7 @@ export async function web3Helper({
       );
       return protocolFee;
     },
-    async txInfo(hash:string) {
+    async txInfo(hash: string) {
       const provider = await fetchProvider();
       if (hash === "") {
         return {
@@ -291,7 +298,7 @@ export async function web3Helper({
         };
       }
     },
-    async emmetHashFromtx(hash:string) {
+    async emmetHashFromtx(hash: string) {
 
       const receipt = await (await fetchProvider()).waitForTransaction(hash);
 
@@ -309,11 +316,11 @@ export async function web3Helper({
     protocolFee() {
       return Promise.resolve(50n); // data.getProtocolFee();
     },
-    async token(symbol:string) {
+    async token(symbol: string) {
       const token = await data.getToken(symbol);
       return token;
     },
-    decimals: async(pool:string|undefined) => {
+    decimals: async (pool: string | undefined) => {
       if (!pool) return 18;
       return Number(
         await ERC20__factory.connect(pool, await fetchProvider()).decimals(),
@@ -322,10 +329,10 @@ export async function web3Helper({
     nativeCoin: () => nativeCoin,
     chainName: () => chainName,
     preTransfer: async (
-      signer: ContractRunner | null, 
-      tid:string, 
-      spender:AddressLike, 
-      amt: BigNumberish, 
+      signer: ContractRunner | null,
+      tid: string,
+      spender: AddressLike,
+      amt: BigNumberish,
       gasArgs: any
     ) => {
       const erc = WrappedERC20__factory.connect(tid, signer);
@@ -339,17 +346,17 @@ export async function web3Helper({
     },
 
     getApprovedAmount: async (
-      tid:string, 
-      owner: AddressLike, 
+      tid: string,
+      owner: AddressLike,
       spender: AddressLike
     ) =>
       await WrappedERC20__factory.connect(tid, await fetchProvider()).allowance(
         owner,
         spender,
       ),
-    balance: async (addr:AddressLike) => (await fetchProvider()).getBalance(addr),
+    balance: async (addr: AddressLike) => (await fetchProvider()).getBalance(addr),
     provider: async () => await fetchProvider(),
-    async estimateTime(targetChain:BigNumberish, fromToken: string, targetToken: string) {
+    async estimateTime(targetChain: BigNumberish, fromToken: string, targetToken: string) {
       // Default time
       let estimation: bigint = 2n * 60n * 1000n;
 
@@ -360,19 +367,19 @@ export async function web3Helper({
           fromToken,
           targetToken,
         );
-  
+
         const outgoing = ts[0];
         const foreign = ts[1];
-  
+
         const cctpBurn: bigint = BigInt(EStrategy.CCTPClaim);
         const cctpClaim: bigint = BigInt(EStrategy.CCTPClaim);
-  
+
         const isCCTP =
           foreign.includes(cctpBurn) ||
           foreign.includes(cctpClaim) ||
           outgoing.includes(cctpBurn) ||
           outgoing.includes(cctpClaim);
-  
+
         if (isCCTP) {
           // 3 minutes
           estimation = (3n * 60n) * 1000n;
@@ -380,7 +387,7 @@ export async function web3Helper({
           // 1 minute
           estimation = (1n * 60n) * 1000n;
         }
-        
+
       } catch (error) {
         console.warn(error)
       }
@@ -389,9 +396,9 @@ export async function web3Helper({
     },
 
     async isTransferFromLp(
-      targetChain:BigNumberish, 
-      fromToken:string, 
-      targetToken:string
+      targetChain: BigNumberish,
+      fromToken: string,
+      targetToken: string
     ) {
       const ts = await data.getStrategy(
         targetChain,
@@ -406,12 +413,12 @@ export async function web3Helper({
       // return fee.usdEquivalent;
       return 50n;
     },
-    validateAddress: (addr:string) => Promise.resolve(isAddress(addr)),
+    validateAddress: (addr: string) => Promise.resolve(isAddress(addr)),
     getTokenAddress: async (symbol: string): Promise<string> => {
       const address = await addrBook.get(symbol);
       return address ? address : "";
     },
-    tokenBalance: async (tkn:string, addr: AddressLike) =>
+    tokenBalance: async (tkn: string, addr: AddressLike) =>
       WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr),
     sendInstallment: async (
       signer: ContractRunner | null,
