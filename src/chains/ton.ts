@@ -518,6 +518,9 @@ export async function tonHandler({
     },
     // -----------------------------------------------------------------
     async stakeJetton(poolName, signer, amount, gasArgs) {
+      if (!signer.address)
+        throw new Error(`Signer address not passed: ${signer}`);
+
       try {
         const value: bigint = toNano("0.2");
         const forwardAmount = toNano('0.1');
@@ -531,6 +534,8 @@ export async function tonHandler({
           await jettonMaster.getWalletAddress(signer.address!!)
         );
 
+        const last = await getLastTxHashInBase64ForAddress(underlyingWallet.address);
+
         await underlyingWallet.sendTransfer(
           signer,
           value + (gasArgs ? gasArgs?.value : 0n),
@@ -542,12 +547,48 @@ export async function tonHandler({
           null
         );
 
+        return (await getNewTxAfterHash(
+          last, 
+          underlyingWallet.address, 
+          0xf8a7ea5) // op::transfer
+        ).hash as string;
+
       } catch (error: any | { message: string }) {
         throw new Error(`Emmet.SDK stakeJetton: ${error.message}`)
       }
     },
     // -----------------------------------------------------------------
-    async stakeLiquidity(signer, pool, amount, ga) {
+    async stakeTon(signer, amount) {
+      if (!signer.address)
+        throw new Error(`Signer address not passed: ${signer}`);
+
+      const tonLpAddress: Address = await ab.getGet("elpTON") as Address;
+
+      const tonLp = fetchClient().open(TonLP.fromAddress(tonLpAddress!));
+
+      const last = await getLastTxHashInBase64ForAddress(tonLp.address);
+
+      await tonLp.send(
+        signer,
+        {
+          value: amount + toNano("0.04"),
+        },
+        {
+          $$type: "Deposit",
+          amount,
+          forward_payload: beginCell().storeUint(2, 8).endCell().beginParse()
+        },
+      );
+
+      return (await getNewTxAfterHash(
+        last, 
+        tonLp.address, 
+        0x97ed57f1) // Deposit
+      ).hash as string;
+
+    },
+    // -----------------------------------------------------------------
+    async stakeLiquidity(signer, pool, amount, ga) { // OLD - to be removed
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
 
@@ -620,11 +661,11 @@ export async function tonHandler({
 
       await lp.send(
         signer,
-        { value: toNano("0.5"), ...ga },
+        { value: toNano("0.2"), ...ga },
         { $$type: "WithdrawRewards" }
       );
 
-      return await getNewTxAfterHash(last, lp.address, 0);
+      return await getNewTxAfterHash(last, lp.address, 0x32d20fa6);
     },
     // -----------------------------------------------------------------
     async withdrawLiquidity(signer, pool, amount, ga) {
@@ -644,7 +685,7 @@ export async function tonHandler({
         },
       );
 
-      return await getNewTxAfterHash(last, lp.address, 1814330430);
+      return await getNewTxAfterHash(last, lp.address, 0x60591510);
     },
     // -----------------------------------------------------------------
     decimals: async (pool) => {
