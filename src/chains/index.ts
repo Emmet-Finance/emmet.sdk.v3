@@ -31,6 +31,10 @@ export interface GetBalance {
   balance: (addr: string) => Promise<bigint>;
 }
 
+// -----------------------------------------------------------------
+//                  L I Q U D I T Y  P O O L
+// -----------------------------------------------------------------
+
 export type TLPData = {
   "$$type": string,
   apy: bigint,
@@ -51,8 +55,7 @@ export type TLPPosition = {
   rewards: bigint
 }
 
-export interface ILiquidityPool
-// <Signer, RetTx, GasArgs> 
+export interface ILiquidityPool<Signer, RetTx, GasArgs> 
 {
   /**
    * Fetches a LP data in a single request
@@ -85,12 +88,12 @@ export interface ILiquidityPool
    * @param ga gas arguments
    * @returns \{ hash: string; tx: RetTx }
    */
-  // stakeJetton: (
-  //   poolName: string, 
-  //   signer: Signer, 
-  //   amount: bigint,
-  //   gasArgs: GasArgs | undefined,
-  // ) => Promise<{ hash: string; tx: RetTx }>;
+  stakeJetton: (
+    poolName: string, 
+    signer: Signer, 
+    amount: bigint,
+    gasArgs: GasArgs | undefined,
+  ) => Promise<void | RetTx>;
 }
 
 export interface StakeLiquidity<Signer, RetTx, GasArgs> {
