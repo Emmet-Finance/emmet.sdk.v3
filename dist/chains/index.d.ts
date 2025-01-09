@@ -75,11 +75,15 @@ export interface ILiquidityPool<Signer, RetTx, GasArgs> {
      * @param ga gas arguments
      * @returns \{ hash: string; tx: RetTx }
      */
-    stakeJetton: (poolName: string, signer: Signer, amount: bigint, gasArgs: GasArgs | undefined) => Promise<void | RetTx>;
+    stakeJetton: (poolName: string, signer: Signer, amount: bigint, gasArgs: GasArgs | undefined) => Promise<RetTx>;
+    stakeTon: (signer: Signer, amount: bigint) => Promise<RetTx>;
 }
 export interface StakeLiquidity<Signer, RetTx, GasArgs> {
     /**
      * Stakes the underlying asset
+     *
+     * DEPRECATED (to be removed) - replaced by stakeJetton | stakeTon
+     *
      * @param signer the relevant chain signer
      * @param pool The address of the Liquidity Pool
      * @param amount the number of staked asset units
@@ -87,6 +91,33 @@ export interface StakeLiquidity<Signer, RetTx, GasArgs> {
      * @returns \{ hash: string; tx: RetTx }
      */
     stakeLiquidity: (signer: Signer, pool: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
+        hash: string;
+        tx: RetTx;
+    }>;
+}
+export interface WithdrawLiquidity<Signer, RetTx, GasArgs> {
+    /**
+     * Unstakes the underlying asset
+     * @param signer the relevant chain signer
+     * @param pool The address of the Liquidity Pool
+     * @param amount the number of unstaked asset units
+     * @param ga gas arguments
+     * @returns \{ hash: string; tx: RetTx }
+     */
+    withdrawLiquidity: (signer: Signer, pool: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
+        hash: string;
+        tx: RetTx;
+    }>;
+}
+export interface WithdrawFees<Signer, RetTx, GasArgs> {
+    /**
+     * Sends the earned rewards to the staker
+     * @param signer the relevant chain signer
+     * @param pool The address of the Liquidity Pool
+     * @param ga gas arguments
+     * @returns \{ hash: string; tx: RetTx;}
+     */
+    withdrawFees: (signer: Signer, pool: string, ga: GasArgs | undefined) => Promise<{
         hash: string;
         tx: RetTx;
     }>;
@@ -282,33 +313,6 @@ export interface GetBridgeAddress {
      * @returns The bridge address
      */
     bridge: () => Promise<string>;
-}
-export interface WithdrawLiquidity<Signer, RetTx, GasArgs> {
-    /**
-     * Unstakes the underlying asset
-     * @param signer the relevant chain signer
-     * @param pool The address of the Liquidity Pool
-     * @param amount the number of unstaked asset units
-     * @param ga gas arguments
-     * @returns \{ hash: string; tx: RetTx }
-     */
-    withdrawLiquidity: (signer: Signer, pool: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
-        hash: string;
-        tx: RetTx;
-    }>;
-}
-export interface WithdrawFees<Signer, RetTx, GasArgs> {
-    /**
-     * Sends the earned rewards to the staker
-     * @param signer the relevant chain signer
-     * @param pool The address of the Liquidity Pool
-     * @param ga gas arguments
-     * @returns \{ hash: string; tx: RetTx;}
-     */
-    withdrawFees: (signer: Signer, pool: string, ga: GasArgs | undefined) => Promise<{
-        hash: string;
-        tx: RetTx;
-    }>;
 }
 export interface GetLpCurrentAPY {
     /**
