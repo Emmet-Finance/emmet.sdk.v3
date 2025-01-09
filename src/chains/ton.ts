@@ -1,8 +1,8 @@
 import {
   Address,
   beginCell,
+  Cell,
   JettonMaster,
-  JettonWallet,
   type OpenedContract,
   type Sender,
   toNano,
@@ -42,8 +42,7 @@ import {
   TLPPosition,
 } from ".";
 import { Bridge, loadOutgoingTransaction } from "../contracts/ton";
-import { WrappedJetton } from "../contracts/ton/jetton-master";
-import { WrappedJettonWallet } from "../contracts/ton/jetton-wallet";
+import { JettonMinter } from "../contracts/ton/jetton-master";
 import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
 import { StonApiClient } from "@ston-fi/api";
 import { DEX, pTON } from "@ston-fi/sdk";
@@ -51,6 +50,10 @@ import { JettonLP } from "../contracts/ton/pools/tact_JettonLP";
 import { TonLP } from "../contracts/ton/pools/ton/tact_TonLP";
 import { LPWallet } from "../contracts/ton/pools/ton/tact_LPWallet";
 import { sha256_sync } from "@ton/crypto";
+import { JettonWallet } from '../contracts/ton/jetton-wallet';
+
+import { WrappedJetton } from "../contracts/ton/wrapped-jetton";
+import { WrappedJettonWallet } from "../contracts/ton/wrapped-jetton-wallet";
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -79,9 +82,7 @@ export type TonHelper = AddressBook &
   SendInstallment<Sender, string, TonGasArgs> &
 
   // L I Q U I D I T Y   P O O L
-  ILiquidityPool
-    // <Sender, string, { value: bigint; bounce?: boolean }> 
-    &
+  ILiquidityPool<Sender, string, { value: bigint; bounce?: boolean }> &
   StakeLiquidity<Sender, string, { value: bigint; bounce?: boolean }> &
   WithdrawLiquidity<Sender, string, { value: bigint; bounce?: boolean }> &
   WithdrawFees<Sender, string, { value: bigint; bounce?: boolean }> &
@@ -119,21 +120,21 @@ export async function tonHandler({
   stonRouterAddress,
   pTonAddress,
 }: TonParams): Promise<TonHelper> {
-
+  // -------------------------------------
   const clients = rpcs.map((rpc) => new TonClient({ endpoint: rpc }));
   const fetchClient = () => {
     const randomRpcIndex = Math.floor(Math.random() * rpcs.length);
     return clients[randomRpcIndex];
   };
 
-  //  C O N T R A C T S
+  //          C O N T R A C T S
   const ab = fetchClient().open(TonAddressBook.fromAddress(addressBook));
 
   const bridge = await getAddressByName("EmmetBridge");
   const bridgeReader = fetchClient().open(Bridge.fromAddress(bridge));
 
-  //  F U N C T I O N S
-
+  //          F U N C T I O N S
+  // -------------------------------------
   async function getAddressByName(name: string): Promise<Address> {
     try {
       const poolAddress: Address = await ab.getGet(name) ??
@@ -143,7 +144,7 @@ export async function tonHandler({
       throw new Error(error.message);
     }
   }
-
+  // -------------------------------------
   function getJettonLp(pool: string): OpenedContract<JettonLP> {
     try {
       return fetchClient().open(
@@ -153,7 +154,7 @@ export async function tonHandler({
       throw new Error("Error getting JettonLP");
     }
   }
-
+  // -------------------------------------
   async function getJettonLpByName(poolName: string): Promise<OpenedContract<JettonLP>> {
     try {
       const poolAddress: Address = await getAddressByName(`elp${poolName}`)
@@ -164,12 +165,28 @@ export async function tonHandler({
       throw new Error("Emmet.SDK getJettonLpByName: " + error.message);
     }
   }
-
+  // -------------------------------------
   async function getLastTxHashInBase64ForAddress(addr: Address) {
     const txns = await fetchClient().getTransactions(addr, { limit: 1 });
     return txns[0].hash().toString("base64");
   }
-
+  // -------------------------------------
+  function getJettonMaster(address: Address): OpenedContract<JettonMinter> {
+    return fetchClient().open(
+      JettonMinter.createFromAddress(address)
+    )
+  }
+  // -------------------------------------
+  function getJettonWallet(
+    walletAddress: Address
+  ): OpenedContract<JettonWallet> {
+    return fetchClient().open(
+      JettonWallet.createFromAddress(
+        walletAddress
+      ),
+    );
+  }
+  // -------------------------------------
   async function transferTon(
     bridge: OpenedContract<Bridge>,
     sender: Sender,
@@ -200,7 +217,7 @@ export async function tonHandler({
       },
     )) as unknown as Promise<string>;
   }
-
+  // -------------------------------------
   const transferJettonToBurner = async (
     fromToken: string,
     targetToken: string,
@@ -251,6 +268,7 @@ export async function tonHandler({
       },
     )) as unknown as Promise<string>;
   };
+  // -------------------------------------
   const transferJettonToBridge = async (
     fromToken: string,
     targetToken: string,
@@ -269,6 +287,27 @@ export async function tonHandler({
         await jt.getGetWalletAddress(signer.address!),
       ),
     );
+
+    const forward_payload: Cell = beginCell()
+      .storeUint(target_chain, 64) // Target Chain
+      .storeRef(
+        beginCell()
+          .storeUint(toKey(fromToken), 256)
+          .storeStringRefTail(fromToken)
+          .asCell(),
+      )
+      .storeRef(
+        beginCell()
+          .storeStringRefTail(destAddress)
+          .asCell())
+      .storeRef(
+        beginCell()
+          .storeUint(toKey(targetToken), 256)
+          .storeStringRefTail(targetToken)
+          .asCell(),
+      )
+      .endCell();
+
     return (await jtw.send(
       signer,
       { value: gasArgs.value + toNano("0.05") },
@@ -277,29 +316,14 @@ export async function tonHandler({
         amount: amt,
         custom_payload: null,
         destination: bridge,
-        forward_payload: beginCell()
-          .storeUint(target_chain, 64) // Target Chain
-          .storeRef(
-            beginCell()
-              .storeUint(toKey(fromToken), 256)
-              .storeStringRefTail(fromToken)
-              .asCell(),
-          )
-          .storeRef(beginCell().storeStringRefTail(destAddress).asCell())
-          .storeRef(
-            beginCell()
-              .storeUint(toKey(targetToken), 256)
-              .storeStringRefTail(targetToken)
-              .asCell(),
-          )
-          .endCell(),
+        forward_payload,
         forward_ton_amount: gasArgs.value,
         query_id: 0n,
         response_destination: bridge,
       },
     )) as unknown as Promise<string>;
   };
-
+  // -------------------------------------
   async function isWrappedToken(
     targetChain: bigint,
     fromTokenId: bigint,
@@ -321,7 +345,7 @@ export async function tonHandler({
 
     return false;
   }
-
+  // -------------------------------------
   async function getNewTxAfterHash(
     last: string,
     addr: Address,
@@ -344,7 +368,7 @@ export async function tonHandler({
         continue;
       }
 
-      const txs = await fetchClient().getTransactions(addr, { limit: 25 });
+      const txs = await fetchClient().getTransactions(addr, { limit: 10 });
 
       for (const tx of txs) {
         for (let i = 0; i < tx.outMessages.size; i++) {
@@ -367,7 +391,7 @@ export async function tonHandler({
   const ston = new StonApiClient({
     baseURL: stonApiUrl,
   });
-
+  // -------------------------------------
   return {
 
     // -----------------------------------------------------------------
@@ -493,23 +517,35 @@ export async function tonHandler({
       }
     },
     // -----------------------------------------------------------------
-    // async stakeJetton(poolName, signer, amount, gasArgs) {
-    //   try {
-    //     const lp = await getJettonLpByName(poolName);
-    //     const result = await lp.send(
-    //       signer,
-    //       {
-    //         value: toNano("0.2"),
-    //         ...gasArgs
-    //       },
-    //       {
-    //         $$type: 
-    //       }
-    //     )
-    //   } catch {
-        
-    //   }
-    // },
+    async stakeJetton(poolName, signer, amount, gasArgs) {
+      try {
+        const value: bigint = toNano("0.2");
+        const forwardAmount = toNano('0.1');
+
+        const lp = await getJettonLpByName(poolName);
+        const underlyingAddress: Address = await lp.getUnderlying();
+
+        const jettonMaster: OpenedContract<JettonMinter> = getJettonMaster(underlyingAddress);
+
+        const underlyingWallet: OpenedContract<JettonWallet> = getJettonWallet(
+          await jettonMaster.getWalletAddress(signer.address!!)
+        );
+
+        await underlyingWallet.sendTransfer(
+          signer,
+          value + (gasArgs ? gasArgs?.value : 0n),
+          amount,
+          lp.address,
+          signer.address!!,
+          beginCell().storeStringRefTail("Deposit").endCell(),
+          forwardAmount,
+          null
+        );
+
+      } catch (error: any | { message: string }) {
+        throw new Error(`Emmet.SDK stakeJetton: ${error.message}`)
+      }
+    },
     // -----------------------------------------------------------------
     async stakeLiquidity(signer, pool, amount, ga) {
       if (!signer.address)
@@ -778,19 +814,38 @@ export async function tonHandler({
     tokenBalance: async (token, addr) => {
 
       let tokenBal: bigint = 0n;
+      let tokenAddress: Address;
+      let userAddress: Address;
+
+      // Ensure token & user addresses are valid
+      try {
+        tokenAddress = Address.parse(token);
+      } catch {
+        console.warn(`Invalid token address: ${token}`);
+        return tokenBal;
+      }
 
       try {
-        const jc = fetchClient().open(JettonMaster.create(Address.parse(token)));
-        const jwa = await jc.getWalletAddress(Address.parse(addr));
-        const jw = await fetchClient().open(JettonWallet.create(jwa));
-        tokenBal = await jw.getBalance();
+        userAddress = Address.parse(addr);
+      } catch {
+        console.warn(`Invalid user address: ${addr}`);
+        return tokenBal;
+      }
+
+      try {
+        const jc = getJettonMaster(tokenAddress!);
+        const jwa = await jc.getWalletAddress(userAddress!);
+        const jw = getJettonWallet(jwa);
+        const data = await jw.getWalletData();
+        tokenBal = data.balance;
+        return tokenBal;
       } catch (error) {
-        console.warn(error)
+        // RPC / Contract related errors
+        console.warn(`Emmet.SDK tokenBalance: token: ${token}, user: ${addr}\n`, error);
+        await sleep(1000); // Not to overload the RPC
         // @ts-ignore
         return await this.tokenBalance(token, addr);
       }
-
-      return tokenBal;
 
     },
     // -----------------------------------------------------------------
