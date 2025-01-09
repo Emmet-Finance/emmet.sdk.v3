@@ -1,10 +1,13 @@
 import { Address, type Sender, TonClient } from "@ton/ton";
-import { type ChainID, type ChainName, type Decimals, type FetchTxInfo, type GetBalance, type GetBridgeAddress, type GetEmmetHashFromTx, type GetEstimatedTime, type GetProvider, type GetTokenBalance, type GetTxFee, type NativeCoinName, type ProtocolFee, type SendInstallment, type TokenInfo, type ValidateAddress, type AddressBook, type StakeLiquidity, type GetLpCurrentAPY, type GetLpProtocolFee, type GetLpProtocolFeeAmount, type GetLpTokenFee, type GetLpTotalSupply, type WithdrawFees, type WithdrawLiquidity, type GetLpFeeDecimals, type GetLpFeeGrowthGlobal, type GetLpProviderRewards, type IsTransferFromLp, type GetProtocolFeeInUSD, type GetSwapResultAmount, type GetCrossChainStrategy, type GetTokenAddress, type SwapTokens } from ".";
+import { type ChainID, type ChainName, type Decimals, type FetchTxInfo, type GetBalance, type GetBridgeAddress, type GetEmmetHashFromTx, type GetEstimatedTime, type GetProvider, type GetTokenBalance, type GetTxFee, type NativeCoinName, type ProtocolFee, type SendInstallment, type TokenInfo, type ValidateAddress, type AddressBook, type StakeLiquidity, type WithdrawFees, type WithdrawLiquidity, type IsTransferFromLp, type GetProtocolFeeInUSD, type GetSwapResultAmount, type GetCrossChainStrategy, type GetTokenAddress, type SwapTokens, ILiquidityPool } from ".";
 export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
 };
-export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Sender, string, TonGasArgs> & ValidateAddress & GetTokenBalance & GetTxFee & ChainName & NativeCoinName & ChainID & FetchTxInfo & ProtocolFee & GetEmmetHashFromTx & TokenInfo & GetEstimatedTime & GetBridgeAddress & Decimals & AddressBook & StakeLiquidity<Sender, string, {
+export type TonHelper = AddressBook & ChainID & ChainName & Decimals & GetBridgeAddress & GetBalance & GetCrossChainStrategy & GetEmmetHashFromTx & GetEstimatedTime & GetProtocolFeeInUSD & GetProvider<TonClient> & GetTokenAddress & GetTokenBalance & GetTxFee & NativeCoinName & ProtocolFee & TokenInfo & ValidateAddress & FetchTxInfo & SendInstallment<Sender, string, TonGasArgs> & ILiquidityPool<Sender, string, {
+    value: bigint;
+    bounce?: boolean;
+}> & StakeLiquidity<Sender, string, {
     value: bigint;
     bounce?: boolean;
 }> & WithdrawLiquidity<Sender, string, {
@@ -13,7 +16,7 @@ export type TonHelper = GetBalance & GetProvider<TonClient> & SendInstallment<Se
 }> & WithdrawFees<Sender, string, {
     value: bigint;
     bounce?: boolean;
-}> & GetLpCurrentAPY & GetLpTotalSupply & GetLpTokenFee & GetLpProtocolFee & GetLpProtocolFeeAmount & GetLpProviderRewards & GetLpFeeGrowthGlobal & GetLpFeeDecimals & IsTransferFromLp & GetSwapResultAmount & GetProtocolFeeInUSD & GetCrossChainStrategy & GetTokenAddress & SwapTokens<Sender, undefined>;
+}> & IsTransferFromLp & GetSwapResultAmount & SwapTokens<Sender, undefined>;
 export interface TonParams {
     rpcs: readonly string[];
     nativeTokenId: bigint;
@@ -25,7 +28,7 @@ export interface TonParams {
     pTonAddress: string;
 }
 /**
- *
+ * Holds the code execution for a number of `ms` milliseconds
  * @param ms number of milliseconds to wait
  * @returns halts the program execution for the `ms` milliseconds
  */

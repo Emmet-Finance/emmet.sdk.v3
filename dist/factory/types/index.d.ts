@@ -1,4 +1,4 @@
-import type { Web3Helper, Web3Params } from "../../chains/web3";
+import type { Web3Helper, Web3Params } from "../../chains/web3helper";
 import type { TonHelper, TonParams } from "../../chains/ton";
 import type { AddressBook, ChainID, Decimals, GetCrossChainStrategy, GetLpTokenFee, GetSwapResultAmount, GetTxFee, NativeCoinName, PreTransfer, ProtocolFee, SendInstallment, StakeLiquidity, WithdrawFees, WithdrawLiquidity } from "../../chains";
 export type EvmMeta = [Web3Helper, Web3Params];

@@ -28,6 +28,69 @@ export interface GetBalance {
      */
     balance: (addr: string) => Promise<bigint>;
 }
+export type TLPData = {
+    "$$type": string;
+    apy: bigint;
+    available_underlying: bigint;
+    decimals: bigint;
+    fee_growth_global: bigint;
+    fee_decimals: bigint;
+    protocol_fee: bigint;
+    protocol_fee_amount: bigint;
+    token_fee: bigint;
+    total_supply: bigint;
+};
+export type TLPPosition = {
+    "$$type": string;
+    balance: bigint;
+    last_fee_growth: bigint;
+    rewards: bigint;
+};
+export interface ILiquidityPool<Signer, RetTx, GasArgs> {
+    /**
+     * Fetches a LP data in a single request
+     * @param poolName the name of the liquidity pool
+     * @returns see type `TLPData`
+     */
+    getLpData: (poolName: string) => Promise<TLPData>;
+    /**
+     * Fetches the number of asset units available as staker rewards
+     * @param poolName the name of the liquidity pool
+     * @param staker the Address of the depositor
+     * @returns The number of available tokens
+     */
+    getRewards: (poolName: string, staker: string) => Promise<bigint>;
+    /**
+     * Fetches the `staker`'s position if any
+     * @param poolName the name of the liquidity pool
+     * @param staker the Address of the depositor
+     * @returns see type `TLPPosition`
+     */
+    getPosition: (poolName: string, staker: string) => Promise<TLPPosition>;
+    /**
+     * Stakes the underlying asset
+     * @param poolName the name of the liquidity pool
+     * @param signer the relevant chain signer
+     * @param amount the number of staked asset units
+     * @param ga gas arguments
+     * @returns \{ hash: string; tx: RetTx }
+     */
+    stakeJetton: (poolName: string, signer: Signer, amount: bigint, gasArgs: GasArgs | undefined) => Promise<void | RetTx>;
+}
+export interface StakeLiquidity<Signer, RetTx, GasArgs> {
+    /**
+     * Stakes the underlying asset
+     * @param signer the relevant chain signer
+     * @param pool The address of the Liquidity Pool
+     * @param amount the number of staked asset units
+     * @param ga gas arguments
+     * @returns \{ hash: string; tx: RetTx }
+     */
+    stakeLiquidity: (signer: Signer, pool: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
+        hash: string;
+        tx: RetTx;
+    }>;
+}
 /**
  * Represents a generic interface for getting a provider.
  * @template T The type of the provider.
@@ -220,20 +283,6 @@ export interface GetBridgeAddress {
      */
     bridge: () => Promise<string>;
 }
-export interface StakeLiquidity<Signer, RetTx, GasArgs> {
-    /**
-     * Stakes the underlying asset
-     * @param signer the relevant chain signer
-     * @param pool The address of the Liquidity Pool
-     * @param amount the number of staked asset units
-     * @param ga gas arguments
-     * @returns \{ hash: string; tx: RetTx }
-     */
-    stakeLiquidity: (signer: Signer, pool: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
-        hash: string;
-        tx: RetTx;
-    }>;
-}
 export interface WithdrawLiquidity<Signer, RetTx, GasArgs> {
     /**
      * Unstakes the underlying asset
@@ -300,15 +349,6 @@ export interface GetLpProtocolFeeAmount {
      * @returns the number of the tokens avalable as Emmet.Community fee
      */
     getLpProtocolFeeAmount: (pool: string) => Promise<bigint>;
-}
-export interface GetLpProviderRewards {
-    /**
-     * Fetches the number of asset units available as staker rewards
-     * @param pool The address of the Liquidity Pool
-     * @param address staker address
-     * @returns The number of available tokens
-     */
-    getLpProviderRewards: (pool: string, address: string) => Promise<bigint>;
 }
 export interface GetLpFeeGrowthGlobal {
     /**
