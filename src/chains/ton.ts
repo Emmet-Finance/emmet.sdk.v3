@@ -522,8 +522,8 @@ export async function tonHandler({
         throw new Error(`Signer address not passed: ${signer}`);
 
       try {
-        const value: bigint = toNano("0.2");
-        const forwardAmount = toNano('0.1');
+        const value: bigint = toNano("0.12");
+        const forwardAmount = toNano('0.095');
 
         const lp = await getJettonLpByName(poolName);
         const underlyingAddress: Address = await lp.getUnderlying();
@@ -538,7 +538,7 @@ export async function tonHandler({
 
         await underlyingWallet.sendTransfer(
           signer,
-          value + (gasArgs ? gasArgs?.value : 0n),
+          value,
           amount,
           lp.address,
           signer.address!!,
@@ -661,7 +661,7 @@ export async function tonHandler({
 
       await lp.send(
         signer,
-        { value: toNano("0.2"), ...ga },
+        { value: toNano("0.06"), ...ga },
         { $$type: "WithdrawRewards" }
       );
 
@@ -678,7 +678,7 @@ export async function tonHandler({
 
       await lp.send(
         signer,
-        { value: toNano("0.5"), ...ga },
+        { value: toNano("0.05"), ...ga },
         {
           $$type: "Withdraw",
           amount
