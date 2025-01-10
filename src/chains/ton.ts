@@ -536,9 +536,13 @@ export async function tonHandler({
 
         const last = await getLastTxHashInBase64ForAddress(underlyingWallet.address);
 
+        const addValue: bigint = gasArgs
+          ? gasArgs.value
+          : 0n;
+
         await underlyingWallet.sendTransfer(
           signer,
-          value,
+          value + addValue,
           amount,
           lp.address,
           signer.address!!,
