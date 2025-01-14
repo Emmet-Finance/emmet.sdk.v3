@@ -517,7 +517,7 @@ export async function tonHandler({
       }
     },
     // -----------------------------------------------------------------
-    async stakeJetton(poolName, signer, amount, gasArgs) {
+    async stakeToken(poolName, signer, amount, gasArgs) {
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
 
@@ -562,7 +562,7 @@ export async function tonHandler({
       }
     },
     // -----------------------------------------------------------------
-    async stakeTon(signer, amount) {
+    async stakeCoin(signer, amount) {
       if (!signer.address)
         throw new Error(`Signer address not passed: ${signer}`);
 
