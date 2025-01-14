@@ -4,7 +4,6 @@ import {
     type ContractTransactionResponse,
     type Overrides,
     type Provider,
-    type Signer,
 } from "ethers";
 import type {
     AddressBook,
@@ -80,12 +79,12 @@ export type Web3Helper = GetBalance &
     ParceCallData &
     GetTokenAddress &
     GetSwapResultAmount &
-    ILiquidityPool<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> &
-    PreTransfer<Signer | JsonRpcSigner, PayableOverrides> &
-    SendInstallment<Signer | JsonRpcSigner, ContractTransactionResponse, PayableOverrides> &
-    StakeLiquidity<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> &
-    WithdrawLiquidity<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> &
-    WithdrawFees<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> 
+    ILiquidityPool<JsonRpcSigner, ContractTransactionResponse, Overrides> &
+    PreTransfer<JsonRpcSigner, PayableOverrides> &
+    SendInstallment<JsonRpcSigner, ContractTransactionResponse, PayableOverrides> &
+    StakeLiquidity<JsonRpcSigner, ContractTransactionResponse, Overrides> &
+    WithdrawLiquidity<JsonRpcSigner, ContractTransactionResponse, Overrides> &
+    WithdrawFees<JsonRpcSigner, ContractTransactionResponse, Overrides> 
     ;
 
 export interface Web3Params {
