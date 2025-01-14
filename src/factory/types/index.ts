@@ -108,27 +108,9 @@ export type HelperMap<K extends ChainNonce> = Map<
 >;
 
 export interface ChainFactory {
-  stakeLiqiduity: <Signer, RetTx, GasArgs>(
-    chain: StakeLiquidity<Signer, RetTx, GasArgs> & AddressBook,
-    signer: Signer,
-    token: string,
-    amount: bigint,
-    ga: GasArgs | undefined,
-  ) => Promise<{ hash: string; tx: RetTx }>;
-  withdrawLiqiduity: <Signer, RetTx, GasArgs>(
-    chain: WithdrawLiquidity<Signer, RetTx, GasArgs> & AddressBook,
-    signer: Signer,
-    token: string,
-    amount: bigint,
-    ga: GasArgs | undefined,
-  ) => Promise<{ hash: string; tx: RetTx }>;
-  withdrawFees: <Signer, RetTx, GasArgs>(
-    chain: WithdrawFees<Signer, RetTx, GasArgs> & AddressBook,
-    signer: Signer,
-    token: string,
-    ga: GasArgs | undefined,
-  ) => Promise<{ hash: string; tx: RetTx }>;
-  inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
+  // -----------------------------------------------------------------
+  //                  B R I D G E   R E L A T E D
+  // -----------------------------------------------------------------
   sendInstallment: <Signer, RetTx, GasArgs>(
     chain: SendInstallment<Signer, RetTx, GasArgs> & GetTxFee,
     signer: Signer,
@@ -139,6 +121,7 @@ export interface ChainFactory {
     destAddress: string,
     gasArgs?: GasArgs,
   ) => Promise<{ hash: string; tx: RetTx }>;
+  // -----------------------------------------------------------------
   preTransfer: <Signer, GasArgs>(
     chain: PreTransfer<Signer, GasArgs>,
     signer: Signer,
@@ -147,23 +130,63 @@ export interface ChainFactory {
     amount: bigint,
     gasArgs: GasArgs,
   ) => Promise<string>;
+  // -----------------------------------------------------------------
+  //                          C O M M O N
+  // -----------------------------------------------------------------
+  inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
+  // -----------------------------------------------------------------
+  //                  L I Q U D I T Y  P O O L
+  // -----------------------------------------------------------------
+  stakeLiqiduity: <Signer, RetTx, GasArgs>(
+    chain: StakeLiquidity<Signer, RetTx, GasArgs> & AddressBook,
+    signer: Signer,
+    token: string,
+    amount: bigint,
+    ga: GasArgs | undefined,
+  ) => Promise<{ hash: string; tx: RetTx }>;
+  // -----------------------------------------------------------------
+  withdrawLiqiduity: <Signer, RetTx, GasArgs>(
+    chain: WithdrawLiquidity<Signer, RetTx, GasArgs> & AddressBook,
+    signer: Signer,
+    token: string,
+    amount: bigint,
+    ga: GasArgs | undefined,
+  ) => Promise<{ hash: string; tx: RetTx }>;
+  // -----------------------------------------------------------------
+  withdrawFees: <Signer, RetTx, GasArgs>(
+    chain: WithdrawFees<Signer, RetTx, GasArgs> & AddressBook,
+    signer: Signer,
+    token: string,
+    ga: GasArgs | undefined,
+  ) => Promise<{ hash: string; tx: RetTx }>;
+
+  // -----------------------------------------------------------------
+  //                  E X P L O R E R   R E L A T E D
+  // -----------------------------------------------------------------
   getTransactions: (
     batch: bigint | number,
     offset: bigint | number,
   ) => Promise<Transaction[]>;
+  // -----------------------------------------------------------------
   getTransaction: (hash: string) => Promise<DetailedTx>;
+  // -----------------------------------------------------------------
   getExplorerStats: () => Promise<ExplorerMeta>;
-  getStats: () => Promise<[bigint, bigint, bigint, bigint] & { 
+  // -----------------------------------------------------------------
+  getStats: () => Promise<[bigint, bigint, bigint, bigint] & {
     bridgedInUSD: bigint;
     collectedFees: bigint;
     totalTransactions: bigint;
-    uniqueAccounts: bigint; 
+    uniqueAccounts: bigint;
   }>
+  // -----------------------------------------------------------------
   getTokenPrice: (symbol: string) => Promise<bigint>;
+  // -----------------------------------------------------------------
   getPriceDecimals: (symbol: string) => Promise<bigint>;
+  // -----------------------------------------------------------------
   getProtocolFeeInUSD: (
     chain: ProtocolFee & NativeCoinName & Decimals,
   ) => Promise<number>;
+  // -----------------------------------------------------------------
   getDestinationTokens: (
     fromChain: GetCrossChainStrategy &
       GetLpTokenFee &
@@ -175,6 +198,7 @@ export interface ChainFactory {
     sourceAmount: bigint,
     slippage: number, // out of 10000. 100/10000 = 1%
   ) => Promise<bigint>;
+  // -----------------------------------------------------------------
 }
 
 export interface Transaction {
@@ -191,6 +215,7 @@ export interface Transaction {
   started: bigint;
   finished: bigint;
 }
+
 export type DetailedTx = Transaction & {
   fromChainTimestamp: bigint;
   targetChainTimestamp: bigint;
