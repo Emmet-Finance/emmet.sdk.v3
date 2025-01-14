@@ -1,5 +1,6 @@
 import {
     BigNumberish,
+    JsonRpcSigner,
     type ContractTransactionResponse,
     type Overrides,
     type Provider,
@@ -50,11 +51,9 @@ import type {
 
 export type Web3Helper = GetBalance &
     GetProvider<Provider> &
-    SendInstallment<Signer, ContractTransactionResponse, PayableOverrides> &
     ValidateAddress &
     GetTokenBalance &
     GetApprovedTokenAmount &
-    PreTransfer<Signer, PayableOverrides> &
     ChainName &
     NativeCoinName &
     AddressBook &
@@ -69,9 +68,6 @@ export type Web3Helper = GetBalance &
     GetBridgeAddress &
     GetProtocolFeeInUSD &
     Decimals &
-    StakeLiquidity<Signer, ContractTransactionResponse, Overrides> &
-    WithdrawLiquidity<Signer, ContractTransactionResponse, Overrides> &
-    WithdrawFees<Signer, ContractTransactionResponse, Overrides> &
     GetLpCurrentAPY &
     GetLpTotalSupply &
     GetLpTokenFee &
@@ -84,7 +80,12 @@ export type Web3Helper = GetBalance &
     ParceCallData &
     GetTokenAddress &
     GetSwapResultAmount &
-    ILiquidityPool<Signer, ContractTransactionResponse, Overrides>
+    ILiquidityPool<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> &
+    PreTransfer<Signer | JsonRpcSigner, PayableOverrides> &
+    SendInstallment<Signer | JsonRpcSigner, ContractTransactionResponse, PayableOverrides> &
+    StakeLiquidity<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> &
+    WithdrawLiquidity<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> &
+    WithdrawFees<Signer | JsonRpcSigner, ContractTransactionResponse, Overrides> 
     ;
 
 export interface Web3Params {
