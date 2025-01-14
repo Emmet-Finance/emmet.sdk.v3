@@ -610,7 +610,7 @@ export async function tonHandler({
         await tonLp.send(
           signer,
           {
-            value: amount + toNano("0.04"),
+            value: amount + toNano("0.02"),
           },
           {
             $$type: "Deposit",
@@ -618,7 +618,11 @@ export async function tonHandler({
             forward_payload: payload
           },
         );
-        return await getNewTxAfterHash(last, tonLp.address, 923309543);
+        return (await getNewTxAfterHash(
+          last, 
+          tonLp.address, 
+          0x97ed57f1) // Deposit
+        );
       }
 
       // ----------------- If Jetton is deposited -----------------
@@ -638,7 +642,7 @@ export async function tonHandler({
       await wc.send(
         signer,
         {
-          value: toNano("0.4"),
+          value: toNano("0.2"),
           ...ga,
         },
         {
@@ -647,12 +651,16 @@ export async function tonHandler({
           custom_payload: null,
           sender: lp.address,
           forward_payload: payload,
-          forward_ton_amount: toNano("0.2"),
+          forward_ton_amount: toNano("0.1"),
           query_id: 0n,
           response_destination: lp.address,
         },
       );
-      return await getNewTxAfterHash(last, lp.address, 923309543);
+      return (await getNewTxAfterHash(
+        last, 
+        wc.address,
+        0xf8a7ea5) // op::transfer
+      );
     },
     // -----------------------------------------------------------------
     async withdrawFees(signer, pool, ga) {
