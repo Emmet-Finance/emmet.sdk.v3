@@ -42,6 +42,7 @@ import type {
     ReadConsensus,
     ParceCallData,
     GetTokenAddress,
+    ILiquidityPool,
 } from ".";
 import type {
     PayableOverrides
@@ -82,7 +83,8 @@ export type Web3Helper = GetBalance &
     GetCrossChainStrategy &
     ParceCallData &
     GetTokenAddress &
-    GetSwapResultAmount
+    GetSwapResultAmount &
+    ILiquidityPool<Signer, ContractTransactionResponse, Overrides>
     ;
 
 export interface Web3Params {
