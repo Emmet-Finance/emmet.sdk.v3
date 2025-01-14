@@ -71,6 +71,12 @@ export type ChainInfo = {
 } & Map<ChainNonce, ChainData<ChainNonce>>;
 export type HelperMap<K extends ChainNonce> = Map<K, InferChainH<K> | undefined>;
 export interface ChainFactory {
+    sendInstallment: <Signer, RetTx, GasArgs>(chain: SendInstallment<Signer, RetTx, GasArgs> & GetTxFee, signer: Signer, amount: bigint, chainId: number, fromSymbol: string, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
+        hash: string;
+        tx: RetTx;
+    }>;
+    preTransfer: <Signer, GasArgs>(chain: PreTransfer<Signer, GasArgs>, signer: Signer, tid: string, spender: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
+    inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
     stakeLiqiduity: <Signer, RetTx, GasArgs>(chain: StakeLiquidity<Signer, RetTx, GasArgs> & AddressBook, signer: Signer, token: string, amount: bigint, ga: GasArgs | undefined) => Promise<{
         hash: string;
         tx: RetTx;
@@ -83,12 +89,6 @@ export interface ChainFactory {
         hash: string;
         tx: RetTx;
     }>;
-    inner: <T extends ChainNonce>(chain: T) => Promise<InferChainH<T>>;
-    sendInstallment: <Signer, RetTx, GasArgs>(chain: SendInstallment<Signer, RetTx, GasArgs> & GetTxFee, signer: Signer, amount: bigint, chainId: number, fromSymbol: string, tokenSymbol: string, destAddress: string, gasArgs?: GasArgs) => Promise<{
-        hash: string;
-        tx: RetTx;
-    }>;
-    preTransfer: <Signer, GasArgs>(chain: PreTransfer<Signer, GasArgs>, signer: Signer, tid: string, spender: string, amount: bigint, gasArgs: GasArgs) => Promise<string>;
     getTransactions: (batch: bigint | number, offset: bigint | number) => Promise<Transaction[]>;
     getTransaction: (hash: string) => Promise<DetailedTx>;
     getExplorerStats: () => Promise<ExplorerMeta>;
