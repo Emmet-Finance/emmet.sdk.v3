@@ -3,6 +3,7 @@ import {
   AddressLike,
   type BigNumberish,
   ContractRunner,
+  ContractTransactionResponse,
   isAddress,
   JsonRpcProvider,
   Overrides,
@@ -12,6 +13,8 @@ import {
 import type {
   TStrategy,
   SendParams,
+  TLPData,
+  TLPPosition,
 } from ".";
 import { strategyMap, EStrategy } from ".";
 import {
@@ -19,6 +22,7 @@ import {
   EmmetAddressBook__factory,
   EmmetBridge__factory,
   EmmetData__factory,
+  EmmetLP,
   EmmetLP__factory,
   ERC20__factory,
   WrappedERC20__factory,
@@ -75,8 +79,94 @@ export async function web3Helper({
   const emmetData = await addrBook.get("EmmetData");
   const data = EmmetData__factory.connect(emmetData, await fetchProvider());
 
+  //          F U N C T I O N S
+  // -------------------------------------
+  async function getAddressByName(name: string): Promise<string> {
+    let address: string = "";
+    try {
+      address = await addrBook.get(name);
+    } catch (error: { message: string } | any) {
+      throw new Error("Emmet.SDK getAddressByName: " + error.message);
+    }
+    return address;
+  }
+  // -------------------------------------
+  async function getLpByName(poolName: string, signer?: ContractRunner | null): Promise<EmmetLP | undefined> {
+    let lp: EmmetLP | undefined = undefined;
+    try {
+      const lpAddress: string = await getAddressByName(poolName);
+      lp = EmmetLP__factory.connect(
+        lpAddress,
+        signer ? signer : await fetchProvider(),
+      ) as EmmetLP;
+
+    } catch (error: { message: string } | any) {
+      throw new Error("Emmet.SDK getLpByName: " + error.message);
+    }
+    return lp;
+
+  }
+  // -------------------------------------
+  function formatedPoolName(poolName: string): string {
+    return poolName.includes("elp")
+      ? poolName
+      : `elp${poolName}`;
+  }
+
   return {
+    // -----------------------------------------------------------------
+    //                          C O M M O N
+    // -----------------------------------------------------------------
+    async address(contr: string) {
+      return await addrBook.get(contr);
+    },
+    // -----------------------------------------------------------------
+    async bridge() {
+      return await bridge.getAddress();
+    },
+    // -----------------------------------------------------------------
     id: async () => (await (await fetchProvider()).getNetwork()).chainId,
+    // -----------------------------------------------------------------
+    async crossChainStrategy(targetChain: BigNumberish, fromSymbol: string, targetSymbol: string) {
+
+      const outgoing: TStrategy[] = [];
+      const incoming: TStrategy[] = [];
+      const foreign: TStrategy[] = [];
+
+      try {
+
+        const ccts = await data.getStrategy(
+          targetChain,
+          fromSymbol,
+          targetSymbol,
+        );
+
+        const map = [
+          { strategies: ccts.outgoing, targetArray: outgoing },
+          { strategies: ccts.incoming, targetArray: incoming },
+          { strategies: ccts.foreign, targetArray: foreign }
+        ];
+
+        for (const { strategies, targetArray } of map) {
+          for (const strat of strategies) {
+            const strategyName: TStrategy = strategyMap[BigInt(strat).toString()] as TStrategy;
+            if (strategyName) {
+              targetArray.push(strategyName);
+            }
+          }
+        }
+
+      } catch (error) {
+
+      }
+
+      return {
+        outgoing,
+        incoming,
+        foreign,
+      };
+    },
+    // -----------------------------------------------------------------
     parseCallData: (encoded: string) => {
       if (encoded.slice(0, 10).toLowerCase() == "0x3ba81aee") {
         try {
@@ -117,159 +207,30 @@ export async function web3Helper({
             toToken,
             data
           };
+
         } catch (error) {
           console.log(error)
         }
       }
       return undefined;
-
     },
-    stakeLiquidity: async (
-      signer: Signer, 
-      pool: string, 
-      amount: bigint, 
-      ga: Overrides | undefined
-    ) => {
-      const lp = EmmetLP__factory.connect(pool, signer);
-      const deposit = await lp.deposit(amount, { ...ga });
-      return {
-        hash: deposit.hash,
-        tx: deposit,
-      };
+    // -----------------------------------------------------------------
+    protocolFeeInUSD: () => {
+      // const fee = await data.protocolFee();
+      // return fee.usdEquivalent;
+      return 50n;
     },
-    async getSwapResultAmount(
-      _fromSymbol: any,
-      _targetSymbol: any,
-      amount: BigNumberish,
-      _slippage: any
-    ) {
-      return BigInt(amount);
+    // -----------------------------------------------------------------
+    validateAddress: (addr: string) => Promise.resolve(isAddress(addr)),
+    // -----------------------------------------------------------------
+    getTokenAddress: async (symbol: string): Promise<string> => {
+      const address = await addrBook.get(symbol);
+      return address ? address : "";
     },
-    async crossChainStrategy(targetChain: BigNumberish, fromSymbol: string, targetSymbol: string) {
-
-      const outgoing: TStrategy[] = [];
-      const incoming: TStrategy[] = [];
-      const foreign: TStrategy[] = [];
-
-      try {
-
-        const ccts = await data.getStrategy(
-          targetChain,
-          fromSymbol,
-          targetSymbol,
-        );
-
-        const map = [
-          { strategies: ccts.outgoing, targetArray: outgoing },
-          { strategies: ccts.incoming, targetArray: incoming },
-          { strategies: ccts.foreign, targetArray: foreign }
-        ];
-
-        for (const { strategies, targetArray } of map) {
-          for (const strat of strategies) {
-            const strategyName: TStrategy = strategyMap[BigInt(strat).toString()] as TStrategy;
-            if (strategyName) {
-              targetArray.push(strategyName);
-            }
-          }
-        }
-
-      } catch (error) {
-
-      }
-
-      return {
-        outgoing,
-        incoming,
-        foreign,
-      };
-    },
-    findTransactionByFromHash: async (hash: string) => {
-      try {
-        const TXs: CrossChainTransaction.CCTStructOutput[] = await consensus.getTransactions(100, 0);
-        const filtered: CrossChainTransaction.CCTStructOutput[] | undefined =
-          TXs.filter(tx => tx.originalHash == hash.replace('0x', ''));
-        return filtered[0];
-      } catch (error) {
-        return undefined;
-      }
-    },
-    getConsensusTransaction: async (hash: string) => {
-      try {
-        const TX: CrossChainTransaction.CCTStructOutput = await consensus.getTransaction(hash);
-        return TX;
-      } catch (error) {
-        return undefined;
-      }
-
-    },
-    withdrawLiquidity: async (signer: any, pool: string, amt: BigNumberish, ga: any) => {
-      const lp = EmmetLP__factory.connect(pool, signer);
-      const withdraw = await lp.withdrawTokens(amt, { ...ga });
-      return {
-        hash: withdraw.hash,
-        tx: withdraw,
-      };
-    },
-    withdrawFees: async (signer: any, pool: string, ga: any) => {
-      const lp = EmmetLP__factory.connect(pool, signer);
-      const withdraw = await lp.withdrawFees({ ...ga });
-      return {
-        hash: withdraw.hash,
-        tx: withdraw,
-      };
-    },
-    getLpCurrentAPY: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const apy = await lp.currentAPY();
-      return apy;
-    },
-    getLpTotalSupply: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const totalSupply = await lp.totalSupply();
-      return totalSupply;
-    },
-    getLpTokenFee: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const tokenFee = await lp.tokenFee();
-      return tokenFee;
-    },
-    getLpProtocolFee: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const protocolFee = await lp.protocolFee();
-      return protocolFee;
-    },
-    getLpProtocolFeeAmount: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const protocolFeeAmount = await lp.protocolFeeAmount();
-      return protocolFeeAmount;
-    },
-    getLpFeeGrowthGlobal: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const feeGrowthGlobal = await lp.feeGrowthGlobal();
-      return feeGrowthGlobal;
-    },
-    getLpFeeDecimals: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const feeDecimals = await lp.feeDecimals();
-      return feeDecimals;
-    },
-    async address(contr: string) {
-      return await addrBook.get(contr);
-    },
-    async bridge() {
-      return await bridge.getAddress();
-    },
-    async txFee(targetChainId: BigNumberish, fromToken: string, targetToken: string) {
-      const isFeeERC20: boolean = false;
-      const protocolFee = await bridge.estimateFee(
-        targetChainId,
-        fromToken,
-        targetToken,
-        isFeeERC20
-      );
-      return protocolFee;
-    },
+    // -----------------------------------------------------------------
+    tokenBalance: async (tkn: string, addr: AddressLike) =>
+      WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr),
+    // -----------------------------------------------------------------
     async txInfo(hash: string) {
       const provider = await fetchProvider();
       if (hash === "") {
@@ -298,53 +259,28 @@ export async function web3Helper({
         };
       }
     },
-    async emmetHashFromtx(hash: string) {
 
-      const receipt = await (await fetchProvider()).waitForTransaction(hash);
-
-      if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
-      const log = receipt.logs.find((e) =>
-        e.topics.includes(
-          bridge.interface.getEvent("SentInstallment").topicHash,
-        ),
-      );
-      if (!log)
-        throw new Error(`No send installment log found for tx hash: ${hash}`);
-      const decode = bridge.interface.parseLog(log);
-      return decode?.args.txHash;
-    },
+    // -----------------------------------------------------------------
     protocolFee() {
       return Promise.resolve(50n); // data.getProtocolFee();
     },
+    // -----------------------------------------------------------------
     async token(symbol: string) {
       const token = await data.getToken(symbol);
       return token;
     },
+    // -----------------------------------------------------------------
     decimals: async (pool: string | undefined) => {
       if (!pool) return 18;
       return Number(
         await ERC20__factory.connect(pool, await fetchProvider()).decimals(),
       );
     },
+    // -----------------------------------------------------------------
     nativeCoin: () => nativeCoin,
+    // -----------------------------------------------------------------
     chainName: () => chainName,
-    preTransfer: async (
-      signer: ContractRunner | null,
-      tid: string,
-      spender: AddressLike,
-      amt: BigNumberish,
-      gasArgs: any
-    ) => {
-      const erc = WrappedERC20__factory.connect(tid, signer);
-      const preTransferGas = await erc.approve.estimateGas(spender, amt);
-      const approved = await erc.approve(spender, amt, {
-        ...gasArgs,
-        gasLimit: preTransferGas,
-      });
-      await approved.wait();
-      return approved.hash;
-    },
-
+    // -----------------------------------------------------------------
     getApprovedAmount: async (
       tid: string,
       owner: AddressLike,
@@ -354,8 +290,11 @@ export async function web3Helper({
         owner,
         spender,
       ),
+    // -----------------------------------------------------------------
     balance: async (addr: AddressLike) => (await fetchProvider()).getBalance(addr),
+    // -----------------------------------------------------------------
     provider: async () => await fetchProvider(),
+    // -----------------------------------------------------------------
     async estimateTime(targetChain: BigNumberish, fromToken: string, targetToken: string) {
       // Default time
       let estimation: bigint = 2n * 60n * 1000n;
@@ -395,6 +334,179 @@ export async function web3Helper({
       return estimation;
     },
 
+    // -----------------------------------------------------------------
+    //                  L I Q U D I T Y  P O O L
+    // -----------------------------------------------------------------
+    async getLpData(poolName) {
+      let data: TLPData = {
+        $$type: "LPData",
+        apy: 0n,
+        available_underlying: 0n,
+        decimals: 0n,
+        fee_growth_global: 0n,
+        fee_decimals: 0n,
+        protocol_fee: 0n,
+        protocol_fee_amount: 0n,
+        token_fee: 0n,
+        total_supply: 0n,
+      }
+      try {
+        const lp = await getLpByName(formatedPoolName(poolName));
+        // Use a fallback value to ensure type safety
+        const lpData = await lp?.getData();
+        if (lpData) {
+          data = {
+            $$type: "LPData", // Set the required value for $$type
+            apy: lpData.apy,
+            available_underlying: lpData.availableUnderlying,
+            decimals: lpData.tokenDecimals,
+            fee_growth_global: lpData.globalRewards,
+            fee_decimals: lpData.feesDecimals,
+            protocol_fee: lpData.communityFee,
+            protocol_fee_amount: lpData.stakerFee,
+            token_fee: lpData.stakerFee, // Adjust as needed
+            total_supply: lpData.supply,
+          };
+        }
+
+      } catch (error: any | { message: string }) {
+        console.warn("Emmet.SDK getLpData " + error.message);
+      }
+      return data;
+    },
+    // -----------------------------------------------------------------
+    async getRewards(poolName, staker): Promise<bigint> {
+      let rewards: bigint = 0n;
+      try {
+        const lp = await getLpByName(formatedPoolName(poolName));
+        rewards = await lp?.getProviderRewards(staker) as bigint;
+      } catch (error: any | { message: string }) {
+        console.warn("Emmet.SDK getRewards " + error.message);
+      }
+      return rewards;
+    },
+    // -----------------------------------------------------------------
+    async getPosition(poolName, staker) {
+      let position: TLPPosition = {
+        "$$type": "Position",
+        balance: 0n,
+        last_fee_growth: 0n,
+        rewards: 0n
+      }
+
+      try {
+        const lp = await getLpByName(formatedPoolName(poolName));
+        const lpPosition = await lp?.getPosition(staker);
+        if (lpPosition) {
+          position = {
+            ...position,
+            balance: lpPosition.balance,
+            last_fee_growth: lpPosition.internalFeeGrowth,
+            rewards: lpPosition.rewards
+          }
+        }
+      } catch (error: any | { message: string }) {
+        console.warn("Emmet.SDK getPosition " + error.message);
+      }
+
+      return position;
+    },
+    // -----------------------------------------------------------------
+    async stakeToken(poolName, signer, amount, gasArgs) {
+      let result: ContractTransactionResponse | undefined;
+      try {
+        const lp = await getLpByName(formatedPoolName(poolName), signer);
+        result = await lp?.deposit(amount, { ...gasArgs });
+      } catch (error: any | { message: string }) {
+        console.warn("Emmet.SDK stakeToken " + error.message);
+      }
+      return result;
+    },
+    // -----------------------------------------------------------------
+    async stakeCoin(signer, amount) {
+      let result: ContractTransactionResponse | undefined;
+      try {
+        const lp = await getLpByName(formatedPoolName(nativeCoin), signer);
+        result = await lp?.deposit(amount);
+      } catch (error: any | { message: string }) {
+        console.warn("Emmet.SDK stakeCoin " + error.message);
+      }
+      return result;
+    },
+    // -----------------------------------------------------------------
+    stakeLiquidity: async ( // DEPRECATED (to be removed)
+      signer: Signer,
+      pool: string,
+      amount: bigint,
+      ga: Overrides | undefined
+    ) => {
+      const lp = EmmetLP__factory.connect(pool, signer);
+      const deposit = await lp.deposit(amount, { ...ga });
+      return {
+        hash: deposit.hash,
+        tx: deposit,
+      };
+    },
+    // -----------------------------------------------------------------
+    withdrawLiquidity: async (signer: any, pool: string, amt: BigNumberish, ga: any) => {
+      const lp = EmmetLP__factory.connect(pool, signer);
+      const withdraw = await lp.withdrawTokens(amt, { ...ga });
+      return {
+        hash: withdraw.hash,
+        tx: withdraw,
+      };
+    },
+    // -----------------------------------------------------------------
+    withdrawFees: async (signer: any, pool: string, ga: any) => {
+      const lp = EmmetLP__factory.connect(pool, signer);
+      const withdraw = await lp.withdrawFees({ ...ga });
+      return {
+        hash: withdraw.hash,
+        tx: withdraw,
+      };
+    },
+    // -----------------------------------------------------------------
+    getLpCurrentAPY: async (pool: string) => {
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const apy = await lp.currentAPY();
+      return apy;
+    },
+    // -----------------------------------------------------------------
+    getLpTotalSupply: async (pool: string) => {
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const totalSupply = await lp.totalSupply();
+      return totalSupply;
+    },
+    // -----------------------------------------------------------------
+    getLpTokenFee: async (pool: string) => {
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const tokenFee = await lp.tokenFee();
+      return tokenFee;
+    },
+    getLpProtocolFee: async (pool: string) => {
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const protocolFee = await lp.protocolFee();
+      return protocolFee;
+    },
+    // -----------------------------------------------------------------
+    getLpProtocolFeeAmount: async (pool: string) => {
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const protocolFeeAmount = await lp.protocolFeeAmount();
+      return protocolFeeAmount;
+    },
+    // -----------------------------------------------------------------
+    getLpFeeGrowthGlobal: async (pool: string) => {
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const feeGrowthGlobal = await lp.feeGrowthGlobal();
+      return feeGrowthGlobal;
+    },
+    // -----------------------------------------------------------------
+    getLpFeeDecimals: async (pool: string) => {
+      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const feeDecimals = await lp.feeDecimals();
+      return feeDecimals;
+    },
+    // -----------------------------------------------------------------
     async isTransferFromLp(
       targetChain: BigNumberish,
       fromToken: string,
@@ -408,18 +520,65 @@ export async function web3Helper({
       const _isTransferFromLp = ts[1].includes(7n);
       return _isTransferFromLp;
     },
-    protocolFeeInUSD: () => {
-      // const fee = await data.protocolFee();
-      // return fee.usdEquivalent;
-      return 50n;
+    // -----------------------------------------------------------------
+    //                  E X P L O R E R   R E L A T E D
+    // -----------------------------------------------------------------
+    findTransactionByFromHash: async (hash: string) => {
+      try {
+        const TXs: CrossChainTransaction.CCTStructOutput[] = await consensus.getTransactions(100, 0);
+        const filtered: CrossChainTransaction.CCTStructOutput[] | undefined =
+          TXs.filter(tx => tx.originalHash == hash.replace('0x', ''));
+        return filtered[0];
+      } catch (error) {
+        return undefined;
+      }
     },
-    validateAddress: (addr: string) => Promise.resolve(isAddress(addr)),
-    getTokenAddress: async (symbol: string): Promise<string> => {
-      const address = await addrBook.get(symbol);
-      return address ? address : "";
+    // -----------------------------------------------------------------
+    getConsensusTransaction: async (hash: string) => {
+      try {
+        const TX: CrossChainTransaction.CCTStructOutput = await consensus.getTransaction(hash);
+        return TX;
+      } catch (error) {
+        return undefined;
+      }
+
     },
-    tokenBalance: async (tkn: string, addr: AddressLike) =>
-      WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr),
+    // -----------------------------------------------------------------
+    async emmetHashFromtx(hash: string) {
+
+      const receipt = await (await fetchProvider()).waitForTransaction(hash);
+
+      if (!receipt) throw new Error(`No receipt found for tx hash: ${hash}`);
+      const log = receipt.logs.find((e) =>
+        e.topics.includes(
+          bridge.interface.getEvent("SentInstallment").topicHash,
+        ),
+      );
+      if (!log)
+        throw new Error(`No send installment log found for tx hash: ${hash}`);
+      const decode = bridge.interface.parseLog(log);
+      return decode?.args.txHash;
+    },
+    // -----------------------------------------------------------------
+    //                  B R I D G E   R E L A T E D
+    // -----------------------------------------------------------------
+    preTransfer: async (
+      signer: ContractRunner | null,
+      tid: string,
+      spender: AddressLike,
+      amt: BigNumberish,
+      gasArgs: any
+    ) => {
+      const erc = WrappedERC20__factory.connect(tid, signer);
+      const preTransferGas = await erc.approve.estimateGas(spender, amt);
+      const approved = await erc.approve(spender, amt, {
+        ...gasArgs,
+        gasLimit: preTransferGas,
+      });
+      await approved.wait();
+      return approved.hash;
+    },
+    // -----------------------------------------------------------------
     sendInstallment: async (
       signer: ContractRunner | null,
       amt: bigint,
@@ -462,5 +621,28 @@ export async function web3Helper({
         tx: tx,
       };
     },
+    // -----------------------------------------------------------------
+    async txFee(targetChainId: BigNumberish, fromToken: string, targetToken: string) {
+      const isFeeERC20: boolean = false;
+      const protocolFee = await bridge.estimateFee(
+        targetChainId,
+        fromToken,
+        targetToken,
+        isFeeERC20
+      );
+      return protocolFee;
+    },
+    // -----------------------------------------------------------------
+    //                    S W A P  R E L A T E D
+    // -----------------------------------------------------------------
+    async getSwapResultAmount(
+      _fromSymbol: any,
+      _targetSymbol: any,
+      amount: BigNumberish,
+      _slippage: any
+    ) {
+      return BigInt(amount);
+    },
+
   };
 }
