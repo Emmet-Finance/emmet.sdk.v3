@@ -75,8 +75,8 @@ export interface ILiquidityPool<Signer, RetTx, GasArgs> {
      * @param ga gas arguments
      * @returns \{ hash: string; tx: RetTx }
      */
-    stakeJetton: (poolName: string, signer: Signer, amount: bigint, gasArgs: GasArgs | undefined) => Promise<RetTx>;
-    stakeTon: (signer: Signer, amount: bigint) => Promise<RetTx>;
+    stakeToken: (poolName: string, signer: Signer, amount: bigint, gasArgs: GasArgs | undefined) => Promise<RetTx | undefined>;
+    stakeCoin: (signer: Signer, amount: bigint) => Promise<RetTx | undefined>;
 }
 export interface StakeLiquidity<Signer, RetTx, GasArgs> {
     /**
@@ -441,4 +441,5 @@ export * from "./ChainInfo";
 export * from "./getConsensus";
 export * from "./ton";
 export * from "./web3";
+export * from "./web3helper";
 //# sourceMappingURL=index.d.ts.map
