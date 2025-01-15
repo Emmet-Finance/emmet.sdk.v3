@@ -135,12 +135,6 @@ export async function tonHandler({
 
   //          F U N C T I O N S
   // -------------------------------------
-  function formatedPoolName(poolName: string): string {
-    return poolName.includes("elp")
-      ? poolName
-      : `elp${poolName}`;
-  }
-  // -------------------------------------
   async function getAddressByName(name: string): Promise<Address> {
     try {
       const poolAddress: Address = await ab.getGet(name) ??
@@ -163,7 +157,9 @@ export async function tonHandler({
   // -------------------------------------
   async function getJettonLpByName(poolName: string): Promise<OpenedContract<JettonLP>> {
     try {
-      const poolAddress: Address = await getAddressByName(`elp${poolName}`)
+      const poolAddress: Address = await getAddressByName(
+        poolName.includes("elp") ? poolName : `elp${poolName}`
+      );
       return fetchClient().open(
         JettonLP.fromAddress(poolAddress),
       );
@@ -480,10 +476,11 @@ export async function tonHandler({
 
     async getLpData(poolName) {
       try {
-        const lp = await getJettonLpByName(formatedPoolName(poolName));
+        const lp = await getJettonLpByName(poolName);
         const data: TLPData = await lp.getGetData();
         return data;
-      } catch {
+      } catch (error) {
+        console.warn(error)
         return {
           '$$type': 'LPData',
           apy: 0n,
@@ -501,7 +498,7 @@ export async function tonHandler({
     // -----------------------------------------------------------------
     async getPosition(poolName, staker) {
       try {
-        const lp = await getJettonLpByName(formatedPoolName(poolName));
+        const lp = await getJettonLpByName(poolName);
         const position: TLPPosition = await lp.getGetPosition(Address.parse(staker));
         return position;
       } catch {
@@ -516,7 +513,7 @@ export async function tonHandler({
     // -----------------------------------------------------------------
     async getRewards(poolName, staker) {
       try {
-        const lp = await getJettonLpByName(formatedPoolName(poolName));
+        const lp = await getJettonLpByName(poolName);
         return await lp.getRewards(Address.parse(staker));
       } catch {
         return 0n;
@@ -531,7 +528,7 @@ export async function tonHandler({
         const value: bigint = toNano("0.12");
         const forwardAmount = toNano('0.095');
 
-        const lp = await getJettonLpByName(formatedPoolName(poolName));
+        const lp = await getJettonLpByName(poolName);
         const underlyingAddress: Address = await lp.getUnderlying();
 
         const jettonMaster: OpenedContract<JettonMinter> = getJettonMaster(underlyingAddress);
@@ -558,8 +555,8 @@ export async function tonHandler({
         );
 
         return (await getNewTxAfterHash(
-          last, 
-          underlyingWallet.address, 
+          last,
+          underlyingWallet.address,
           0xf8a7ea5) // op::transfer
         ).hash as string;
 
@@ -591,8 +588,8 @@ export async function tonHandler({
       );
 
       return (await getNewTxAfterHash(
-        last, 
-        tonLp.address, 
+        last,
+        tonLp.address,
         0x97ed57f1) // Deposit
       ).hash as string;
 
@@ -625,8 +622,8 @@ export async function tonHandler({
           },
         );
         return (await getNewTxAfterHash(
-          last, 
-          tonLp.address, 
+          last,
+          tonLp.address,
           0x97ed57f1) // Deposit
         );
       }
@@ -663,7 +660,7 @@ export async function tonHandler({
         },
       );
       return (await getNewTxAfterHash(
-        last, 
+        last,
         wc.address,
         0xf8a7ea5) // op::transfer
       );
