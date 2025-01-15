@@ -135,6 +135,12 @@ export async function tonHandler({
 
   //          F U N C T I O N S
   // -------------------------------------
+  function formatedPoolName(poolName: string): string {
+    return poolName.includes("elp")
+      ? poolName
+      : `elp${poolName}`;
+  }
+  // -------------------------------------
   async function getAddressByName(name: string): Promise<Address> {
     try {
       const poolAddress: Address = await ab.getGet(name) ??
@@ -474,7 +480,7 @@ export async function tonHandler({
 
     async getLpData(poolName) {
       try {
-        const lp = await getJettonLpByName(poolName);
+        const lp = await getJettonLpByName(formatedPoolName(poolName));
         const data: TLPData = await lp.getGetData();
         return data;
       } catch {
@@ -495,7 +501,7 @@ export async function tonHandler({
     // -----------------------------------------------------------------
     async getPosition(poolName, staker) {
       try {
-        const lp = await getJettonLpByName(poolName);
+        const lp = await getJettonLpByName(formatedPoolName(poolName));
         const position: TLPPosition = await lp.getGetPosition(Address.parse(staker));
         return position;
       } catch {
@@ -510,7 +516,7 @@ export async function tonHandler({
     // -----------------------------------------------------------------
     async getRewards(poolName, staker) {
       try {
-        const lp = await getJettonLpByName(poolName);
+        const lp = await getJettonLpByName(formatedPoolName(poolName));
         return await lp.getRewards(Address.parse(staker));
       } catch {
         return 0n;
@@ -525,7 +531,7 @@ export async function tonHandler({
         const value: bigint = toNano("0.12");
         const forwardAmount = toNano('0.095');
 
-        const lp = await getJettonLpByName(poolName);
+        const lp = await getJettonLpByName(formatedPoolName(poolName));
         const underlyingAddress: Address = await lp.getUnderlying();
 
         const jettonMaster: OpenedContract<JettonMinter> = getJettonMaster(underlyingAddress);
