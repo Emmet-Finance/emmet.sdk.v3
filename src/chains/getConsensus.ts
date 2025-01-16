@@ -1,7 +1,7 @@
 import { AbiCoder, BigNumberish, JsonRpcProvider, Result } from "ethers";
 import { MainnetRPCUri } from "../factory";
 import { Consensus, Consensus__factory } from "@emmet-contracts/web3";
-import { ReceiveParams } from ".";
+import { ReceiveParams, sleep } from ".";
 import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
 
 // TODO: add testnet support
@@ -27,6 +27,7 @@ export async function getConsensus(): Promise<Consensus> {
     try {
         await provider.getNetwork();
     } catch {
+        await sleep(1000);
         return await getConsensus();
     }
 

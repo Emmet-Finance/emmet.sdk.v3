@@ -16,7 +16,7 @@ import type {
   TLPData,
   TLPPosition,
 } from ".";
-import { strategyMap, EStrategy } from ".";
+import { strategyMap, EStrategy, sleep } from ".";
 import {
   Consensus,
   EmmetAddressBook__factory,
@@ -58,6 +58,7 @@ export async function web3Helper({
       cache[randomRpcIndex] = provider;
       return provider;
     } catch {
+      await sleep(1000);
       return await fetchProvider();
     }
   };
@@ -371,6 +372,8 @@ export async function web3Helper({
 
       } catch (error: any | { message: string }) {
         console.warn("Emmet.SDK getLpData " + error.message);
+        await sleep(1000);
+        
       }
       return data;
     },

@@ -485,7 +485,7 @@ export async function tonHandler({
           '$$type': 'LPData',
           apy: 0n,
           available_underlying: 0n,
-          decimals: 0n,
+          decimals: 1n,
           fee_growth_global: 0n,
           fee_decimals: 0n,
           protocol_fee: 0n,
@@ -892,6 +892,7 @@ export async function tonHandler({
         const jc = getJettonMaster(tokenAddress!);
         const jwa = await jc.getWalletAddress(userAddress!);
         const jw = getJettonWallet(jwa);
+        await sleep(1000);
         const data = await jw.getWalletData();
         tokenBal = data.balance;
         return tokenBal;
