@@ -31,11 +31,11 @@ export const MainnetRPCUri = {
     `https://polygon-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079",
     "https://polygon-rpc.com",
-    "https://polygon-mainnet.g.allthatnode.com/full/evm/e95e54a182194638b7ba5f4598270b44",
-    // "https://polygon-bor-rpc.publicnode.com",
+    // "https://polygon-mainnet.g.allthatnode.com/full/evm/e95e54a182194638b7ba5f4598270b44",
+    "https://polygon-bor-rpc.publicnode.com",
     // "https://1rpc.io/matic",
     // "https://rpc.ankr.com/polygon",
-    // "https://polygon.drpc.org"
+    "https://polygon.drpc.org"
     // "https://polygon.blockpi.network/v1/rpc/public",
   ],
   TON: [
