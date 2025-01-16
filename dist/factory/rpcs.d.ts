@@ -1,7 +1,7 @@
 export declare const MainnetRPCUri: {
     readonly AVALANCHE: readonly [`https://avax-mainnet.g.alchemy.com/v2/${string}`, "https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc", "https://avalanche.public-rpc.com", "https://avalanche-c-chain-rpc.publicnode.com", "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc", "https://avax-pokt.nodies.app/ext/bc/C/rpc"];
     readonly BSC: readonly [`https://bnb-mainnet.g.alchemy.com/v2/${string}`, "https://bsc.drpc.org", "https://rpc.ankr.com/bsc", "https://bsc-dataseed.bnbchain.org", "https://bscrpc.com", "https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-dataseed2.defibit.io", "https://bsc-dataseed3.defibit.io"];
-    readonly POLYGON: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com", "https://polygon-mainnet.g.allthatnode.com/full/evm/e95e54a182194638b7ba5f4598270b44"];
+    readonly POLYGON: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com", "https://polygon-bor-rpc.publicnode.com", "https://polygon.drpc.org"];
     readonly TON: readonly ["https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0"];
 };
 export declare const TestNetRpcUri: {
