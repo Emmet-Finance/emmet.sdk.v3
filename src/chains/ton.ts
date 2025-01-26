@@ -806,12 +806,17 @@ export async function tonHandler({
     // -----------------------------------------------------------------
     chainName: () => chainName,
     async txFee(targetChain, fromSymbol, targetSymbol) {
-      const fee = await bridgeReader.getEstimateFee(
-        BigInt(targetChain),
-        toKey(fromSymbol),
-        toKey(targetSymbol)
-      );
-      return fee;
+      let _fee: bigint = 0n;
+      try {
+        _fee = await bridgeReader.getEstimateFee(
+          BigInt(targetChain),
+          toKey(fromSymbol),
+          toKey(targetSymbol)
+        );
+      } catch (error) {
+        console.warn("Emmet.SDK txFee", error)
+      }
+      return _fee;
     },
     async token(symbol) {
       const foundToken = await bridgeReader.getGetToken(toKey(symbol));
