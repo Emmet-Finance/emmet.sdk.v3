@@ -390,11 +390,19 @@ export async function tonHandler({
     strategy: TStrategy[]
   ) {
 
-    for (let i = 0; i < strategy.length; i++) {
-      if (BigInt(strategy[i]) === TonStrategies.BURN) return true;
+    let isWrapped = false;
+
+    try {
+      for (let i = 0; i < strategy.length; i++) {
+
+        if (strategy[i] 
+            && BigInt(strategy[i]) === TonStrategies.BURN) return true;
+      }
+    } catch (error) {
+      console.warn("Emmet.SDK isWrappedToken", error)
     }
 
-    return false;
+    return isWrapped;
   }
   // -------------------------------------
   async function getNewTxAfterHash(
@@ -949,7 +957,7 @@ export async function tonHandler({
       const bc = fetchClient().open(EmmetBridge.fromAddress(bridge));
 
       const strategies = await getStrategies(cid, fromSymbol, targetSymbol);
-      const isWrapped = await isWrappedToken(strategies.outgoing);
+      const isWrapped: boolean = isWrappedToken(strategies.outgoing);
 
       fee = await bridgeReader.getEstimateFee(cid, toKey(fromSymbol), toKey(targetSymbol));
 
@@ -971,6 +979,7 @@ export async function tonHandler({
           gs,
         );
       } else {
+        console.log("LnM or LP")
         await transferJettonToBridge(
           fromSymbol,
           targetSymbol,
