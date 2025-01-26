@@ -2,9 +2,11 @@ import {
   Address,
   beginCell,
   Cell,
+  ContractProvider,
   JettonMaster,
   type OpenedContract,
   type Sender,
+  SendMode,
   toNano,
   TonClient,
 } from "@ton/ton";
@@ -41,8 +43,8 @@ import {
   TLPData,
   TLPPosition,
 } from ".";
-import { Bridge, loadOutgoingTransaction } from "../contracts/ton";
-import { JettonMinter } from "../contracts/ton/jetton-master";
+import { EmmetBridge, loadOutgoingTransaction } from "../contracts/ton";
+import { JettonMinter, Op } from "../contracts/ton/jetton-master";
 import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
 import { StonApiClient } from "@ston-fi/api";
 import { DEX, pTON } from "@ston-fi/sdk";
@@ -54,6 +56,10 @@ import { JettonWallet } from '../contracts/ton/jetton-wallet';
 
 import { WrappedJetton } from "../contracts/ton/wrapped-jetton";
 import { WrappedJettonWallet } from "../contracts/ton/wrapped-jetton-wallet";
+import { TonStrategies } from "./strategies";
+
+// const ADDRESS_ZERO: string = "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c";
+const MIN_TX_FEE: bigint = toNano("0.03");
 
 export type TonGasArgs = { value: bigint; bounce?: boolean | null | undefined };
 
@@ -122,16 +128,20 @@ export async function tonHandler({
 }: TonParams): Promise<TonHelper> {
   // -------------------------------------
   const clients = rpcs.map((rpc) => new TonClient({ endpoint: rpc }));
-  const fetchClient = () => {
+  const fetchClient = (): TonClient => {
     const randomRpcIndex = Math.floor(Math.random() * rpcs.length);
     return clients[randomRpcIndex];
   };
+
+  const getContractProvider = (address: Address): ContractProvider => {
+    return fetchClient().provider(address)
+  }
 
   //          C O N T R A C T S
   const ab = fetchClient().open(TonAddressBook.fromAddress(addressBook));
 
   const bridge = await getAddressByName("EmmetBridge");
-  const bridgeReader = fetchClient().open(Bridge.fromAddress(bridge));
+  const bridgeReader = fetchClient().open(EmmetBridge.fromAddress(bridge));
 
   //          F U N C T I O N S
   // -------------------------------------
@@ -188,9 +198,55 @@ export async function tonHandler({
       ),
     );
   }
+  async function getStrategies(targetChain: bigint, fromSymbol: string, targetSymbol: string) {
+
+    const strategy = await bridgeReader.getGetStrategies(
+      BigInt(targetChain),
+      toKey(fromSymbol),
+      toKey(targetSymbol)
+    );
+
+    if (!strategy) throw new Error("No cross chain strategy found");
+    const outgoing: TStrategy[] = [];
+
+    for (let i = 0; i < strategy.local.size; i++) {
+      const strat = strategy.local.path.get(BigInt(i));
+      if (strat) {
+        const strategyName: TStrategy = strategyMap[
+          BigInt(strat).toString()
+        ];
+        outgoing.push(strategyName)
+      }
+    }
+    const foreign: TStrategy[] = [];
+    for (let i = 0; i < strategy.foreign.size; i++) {
+      const strat = strategy.foreign.path.get(BigInt(i));
+      if (strat) {
+        const strategyName: TStrategy =
+          strategyMap[BigInt(strat).toString()];
+        foreign.push(strategyName);
+      }
+    }
+
+    const incoming: TStrategy[] = [];
+    for (let i = 0; i < strategy.incomming.size; i++) {
+      const strat = strategy.incomming.path.get(BigInt(i));
+      if (strat) {
+        const strategyName: TStrategy =
+          strategyMap[BigInt(strat).toString()];
+        incoming.push(strategyName);
+      }
+    }
+
+    return {
+      foreign,
+      outgoing,
+      incoming
+    };
+  }
   // -------------------------------------
   async function transferTon(
-    bridge: OpenedContract<Bridge>,
+    bridge: OpenedContract<EmmetBridge>,
     sender: Sender,
     to: string,
     targetTkn: string,
@@ -230,8 +286,7 @@ export async function tonHandler({
     gasArgs: TonGasArgs,
   ): Promise<string> => {
     const tid = toKey(fromToken);
-    const wtd = await bridgeReader.getTokens();
-    const wt = wtd.get(tid)!;
+    const wt = await bridgeReader.getGetToken(tid);
     const jt = fetchClient().open(WrappedJetton.fromAddress(wt.address));
     const jtw = fetchClient().open(
       WrappedJettonWallet.fromAddress(
@@ -243,7 +298,7 @@ export async function tonHandler({
 
     return (await jtw.send(
       signer,
-      { value: gasArgs.value + toNano("0.08") },
+      { value: gasArgs.value + MIN_TX_FEE * 4n },
       {
         $$type: "JettonBurn",
         amount: amt,
@@ -265,7 +320,7 @@ export async function tonHandler({
               .asCell(),
           )
           .endCell(),
-        forward_ton_amount: gasArgs.value + toNano("0.03"),
+        forward_ton_amount: gasArgs.value + MIN_TX_FEE * 3n,
         response_destination: bridge,
       },
     )) as unknown as Promise<string>;
@@ -280,15 +335,11 @@ export async function tonHandler({
     amt: bigint,
     gasArgs: TonGasArgs,
   ) => {
-    const tid = toKey(fromToken);
-    const ntd = await bridgeReader.getTokens();
-    const wt = ntd.get(tid)!;
-    const jt = fetchClient().open(WrappedJetton.fromAddress(wt.address));
-    const jtw = fetchClient().open(
-      WrappedJettonWallet.fromAddress(
-        await jt.getGetWalletAddress(signer.address!),
-      ),
-    );
+
+    const token = await bridgeReader.getGetToken(toKey(fromToken));
+    const jt = fetchClient().open(WrappedJetton.fromAddress(token.address));
+    const walletAddress: Address = await jt.getGetWalletAddress(signer.address!);
+    const wallet = getContractProvider(walletAddress);
 
     const forward_payload: Cell = beginCell()
       .storeUint(target_chain, 64) // Target Chain
@@ -310,39 +361,37 @@ export async function tonHandler({
       )
       .endCell();
 
-    return (await jtw.send(
-      signer,
-      { value: gasArgs.value + toNano("0.05") },
-      {
-        $$type: "JettonTransfer",
-        amount: amt,
-        custom_payload: null,
-        destination: bridge,
-        forward_payload,
-        forward_ton_amount: gasArgs.value,
-        query_id: 0n,
-        response_destination: bridge,
-      },
-    )) as unknown as Promise<string>;
+      const body = beginCell()
+      .storeUint(Op.transfer, 32)
+      .storeUint(1n, 64)
+      .storeCoins(amt)
+      .storeAddress(bridge)
+      .storeAddress(bridge)
+      .storeMaybeRef(null)
+      .storeCoins(gasArgs.value + MIN_TX_FEE * 4n)
+      .storeMaybeRef(forward_payload)
+      .endCell();
+
+      await wallet.internal(
+        signer,
+        {
+          value: gasArgs.value + MIN_TX_FEE * 5n,
+          sendMode: SendMode.PAY_GAS_SEPARATELY,
+          bounce: true,
+          body
+        },
+      )
+
+    return body.hash().toString("hex");
+
   };
   // -------------------------------------
-  async function isWrappedToken(
-    targetChain: bigint,
-    fromTokenId: bigint,
-    targetTokenId: bigint,
+  function isWrappedToken(
+    strategy: TStrategy[]
   ) {
-    const steps = await bridgeReader.getCrossChainStrategy();
 
-    const strategy = steps
-      .get(targetChain)
-      ?.i.get(fromTokenId)
-      ?.i.get(targetTokenId);
-
-    if (!strategy) return false;
-
-    for (let i = 0; i < strategy.local_steps.size; i++) {
-      const strat = strategy.local_steps.steps.get(BigInt(i));
-      if (strat === 5n) return true;
+    for (let i = 0; i < strategy.length; i++) {
+      if (BigInt(strategy[i]) === TonStrategies.BURN) return true;
     }
 
     return false;
@@ -403,21 +452,22 @@ export async function tonHandler({
 
       try { // https://docs.ston.fi/docs/developer-section/sdk/dex-v2/swap
 
+        if (fromSymbol === targetSymbol) {
+          throw new Error("From and Target tokens are the same");
+        }
+
         const stonRouter = fetchClient().open(new DEX!.v2_2!.Router(stonRouterAddress));
         const proxyTon = pTON.v2_1.create(pTonAddress);
 
         if (!sender.address) throw new Error("Sender address not passed");
 
-        const tokens = await bridgeReader.getTokens();
-        const ft = tokens.get(toKey(fromSymbol));
-
+        const ft = await bridgeReader.getGetToken(toKey(fromSymbol));
         if (!ft) throw new Error("From Token not found");
-        const tt = tokens.get(toKey(targetSymbol));
+
+        const tt = await bridgeReader.getGetToken(toKey(targetSymbol));
         if (!tt) throw new Error("Target Token not found");
 
-        if (fromSymbol === targetSymbol) {
-          throw new Error("From and Target tokens are the same");
-        }
+
         if (fromSymbol === "TON") {
           await stonRouter.sendSwapTonToJetton(sender, {
             askJettonAddress: tt.address,
@@ -454,10 +504,9 @@ export async function tonHandler({
     },
     // -----------------------------------------------------------------
     async getSwapResultAmount(fromSymbol, targetSymbol, amount, slippage) {
-      const tokens = await bridgeReader.getTokens();
-      const ft = tokens.get(toKey(fromSymbol));
+      const ft = await bridgeReader.getGetToken(toKey(fromSymbol));
       if (!ft) throw new Error("From Token not found");
-      const tt = tokens.get(toKey(targetSymbol));
+      const tt = await bridgeReader.getGetToken(toKey(targetSymbol));
       if (!tt) throw new Error("Target Token not found");
       const simulation = await ston.simulateSwap({
         askAddress: tt.address.toString(),
@@ -747,37 +796,8 @@ export async function tonHandler({
     //                          C O M M O N
     // -----------------------------------------------------------------
     async crossChainStrategy(targetChain, fromSymbol, targetSymbol) {
-      const ccs = await bridgeReader.getCrossChainStrategy();
-      const strategy = ccs
-        .get(BigInt(targetChain))
-        ?.i.get(toKey(fromSymbol))
-        ?.i.get(toKey(targetSymbol));
-      if (!strategy) throw new Error("No cross chain strategy found");
-      const local: TStrategy[] = [];
 
-      for (let i = 0; i < strategy.local_steps.size; i++) {
-        const strat = strategy.local_steps.steps.get(BigInt(i));
-        if (strat) {
-          const strategyName: TStrategy = strategyMap[
-            BigInt(strat).toString()
-          ];
-          local.push(strategyName)
-        }
-      }
-      const foreign: TStrategy[] = [];
-      for (let i = 0; i < strategy.foreign_steps.size; i++) {
-        const strat = strategy.local_steps.steps.get(BigInt(i));
-        if (strat) {
-          const strategyName: TStrategy =
-            strategyMap[BigInt(strat).toString()];
-          local.push(strategyName);
-        }
-      }
-      return {
-        foreign,
-        outgoing: local,
-        incoming: foreign
-      };
+      return await getStrategies(targetChain, fromSymbol, targetSymbol);
     },
     // -----------------------------------------------------------------
     estimateTime: () => Promise.resolve(2n * 60n * 1000n), // 2 minutes
@@ -785,27 +805,26 @@ export async function tonHandler({
     nativeCoin: () => "TON",
     // -----------------------------------------------------------------
     chainName: () => chainName,
-    async txFee(tc) {
-      const fee =
-        (await bridgeReader.getProtocolFee()) +
-        ((await bridgeReader.getChainFees()).get(tc) ??
-          raise("Chain fees not configured for this chain"));
+    async txFee(targetChain, fromSymbol, targetSymbol) {
+      const fee = await bridgeReader.getEstimateFee(
+        BigInt(targetChain),
+        toKey(fromSymbol),
+        toKey(targetSymbol)
+      );
       return fee;
     },
     async token(symbol) {
-      const id = toKey(symbol);
-      const tokens = await bridgeReader.getTokens();
-      const qToken = tokens.get(id);
-      if (!qToken) throw new Error("No Such Token Found in Storage");
+      const foundToken = await bridgeReader.getGetToken(toKey(symbol));
+
       return {
-        address: qToken.address.toString(),
-        decimals: qToken.decimals,
-        fee: qToken.fee,
-        feeDecimals: qToken.fee_decimals,
-        symbol: qToken.symbol,
-        swap: qToken.swap_address.toString(),
-        priceFeed: id.toString(),
-        token: qToken.address.toString()
+        address: foundToken.address.toString(),
+        decimals: foundToken.decimals,
+        lp: foundToken.emmet_lp.toString(),
+        symbol: foundToken.symbol,
+        swapPool: foundToken.swap_pool.toString(),
+        swapRouter: foundToken.swap_router.toString(),
+        priceFeed: foundToken.wallet.toString(),
+        token: foundToken.address.toString()
       };
     },
     // -----------------------------------------------------------------
@@ -837,7 +856,7 @@ export async function tonHandler({
     },
     // -----------------------------------------------------------------
     async protocolFee() {
-      return await bridgeReader.getProtocolFee();
+      return await bridgeReader.getGetProtocolFee();
     },
     // -----------------------------------------------------------------
     async txInfo(hash) {
@@ -922,22 +941,18 @@ export async function tonHandler({
       fee,
     ) => {
       const lastBridgeTxHash = await getLastTxHashInBase64ForAddress(bridge);
-      const bc = fetchClient().open(Bridge.fromAddress(bridge));
-      const fsid = BigInt(`0x${sha256_sync(fromSymbol).toString("hex")}`);
-      const tid = BigInt(`0x${sha256_sync(targetSymbol).toString("hex")}`);
-      const isWrapped = await isWrappedToken(cid, fsid, tid);
-      const gs =
-        fee !== undefined
-          ? {
-            value: fee,
-          }
-          : {
-            value:
-              (await bridgeReader.getProtocolFee()) +
-              ((await bridgeReader.getChainFees()).get(cid) ??
-                raise("Chain fees not configured for this chain")),
-          };
-      if (fsid === nativeTokenId) {
+      const bc = fetchClient().open(EmmetBridge.fromAddress(bridge));
+
+      const strategies = await getStrategies(cid, fromSymbol, targetSymbol);
+      const isWrapped = await isWrappedToken(strategies.outgoing);
+
+      fee = await bridgeReader.getEstimateFee(cid, toKey(fromSymbol), toKey(targetSymbol));
+
+      const gs = {
+        value: fee
+      };
+
+      if (toKey(fromSymbol) === nativeTokenId) {
         await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
       } else if (isWrapped) {
         console.log("burning");
