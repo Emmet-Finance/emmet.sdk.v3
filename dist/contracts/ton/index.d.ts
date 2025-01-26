@@ -1,6 +1,6 @@
-import { Cell, Slice, Address, Builder, Dictionary, ContractProvider, Sender, Contract, ContractABI } from "@ton/core";
+import { Cell, Slice, Address, Builder, Dictionary, ContractProvider, Sender, Contract, ContractABI } from '@ton/core';
 export type StateInit = {
-    $$type: "StateInit";
+    $$type: 'StateInit';
     code: Cell;
     data: Cell;
 };
@@ -10,12 +10,34 @@ export declare function loadStateInit(slice: Slice): {
     code: Cell;
     data: Cell;
 };
+export type StdAddress = {
+    $$type: 'StdAddress';
+    workchain: bigint;
+    address: bigint;
+};
+export declare function storeStdAddress(src: StdAddress): (builder: Builder) => void;
+export declare function loadStdAddress(slice: Slice): {
+    $$type: "StdAddress";
+    workchain: bigint;
+    address: bigint;
+};
+export type VarAddress = {
+    $$type: 'VarAddress';
+    workchain: bigint;
+    address: Slice;
+};
+export declare function storeVarAddress(src: VarAddress): (builder: Builder) => void;
+export declare function loadVarAddress(slice: Slice): {
+    $$type: "VarAddress";
+    workchain: bigint;
+    address: Slice;
+};
 export type Context = {
-    $$type: "Context";
+    $$type: 'Context';
     bounced: boolean;
     sender: Address;
     value: bigint;
-    raw: Cell;
+    raw: Slice;
 };
 export declare function storeContext(src: Context): (builder: Builder) => void;
 export declare function loadContext(slice: Slice): {
@@ -23,10 +45,10 @@ export declare function loadContext(slice: Slice): {
     bounced: boolean;
     sender: Address;
     value: bigint;
-    raw: Cell;
+    raw: Slice;
 };
 export type SendParameters = {
-    $$type: "SendParameters";
+    $$type: 'SendParameters';
     bounce: boolean;
     to: Address;
     value: bigint;
@@ -46,304 +68,15 @@ export declare function loadSendParameters(slice: Slice): {
     code: Cell | null;
     data: Cell | null;
 };
-export type Deploy = {
-    $$type: "Deploy";
-    queryId: bigint;
-};
-export declare function storeDeploy(src: Deploy): (builder: Builder) => void;
-export declare function loadDeploy(slice: Slice): {
-    $$type: "Deploy";
-    queryId: bigint;
-};
-export type DeployOk = {
-    $$type: "DeployOk";
-    queryId: bigint;
-};
-export declare function storeDeployOk(src: DeployOk): (builder: Builder) => void;
-export declare function loadDeployOk(slice: Slice): {
-    $$type: "DeployOk";
-    queryId: bigint;
-};
-export type FactoryDeploy = {
-    $$type: "FactoryDeploy";
-    queryId: bigint;
-    cashback: Address;
-};
-export declare function storeFactoryDeploy(src: FactoryDeploy): (builder: Builder) => void;
-export declare function loadFactoryDeploy(slice: Slice): {
-    $$type: "FactoryDeploy";
-    queryId: bigint;
-    cashback: Address;
-};
-export type JettonTransfer = {
-    $$type: "JettonTransfer";
-    query_id: bigint;
-    amount: bigint;
-    destination: Address;
-    response_destination: Address;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export declare function storeJettonTransfer(src: JettonTransfer): (builder: Builder) => void;
-export declare function loadJettonTransfer(slice: Slice): {
-    $$type: "JettonTransfer";
-    query_id: bigint;
-    amount: bigint;
-    destination: Address;
-    response_destination: Address;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export type JettonTransferNotification = {
-    $$type: "JettonTransferNotification";
-    query_id: bigint;
-    amount: bigint;
-    sender: Address;
-    forward_payload: Cell;
-};
-export declare function storeJettonTransferNotification(src: JettonTransferNotification): (builder: Builder) => void;
-export declare function loadJettonTransferNotification(slice: Slice): {
-    $$type: "JettonTransferNotification";
-    query_id: bigint;
-    amount: bigint;
-    sender: Address;
-    forward_payload: Cell;
-};
-export type JettonBurn = {
-    $$type: "JettonBurn";
-    query_id: bigint;
-    amount: bigint;
-    response_destination: Address;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export declare function storeJettonBurn(src: JettonBurn): (builder: Builder) => void;
-export declare function loadJettonBurn(slice: Slice): {
-    $$type: "JettonBurn";
-    query_id: bigint;
-    amount: bigint;
-    response_destination: Address;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export type JettonExcesses = {
-    $$type: "JettonExcesses";
-    query_id: bigint;
-};
-export declare function storeJettonExcesses(src: JettonExcesses): (builder: Builder) => void;
-export declare function loadJettonExcesses(slice: Slice): {
-    $$type: "JettonExcesses";
-    query_id: bigint;
-};
-export type JettonInternalTransfer = {
-    $$type: "JettonInternalTransfer";
-    query_id: bigint;
-    amount: bigint;
-    from: Address;
-    response_address: Address;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export declare function storeJettonInternalTransfer(src: JettonInternalTransfer): (builder: Builder) => void;
-export declare function loadJettonInternalTransfer(slice: Slice): {
-    $$type: "JettonInternalTransfer";
-    query_id: bigint;
-    amount: bigint;
-    from: Address;
-    response_address: Address;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export type JettonBurnNotification = {
-    $$type: "JettonBurnNotification";
-    query_id: bigint;
-    amount: bigint;
-    sender: Address;
-    response_destination: Address;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export declare function storeJettonBurnNotification(src: JettonBurnNotification): (builder: Builder) => void;
-export declare function loadJettonBurnNotification(slice: Slice): {
-    $$type: "JettonBurnNotification";
-    query_id: bigint;
-    amount: bigint;
-    sender: Address;
-    response_destination: Address;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export type WalletData = {
-    $$type: "WalletData";
-    balance: bigint;
-    owner: Address;
-    jetton: Address;
-    jetton_wallet_code: Cell;
-};
-export declare function storeWalletData(src: WalletData): (builder: Builder) => void;
-export declare function loadWalletData(slice: Slice): {
-    $$type: "WalletData";
-    balance: bigint;
-    owner: Address;
-    jetton: Address;
-    jetton_wallet_code: Cell;
-};
-export type JettonData = {
-    $$type: "JettonData";
-    total_supply: bigint;
-    mintable: boolean;
-    admin_address: Address;
-    jetton_content: Cell;
-    jetton_wallet_code: Cell;
-};
-export declare function storeJettonData(src: JettonData): (builder: Builder) => void;
-export declare function loadJettonData(slice: Slice): {
-    $$type: "JettonData";
-    total_supply: bigint;
-    mintable: boolean;
-    admin_address: Address;
-    jetton_content: Cell;
-    jetton_wallet_code: Cell;
-};
-export type JettonMint = {
-    $$type: "JettonMint";
-    origin: Address;
-    receiver: Address;
-    amount: bigint;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export declare function storeJettonMint(src: JettonMint): (builder: Builder) => void;
-export declare function loadJettonMint(slice: Slice): {
-    $$type: "JettonMint";
-    origin: Address;
-    receiver: Address;
-    amount: bigint;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export type UpdateAdmin = {
-    $$type: "UpdateAdmin";
-    new_admin: Address;
-};
-export declare function storeUpdateAdmin(src: UpdateAdmin): (builder: Builder) => void;
-export declare function loadUpdateAdmin(slice: Slice): {
-    $$type: "UpdateAdmin";
-    new_admin: Address;
-};
-export type UpdateOwner = {
-    $$type: "UpdateOwner";
-    new_owner: Address;
-};
-export declare function storeUpdateOwner(src: UpdateOwner): (builder: Builder) => void;
-export declare function loadUpdateOwner(slice: Slice): {
-    $$type: "UpdateOwner";
-    new_owner: Address;
-};
-export type GrantRole = {
-    $$type: "GrantRole";
-    to: Address;
-    role_id: bigint;
-};
-export declare function storeGrantRole(src: GrantRole): (builder: Builder) => void;
-export declare function loadGrantRole(slice: Slice): {
-    $$type: "GrantRole";
-    to: Address;
-    role_id: bigint;
-};
-export type RevokeRole = {
-    $$type: "RevokeRole";
-    to: Address;
-    role_id: bigint;
-};
-export declare function storeRevokeRole(src: RevokeRole): (builder: Builder) => void;
-export declare function loadRevokeRole(slice: Slice): {
-    $$type: "RevokeRole";
-    to: Address;
-    role_id: bigint;
-};
-export type RenounceRole = {
-    $$type: "RenounceRole";
-    role_id: bigint;
-    address: Address;
-};
-export declare function storeRenounceRole(src: RenounceRole): (builder: Builder) => void;
-export declare function loadRenounceRole(slice: Slice): {
-    $$type: "RenounceRole";
-    role_id: bigint;
-    address: Address;
-};
-export type UpdateRoleAdmin = {
-    $$type: "UpdateRoleAdmin";
-    role_id: bigint;
-    role_admin: bigint;
-};
-export declare function storeUpdateRoleAdmin(src: UpdateRoleAdmin): (builder: Builder) => void;
-export declare function loadUpdateRoleAdmin(slice: Slice): {
-    $$type: "UpdateRoleAdmin";
-    role_id: bigint;
-    role_admin: bigint;
-};
-export type RoleData = {
-    $$type: "RoleData";
-    roles: Dictionary<Address, boolean>;
-    admin_role: bigint;
-};
-export declare function storeRoleData(src: RoleData): (builder: Builder) => void;
-export declare function loadRoleData(slice: Slice): {
-    $$type: "RoleData";
-    roles: Dictionary<Address, boolean>;
-    admin_role: bigint;
-};
-export type TokenType = {
-    $$type: "TokenType";
-    is_native_coin: boolean;
-    is_native_token: boolean;
-    is_wrapped_token: boolean;
-};
-export declare function storeTokenType(src: TokenType): (builder: Builder) => void;
-export declare function loadTokenType(slice: Slice): {
-    $$type: "TokenType";
-    is_native_coin: boolean;
-    is_native_token: boolean;
-    is_wrapped_token: boolean;
-};
-export type TokenTransfer = {
-    $$type: "TokenTransfer";
-    query_id: bigint;
-    amount: bigint;
-    sender: Address;
-    response_destination: Address | null;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
-export declare function storeTokenTransfer(src: TokenTransfer): (builder: Builder) => void;
-export declare function loadTokenTransfer(slice: Slice): {
-    $$type: "TokenTransfer";
-    query_id: bigint;
-    amount: bigint;
-    sender: Address;
-    response_destination: Address | null;
-    custom_payload: Cell | null;
-    forward_ton_amount: bigint;
-    forward_payload: Cell;
-};
 export type Installment = {
-    $$type: "Installment";
+    $$type: 'Installment';
     from_chain: bigint;
     target_chain: bigint;
     amount: bigint;
     nonce: bigint;
     from_token: Cell;
     to_token: Cell;
-    recepient: Address;
+    recipient: Address;
 };
 export declare function storeInstallment(src: Installment): (builder: Builder) => void;
 export declare function loadInstallment(slice: Slice): {
@@ -354,21 +87,21 @@ export declare function loadInstallment(slice: Slice): {
     nonce: bigint;
     from_token: Cell;
     to_token: Cell;
-    recepient: Address;
+    recipient: Address;
 };
 export type SignerAndSignature = {
-    $$type: "SignerAndSignature";
-    signature: Cell;
+    $$type: 'SignerAndSignature';
+    signature: Slice;
     key: bigint;
 };
 export declare function storeSignerAndSignature(src: SignerAndSignature): (builder: Builder) => void;
 export declare function loadSignerAndSignature(slice: Slice): {
     $$type: "SignerAndSignature";
-    signature: Cell;
+    signature: Slice;
     key: bigint;
 };
 export type ReceiveInstallment = {
-    $$type: "ReceiveInstallment";
+    $$type: 'ReceiveInstallment';
     installment: Installment;
     signatures: Dictionary<bigint, SignerAndSignature>;
     len: bigint;
@@ -386,7 +119,7 @@ export declare function loadReceiveInstallment(slice: Slice): {
         nonce: bigint;
         from_token: Cell;
         to_token: Cell;
-        recepient: Address;
+        recipient: Address;
     };
     signatures: Dictionary<bigint, SignerAndSignature>;
     len: bigint;
@@ -394,7 +127,7 @@ export declare function loadReceiveInstallment(slice: Slice): {
     id: bigint;
 };
 export type FreezeTon = {
-    $$type: "FreezeTon";
+    $$type: 'FreezeTon';
     target_chain: bigint;
     to_token: Cell;
     to: Cell;
@@ -410,46 +143,8 @@ export declare function loadFreezeTon(slice: Slice): {
     from_token: Cell;
     amount: bigint;
 };
-export type MapContract = {
-    $$type: "MapContract";
-    token_id: bigint;
-    token_symbol: string;
-    contract: Address;
-    decimals: bigint;
-    fee: bigint;
-    fee_decimals: bigint;
-    swap_address: Address;
-    token_bridge_wallet_address: Address;
-    liquidity_pool_master_address: Address | null;
-    ston_fi_target_token_wallet_for_ston_fi_router: Address;
-};
-export declare function storeMapContract(src: MapContract): (builder: Builder) => void;
-export declare function loadMapContract(slice: Slice): {
-    $$type: "MapContract";
-    token_id: bigint;
-    token_symbol: string;
-    contract: Address;
-    decimals: bigint;
-    fee: bigint;
-    fee_decimals: bigint;
-    swap_address: Address;
-    token_bridge_wallet_address: Address;
-    liquidity_pool_master_address: Address | null;
-    ston_fi_target_token_wallet_for_ston_fi_router: Address;
-};
-export type SetChainFee = {
-    $$type: "SetChainFee";
-    chain_id: bigint;
-    fee: bigint;
-};
-export declare function storeSetChainFee(src: SetChainFee): (builder: Builder) => void;
-export declare function loadSetChainFee(slice: Slice): {
-    $$type: "SetChainFee";
-    chain_id: bigint;
-    fee: bigint;
-};
 export type OutgoingTransaction = {
-    $$type: "OutgoingTransaction";
+    $$type: 'OutgoingTransaction';
     id: bigint;
     amount: bigint;
     from_token: Cell;
@@ -468,7 +163,7 @@ export declare function loadOutgoingTransaction(slice: Slice): {
     target_chain_id: bigint;
 };
 export type IncomingTransaction = {
-    $$type: "IncomingTransaction";
+    $$type: 'IncomingTransaction';
     id: bigint;
     amount: bigint;
     from_token: Cell;
@@ -487,7 +182,7 @@ export declare function loadIncomingTransaction(slice: Slice): {
     to: Address;
 };
 export type InstallmentOut = {
-    $$type: "InstallmentOut";
+    $$type: 'InstallmentOut';
     amount: bigint;
     to: string;
     target_chain: bigint;
@@ -501,60 +196,8 @@ export declare function loadInstallmentOut(slice: Slice): {
     target_chain: bigint;
     token_id: bigint;
 };
-export type Token = {
-    $$type: "Token";
-    symbol: string;
-    address: Address;
-    swap_address: Address;
-    decimals: bigint;
-    fee: bigint;
-    fee_decimals: bigint;
-    token_bridge_wallet_address: Address;
-    liquidity_pool_master_address: Address | null;
-    ston_fi_target_token_wallet_for_ston_fi_router: Address | null;
-};
-export declare function storeToken(src: Token): (builder: Builder) => void;
-export declare function loadToken(slice: Slice): {
-    $$type: "Token";
-    symbol: string;
-    address: Address;
-    swap_address: Address;
-    decimals: bigint;
-    fee: bigint;
-    fee_decimals: bigint;
-    token_bridge_wallet_address: Address;
-    liquidity_pool_master_address: Address | null;
-    ston_fi_target_token_wallet_for_ston_fi_router: Address | null;
-};
-export type UpdateBaseUri = {
-    $$type: "UpdateBaseUri";
-    new_base_uri: string;
-};
-export declare function storeUpdateBaseUri(src: UpdateBaseUri): (builder: Builder) => void;
-export declare function loadUpdateBaseUri(slice: Slice): {
-    $$type: "UpdateBaseUri";
-    new_base_uri: string;
-};
-export type UpdateTransferFee = {
-    $$type: "UpdateTransferFee";
-    new_fee: bigint;
-};
-export declare function storeUpdateTransferFee(src: UpdateTransferFee): (builder: Builder) => void;
-export declare function loadUpdateTransferFee(slice: Slice): {
-    $$type: "UpdateTransferFee";
-    new_fee: bigint;
-};
-export type RemoveMappedContract = {
-    $$type: "RemoveMappedContract";
-    token_id: bigint;
-};
-export declare function storeRemoveMappedContract(src: RemoveMappedContract): (builder: Builder) => void;
-export declare function loadRemoveMappedContract(slice: Slice): {
-    $$type: "RemoveMappedContract";
-    token_id: bigint;
-};
 export type ReleaseTokens = {
-    $$type: "ReleaseTokens";
+    $$type: 'ReleaseTokens';
     to: Address;
     amount: bigint;
     body: Cell | null;
@@ -566,230 +209,588 @@ export declare function loadReleaseTokens(slice: Slice): {
     amount: bigint;
     body: Cell | null;
 };
-export type UniqueReceiveInstallment = {
-    $$type: "UniqueReceiveInstallment";
-    ri: ReceiveInstallment;
+export type JettonBurnNotification = {
+    $$type: 'JettonBurnNotification';
+    query_id: bigint;
+    amount: bigint;
+    sender: Address;
+    response_destination: Address;
+    forward_ton_amount: bigint;
+    forward_payload: Slice;
 };
-export declare function storeUniqueReceiveInstallment(src: UniqueReceiveInstallment): (builder: Builder) => void;
-export declare function loadUniqueReceiveInstallment(slice: Slice): {
-    $$type: "UniqueReceiveInstallment";
-    ri: {
-        $$type: "ReceiveInstallment";
-        installment: {
-            $$type: "Installment";
-            from_chain: bigint;
-            target_chain: bigint;
-            amount: bigint;
-            nonce: bigint;
-            from_token: Cell;
-            to_token: Cell;
-            recepient: Address;
-        };
-        signatures: Dictionary<bigint, SignerAndSignature>;
-        len: bigint;
-        tx_hash: bigint;
-        id: bigint;
+export declare function storeJettonBurnNotification(src: JettonBurnNotification): (builder: Builder) => void;
+export declare function loadJettonBurnNotification(slice: Slice): {
+    $$type: "JettonBurnNotification";
+    query_id: bigint;
+    amount: bigint;
+    sender: Address;
+    response_destination: Address;
+    forward_ton_amount: bigint;
+    forward_payload: Slice;
+};
+export type JettonMint = {
+    $$type: 'JettonMint';
+    origin: Address;
+    receiver: Address;
+    amount: bigint;
+    custom_payload: Cell | null;
+    forward_ton_amount: bigint;
+    forward_payload: Slice;
+};
+export declare function storeJettonMint(src: JettonMint): (builder: Builder) => void;
+export declare function loadJettonMint(slice: Slice): {
+    $$type: "JettonMint";
+    origin: Address;
+    receiver: Address;
+    amount: bigint;
+    custom_payload: Cell | null;
+    forward_ton_amount: bigint;
+    forward_payload: Slice;
+};
+export type JettonTransfer = {
+    $$type: 'JettonTransfer';
+    query_id: bigint;
+    amount: bigint;
+    destination: Address;
+    response_destination: Address | null;
+    custom_payload: Cell | null;
+    forward_ton_amount: bigint;
+    forward_payload: Cell | null;
+};
+export declare function storeJettonTransfer(src: JettonTransfer): (builder: Builder) => void;
+export declare function loadJettonTransfer(slice: Slice): {
+    $$type: "JettonTransfer";
+    query_id: bigint;
+    amount: bigint;
+    destination: Address;
+    response_destination: Address | null;
+    custom_payload: Cell | null;
+    forward_ton_amount: bigint;
+    forward_payload: Cell | null;
+};
+export type TokenTransferNotification = {
+    $$type: 'TokenTransferNotification';
+    query_id: bigint;
+    amount: bigint;
+    sender: Address;
+    forward_payload: Slice;
+};
+export declare function storeTokenTransferNotification(src: TokenTransferNotification): (builder: Builder) => void;
+export declare function loadTokenTransferNotification(slice: Slice): {
+    $$type: "TokenTransferNotification";
+    query_id: bigint;
+    amount: bigint;
+    sender: Address;
+    forward_payload: Slice;
+};
+export type TokenExcesses = {
+    $$type: 'TokenExcesses';
+    query_id: bigint;
+};
+export declare function storeTokenExcesses(src: TokenExcesses): (builder: Builder) => void;
+export declare function loadTokenExcesses(slice: Slice): {
+    $$type: "TokenExcesses";
+    query_id: bigint;
+};
+export type StonfiSwap = {
+    $$type: 'StonfiSwap';
+    otherTokenWallet: Address;
+    refundAddress: Address;
+    excessesAddress: Address;
+    deadline: bigint;
+    additionalData: SwapAdditionalData;
+};
+export declare function storeStonfiSwap(src: StonfiSwap): (builder: Builder) => void;
+export declare function loadStonfiSwap(slice: Slice): {
+    $$type: "StonfiSwap";
+    otherTokenWallet: Address;
+    refundAddress: Address;
+    excessesAddress: Address;
+    deadline: bigint;
+    additionalData: {
+        $$type: "SwapAdditionalData";
+        minOut: bigint;
+        receiverAddress: Address;
+        fwdGas: bigint;
+        customPayload: Cell | null;
+        refundFwdGas: bigint;
+        refundPayload: Cell | null;
+        refFee: bigint;
+        referralAddress: Address | null;
     };
 };
-export type Strategies = {
-    $$type: "Strategies";
-    strategies: Dictionary<bigint, Steps>;
+export type SwapAdditionalData = {
+    $$type: 'SwapAdditionalData';
+    minOut: bigint;
+    receiverAddress: Address;
+    fwdGas: bigint;
+    customPayload: Cell | null;
+    refundFwdGas: bigint;
+    refundPayload: Cell | null;
+    refFee: bigint;
+    referralAddress: Address | null;
 };
-export declare function storeStrategies(src: Strategies): (builder: Builder) => void;
-export declare function loadStrategies(slice: Slice): {
-    $$type: "Strategies";
-    strategies: Dictionary<bigint, Steps>;
+export declare function storeSwapAdditionalData(src: SwapAdditionalData): (builder: Builder) => void;
+export declare function loadSwapAdditionalData(slice: Slice): {
+    $$type: "SwapAdditionalData";
+    minOut: bigint;
+    receiverAddress: Address;
+    fwdGas: bigint;
+    customPayload: Cell | null;
+    refundFwdGas: bigint;
+    refundPayload: Cell | null;
+    refFee: bigint;
+    referralAddress: Address | null;
 };
-export type ToTokenCrossChainStrategy = {
-    $$type: "ToTokenCrossChainStrategy";
-    to_token: Dictionary<bigint, CrossChainStrategy>;
+export type Deploy = {
+    $$type: 'Deploy';
+    queryId: bigint;
 };
-export declare function storeToTokenCrossChainStrategy(src: ToTokenCrossChainStrategy): (builder: Builder) => void;
-export declare function loadToTokenCrossChainStrategy(slice: Slice): {
-    $$type: "ToTokenCrossChainStrategy";
-    to_token: Dictionary<bigint, CrossChainStrategy>;
+export declare function storeDeploy(src: Deploy): (builder: Builder) => void;
+export declare function loadDeploy(slice: Slice): {
+    $$type: "Deploy";
+    queryId: bigint;
 };
-export type CrossChainTokenStrategy = {
-    $$type: "CrossChainTokenStrategy";
-    from_token: Dictionary<bigint, ToTokenCrossChainStrategy>;
+export type DeployOk = {
+    $$type: 'DeployOk';
+    queryId: bigint;
 };
-export declare function storeCrossChainTokenStrategy(src: CrossChainTokenStrategy): (builder: Builder) => void;
-export declare function loadCrossChainTokenStrategy(slice: Slice): {
-    $$type: "CrossChainTokenStrategy";
-    from_token: Dictionary<bigint, ToTokenCrossChainStrategy>;
+export declare function storeDeployOk(src: DeployOk): (builder: Builder) => void;
+export declare function loadDeployOk(slice: Slice): {
+    $$type: "DeployOk";
+    queryId: bigint;
 };
-export type FromTokenToTargetTokenToSteps = {
-    $$type: "FromTokenToTargetTokenToSteps";
-    i: Dictionary<bigint, TargetTokenToSteps>;
+export type FactoryDeploy = {
+    $$type: 'FactoryDeploy';
+    queryId: bigint;
+    cashback: Address;
 };
-export declare function storeFromTokenToTargetTokenToSteps(src: FromTokenToTargetTokenToSteps): (builder: Builder) => void;
-export declare function loadFromTokenToTargetTokenToSteps(slice: Slice): {
-    $$type: "FromTokenToTargetTokenToSteps";
-    i: Dictionary<bigint, TargetTokenToSteps>;
+export declare function storeFactoryDeploy(src: FactoryDeploy): (builder: Builder) => void;
+export declare function loadFactoryDeploy(slice: Slice): {
+    $$type: "FactoryDeploy";
+    queryId: bigint;
+    cashback: Address;
 };
-export type TargetTokenToSteps = {
-    $$type: "TargetTokenToSteps";
-    i: Dictionary<bigint, Steps>;
+export type DeleteChain = {
+    $$type: 'DeleteChain';
+    chain_id: bigint;
 };
-export declare function storeTargetTokenToSteps(src: TargetTokenToSteps): (builder: Builder) => void;
-export declare function loadTargetTokenToSteps(slice: Slice): {
-    $$type: "TargetTokenToSteps";
-    i: Dictionary<bigint, Steps>;
+export declare function storeDeleteChain(src: DeleteChain): (builder: Builder) => void;
+export declare function loadDeleteChain(slice: Slice): {
+    $$type: "DeleteChain";
+    chain_id: bigint;
+};
+export type DeleteModule = {
+    $$type: 'DeleteModule';
+    step: bigint;
+};
+export declare function storeDeleteModule(src: DeleteModule): (builder: Builder) => void;
+export declare function loadDeleteModule(slice: Slice): {
+    $$type: "DeleteModule";
+    step: bigint;
+};
+export type DeleteStategies = {
+    $$type: 'DeleteStategies';
+    chain_id: bigint;
+    from_token: bigint;
+    to_token: bigint;
+};
+export declare function storeDeleteStategies(src: DeleteStategies): (builder: Builder) => void;
+export declare function loadDeleteStategies(slice: Slice): {
+    $$type: "DeleteStategies";
+    chain_id: bigint;
+    from_token: bigint;
+    to_token: bigint;
+};
+export type DeleteToken = {
+    $$type: 'DeleteToken';
+    symbol: string;
+};
+export declare function storeDeleteToken(src: DeleteToken): (builder: Builder) => void;
+export declare function loadDeleteToken(slice: Slice): {
+    $$type: "DeleteToken";
+    symbol: string;
+};
+export type DeleteValidator = {
+    $$type: 'DeleteValidator';
+    candidate: Address;
+};
+export declare function storeDeleteValidator(src: DeleteValidator): (builder: Builder) => void;
+export declare function loadDeleteValidator(slice: Slice): {
+    $$type: "DeleteValidator";
+    candidate: Address;
+};
+export type Pause = {
+    $$type: 'Pause';
+};
+export declare function storePause(): (builder: Builder) => void;
+export declare function loadPause(slice: Slice): {
+    $$type: "Pause";
+};
+export type SetAdmin = {
+    $$type: 'SetAdmin';
+    newAdmin: Address;
+};
+export declare function storeSetAdmin(src: SetAdmin): (builder: Builder) => void;
+export declare function loadSetAdmin(slice: Slice): {
+    $$type: "SetAdmin";
+    newAdmin: Address;
+};
+export type SetChain = {
+    $$type: 'SetChain';
+    name: string;
+    chain_id: bigint;
+};
+export declare function storeSetChain(src: SetChain): (builder: Builder) => void;
+export declare function loadSetChain(slice: Slice): {
+    $$type: "SetChain";
+    name: string;
+    chain_id: bigint;
+};
+export type SetCFO = {
+    $$type: 'SetCFO';
+    newCFO: Address;
+};
+export declare function storeSetCFO(src: SetCFO): (builder: Builder) => void;
+export declare function loadSetCFO(slice: Slice): {
+    $$type: "SetCFO";
+    newCFO: Address;
+};
+export type SetModule = {
+    $$type: 'SetModule';
+    step: bigint;
+    module: Address;
+};
+export declare function storeSetModule(src: SetModule): (builder: Builder) => void;
+export declare function loadSetModule(slice: Slice): {
+    $$type: "SetModule";
+    step: bigint;
+    module: Address;
+};
+export type SetValidator = {
+    $$type: 'SetValidator';
+    candidate: Address;
+};
+export declare function storeSetValidator(src: SetValidator): (builder: Builder) => void;
+export declare function loadSetValidator(slice: Slice): {
+    $$type: "SetValidator";
+    candidate: Address;
+};
+export type SetStrategies = {
+    $$type: 'SetStrategies';
+    chain_id: bigint;
+    from_token: bigint;
+    to_token: bigint;
+    foreign: Steps;
+    incomming: Steps;
+    local: Steps;
+};
+export declare function storeSetStrategies(src: SetStrategies): (builder: Builder) => void;
+export declare function loadSetStrategies(slice: Slice): {
+    $$type: "SetStrategies";
+    chain_id: bigint;
+    from_token: bigint;
+    to_token: bigint;
+    foreign: {
+        $$type: "Steps";
+        path: Dictionary<bigint, bigint>;
+        size: bigint;
+    };
+    incomming: {
+        $$type: "Steps";
+        path: Dictionary<bigint, bigint>;
+        size: bigint;
+    };
+    local: {
+        $$type: "Steps";
+        path: Dictionary<bigint, bigint>;
+        size: bigint;
+    };
+};
+export type SetToken = {
+    $$type: 'SetToken';
+    address: Address;
+    decimals: bigint;
+    emmet_lp: Address;
+    symbol: string;
+    swap_pool: Address;
+    swap_router: Address;
+    wallet: Address;
+};
+export declare function storeSetToken(src: SetToken): (builder: Builder) => void;
+export declare function loadSetToken(slice: Slice): {
+    $$type: "SetToken";
+    address: Address;
+    decimals: bigint;
+    emmet_lp: Address;
+    symbol: string;
+    swap_pool: Address;
+    swap_router: Address;
+    wallet: Address;
+};
+export type Unpause = {
+    $$type: 'Unpause';
+};
+export declare function storeUnpause(): (builder: Builder) => void;
+export declare function loadUnpause(slice: Slice): {
+    $$type: "Unpause";
+};
+export type UpdateChainFee = {
+    $$type: 'UpdateChainFee';
+    chain_id: bigint;
+    strategy_step: bigint;
+    gas_amount: bigint;
+};
+export declare function storeUpdateChainFee(src: UpdateChainFee): (builder: Builder) => void;
+export declare function loadUpdateChainFee(slice: Slice): {
+    $$type: "UpdateChainFee";
+    chain_id: bigint;
+    strategy_step: bigint;
+    gas_amount: bigint;
+};
+export type UpdateConsensusFee = {
+    $$type: 'UpdateConsensusFee';
+    amount: bigint;
+};
+export declare function storeUpdateConsensusFee(src: UpdateConsensusFee): (builder: Builder) => void;
+export declare function loadUpdateConsensusFee(slice: Slice): {
+    $$type: "UpdateConsensusFee";
+    amount: bigint;
+};
+export type UpdateMinimumTxFee = {
+    $$type: 'UpdateMinimumTxFee';
+    amount: bigint;
+};
+export declare function storeUpdateMinimumTxFee(src: UpdateMinimumTxFee): (builder: Builder) => void;
+export declare function loadUpdateMinimumTxFee(slice: Slice): {
+    $$type: "UpdateMinimumTxFee";
+    amount: bigint;
+};
+export type UpdateProtocolFee = {
+    $$type: 'UpdateProtocolFee';
+    amount: bigint;
+};
+export declare function storeUpdateProtocolFee(src: UpdateProtocolFee): (builder: Builder) => void;
+export declare function loadUpdateProtocolFee(slice: Slice): {
+    $$type: "UpdateProtocolFee";
+    amount: bigint;
+};
+export type WithdrawGas = {
+    $$type: 'WithdrawGas';
+    amount: bigint;
+};
+export declare function storeWithdrawGas(src: WithdrawGas): (builder: Builder) => void;
+export declare function loadWithdrawGas(slice: Slice): {
+    $$type: "WithdrawGas";
+    amount: bigint;
+};
+export type Token = {
+    $$type: 'Token';
+    address: Address;
+    decimals: bigint;
+    emmet_lp: Address;
+    symbol: string;
+    swap_pool: Address;
+    swap_router: Address;
+    wallet: Address;
+};
+export declare function storeToken(src: Token): (builder: Builder) => void;
+export declare function loadToken(slice: Slice): {
+    $$type: "Token";
+    address: Address;
+    decimals: bigint;
+    emmet_lp: Address;
+    symbol: string;
+    swap_pool: Address;
+    swap_router: Address;
+    wallet: Address;
+};
+export type Chain = {
+    $$type: 'Chain';
+    name: string;
+    chain_id: bigint;
+};
+export declare function storeChain(src: Chain): (builder: Builder) => void;
+export declare function loadChain(slice: Slice): {
+    $$type: "Chain";
+    name: string;
+    chain_id: bigint;
+};
+export type ForeignFees = {
+    $$type: 'ForeignFees';
+    i: Dictionary<bigint, bigint>;
+};
+export declare function storeForeignFees(src: ForeignFees): (builder: Builder) => void;
+export declare function loadForeignFees(slice: Slice): {
+    $$type: "ForeignFees";
+    i: Dictionary<bigint, bigint>;
 };
 export type Steps = {
-    $$type: "Steps";
-    steps: Dictionary<bigint, bigint>;
+    $$type: 'Steps';
+    path: Dictionary<bigint, bigint>;
     size: bigint;
 };
 export declare function storeSteps(src: Steps): (builder: Builder) => void;
 export declare function loadSteps(slice: Slice): {
     $$type: "Steps";
-    steps: Dictionary<bigint, bigint>;
+    path: Dictionary<bigint, bigint>;
     size: bigint;
 };
-export type CrossChainStrategy = {
-    $$type: "CrossChainStrategy";
-    local_steps: Steps;
-    foreign_steps: Steps;
+export type Strategies = {
+    $$type: 'Strategies';
+    foreign: Steps;
+    incomming: Steps;
+    local: Steps;
 };
-export declare function storeCrossChainStrategy(src: CrossChainStrategy): (builder: Builder) => void;
-export declare function loadCrossChainStrategy(slice: Slice): {
-    $$type: "CrossChainStrategy";
-    local_steps: {
+export declare function storeStrategies(src: Strategies): (builder: Builder) => void;
+export declare function loadStrategies(slice: Slice): {
+    $$type: "Strategies";
+    foreign: {
         $$type: "Steps";
-        steps: Dictionary<bigint, bigint>;
+        path: Dictionary<bigint, bigint>;
         size: bigint;
     };
-    foreign_steps: {
+    incomming: {
         $$type: "Steps";
-        steps: Dictionary<bigint, bigint>;
+        path: Dictionary<bigint, bigint>;
+        size: bigint;
+    };
+    local: {
+        $$type: "Steps";
+        path: Dictionary<bigint, bigint>;
         size: bigint;
     };
 };
-export type TargetTokenToCrossChainStrategy = {
-    $$type: "TargetTokenToCrossChainStrategy";
-    i: Dictionary<bigint, CrossChainStrategy>;
+export type ToTokenMap = {
+    $$type: 'ToTokenMap';
+    i: Dictionary<bigint, Strategies>;
 };
-export declare function storeTargetTokenToCrossChainStrategy(src: TargetTokenToCrossChainStrategy): (builder: Builder) => void;
-export declare function loadTargetTokenToCrossChainStrategy(slice: Slice): {
-    $$type: "TargetTokenToCrossChainStrategy";
-    i: Dictionary<bigint, CrossChainStrategy>;
+export declare function storeToTokenMap(src: ToTokenMap): (builder: Builder) => void;
+export declare function loadToTokenMap(slice: Slice): {
+    $$type: "ToTokenMap";
+    i: Dictionary<bigint, Strategies>;
 };
-export type FromTokenToTargetTokenToCrossChainStrategy = {
-    $$type: "FromTokenToTargetTokenToCrossChainStrategy";
-    i: Dictionary<bigint, TargetTokenToCrossChainStrategy>;
+export type FromTokenMap = {
+    $$type: 'FromTokenMap';
+    i: Dictionary<bigint, ToTokenMap>;
 };
-export declare function storeFromTokenToTargetTokenToCrossChainStrategy(src: FromTokenToTargetTokenToCrossChainStrategy): (builder: Builder) => void;
-export declare function loadFromTokenToTargetTokenToCrossChainStrategy(slice: Slice): {
-    $$type: "FromTokenToTargetTokenToCrossChainStrategy";
-    i: Dictionary<bigint, TargetTokenToCrossChainStrategy>;
+export declare function storeFromTokenMap(src: FromTokenMap): (builder: Builder) => void;
+export declare function loadFromTokenMap(slice: Slice): {
+    $$type: "FromTokenMap";
+    i: Dictionary<bigint, ToTokenMap>;
 };
-export type UpdateProtocolFee = {
-    $$type: "UpdateProtocolFee";
-    new_fee: bigint;
+export type GrantRole = {
+    $$type: 'GrantRole';
+    to: Address;
+    role_id: bigint;
 };
-export declare function storeUpdateProtocolFee(src: UpdateProtocolFee): (builder: Builder) => void;
-export declare function loadUpdateProtocolFee(slice: Slice): {
-    $$type: "UpdateProtocolFee";
-    new_fee: bigint;
+export declare function storeGrantRole(src: GrantRole): (builder: Builder) => void;
+export declare function loadGrantRole(slice: Slice): {
+    $$type: "GrantRole";
+    to: Address;
+    role_id: bigint;
 };
-export type AddValidator = {
-    $$type: "AddValidator";
-    key: bigint;
+export type RenounceRole = {
+    $$type: 'RenounceRole';
+    role_id: bigint;
     address: Address;
 };
-export declare function storeAddValidator(src: AddValidator): (builder: Builder) => void;
-export declare function loadAddValidator(slice: Slice): {
-    $$type: "AddValidator";
-    key: bigint;
+export declare function storeRenounceRole(src: RenounceRole): (builder: Builder) => void;
+export declare function loadRenounceRole(slice: Slice): {
+    $$type: "RenounceRole";
+    role_id: bigint;
     address: Address;
 };
-export type RemoveValidator = {
-    $$type: "RemoveValidator";
-    key: bigint;
+export type RevokeRole = {
+    $$type: 'RevokeRole';
+    to: Address;
+    role_id: bigint;
 };
-export declare function storeRemoveValidator(src: RemoveValidator): (builder: Builder) => void;
-export declare function loadRemoveValidator(slice: Slice): {
-    $$type: "RemoveValidator";
-    key: bigint;
+export declare function storeRevokeRole(src: RevokeRole): (builder: Builder) => void;
+export declare function loadRevokeRole(slice: Slice): {
+    $$type: "RevokeRole";
+    to: Address;
+    role_id: bigint;
 };
-export type SetIncomingStrategy = {
-    $$type: "SetIncomingStrategy";
-    from_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
-    steps: Steps;
+export type RoleData = {
+    $$type: 'RoleData';
+    roles: Dictionary<Address, boolean>;
+    admin_role: bigint;
 };
-export declare function storeSetIncomingStrategy(src: SetIncomingStrategy): (builder: Builder) => void;
-export declare function loadSetIncomingStrategy(slice: Slice): {
-    $$type: "SetIncomingStrategy";
-    from_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
-    steps: {
-        $$type: "Steps";
-        steps: Dictionary<bigint, bigint>;
-        size: bigint;
-    };
+export declare function storeRoleData(src: RoleData): (builder: Builder) => void;
+export declare function loadRoleData(slice: Slice): {
+    $$type: "RoleData";
+    roles: Dictionary<Address, boolean>;
+    admin_role: bigint;
 };
-export type SetCrossChainStrategy = {
-    $$type: "SetCrossChainStrategy";
-    target_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
-    local_steps: Steps;
-    foreign_steps: Steps;
+export type UpdateRoleAdmin = {
+    $$type: 'UpdateRoleAdmin';
+    role_id: bigint;
+    role_admin: bigint;
 };
-export declare function storeSetCrossChainStrategy(src: SetCrossChainStrategy): (builder: Builder) => void;
-export declare function loadSetCrossChainStrategy(slice: Slice): {
-    $$type: "SetCrossChainStrategy";
-    target_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
-    local_steps: {
-        $$type: "Steps";
-        steps: Dictionary<bigint, bigint>;
-        size: bigint;
-    };
-    foreign_steps: {
-        $$type: "Steps";
-        steps: Dictionary<bigint, bigint>;
-        size: bigint;
-    };
+export declare function storeUpdateRoleAdmin(src: UpdateRoleAdmin): (builder: Builder) => void;
+export declare function loadUpdateRoleAdmin(slice: Slice): {
+    $$type: "UpdateRoleAdmin";
+    role_id: bigint;
+    role_admin: bigint;
 };
-export type RemoveInternalStrategy = {
-    $$type: "RemoveInternalStrategy";
-    from_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
+export type EmmetBridge$Data = {
+    $$type: 'EmmetBridge$Data';
+    admin: Address;
+    cfo: Address;
+    chains: Dictionary<bigint, Chain>;
+    chainId: bigint;
+    consensus_fee: bigint;
+    foreign_fees: Dictionary<bigint, ForeignFees>;
+    incomming_txs: Dictionary<bigint, boolean>;
+    locked: Dictionary<bigint, bigint>;
+    min_tx_fee: bigint;
+    modules: Dictionary<bigint, Address>;
+    nonce: bigint;
+    paused: boolean;
+    protocol_fee: bigint;
+    roles: Dictionary<bigint, RoleData>;
+    token_strategies: Dictionary<bigint, FromTokenMap>;
+    threshold: bigint;
+    tokens: Dictionary<bigint, Token>;
+    TVL: bigint;
+    validators: Dictionary<bigint, Address>;
+    validator_count: bigint;
 };
-export declare function storeRemoveInternalStrategy(src: RemoveInternalStrategy): (builder: Builder) => void;
-export declare function loadRemoveInternalStrategy(slice: Slice): {
-    $$type: "RemoveInternalStrategy";
-    from_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
+export declare function storeEmmetBridge$Data(src: EmmetBridge$Data): (builder: Builder) => void;
+export declare function loadEmmetBridge$Data(slice: Slice): {
+    $$type: "EmmetBridge$Data";
+    admin: Address;
+    cfo: Address;
+    chains: Dictionary<bigint, Chain>;
+    chainId: bigint;
+    consensus_fee: bigint;
+    foreign_fees: Dictionary<bigint, ForeignFees>;
+    incomming_txs: Dictionary<bigint, boolean>;
+    locked: Dictionary<bigint, bigint>;
+    min_tx_fee: bigint;
+    modules: Dictionary<bigint, Address>;
+    nonce: bigint;
+    paused: boolean;
+    protocol_fee: bigint;
+    roles: Dictionary<bigint, RoleData>;
+    token_strategies: Dictionary<bigint, FromTokenMap>;
+    threshold: bigint;
+    tokens: Dictionary<bigint, Token>;
+    TVL: bigint;
+    validators: Dictionary<bigint, Address>;
+    validator_count: bigint;
 };
-export type RemoveCrossChainStrategy = {
-    $$type: "RemoveCrossChainStrategy";
-    target_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
+export declare const EmmetBridge_getterMapping: {
+    [key: string]: string;
 };
-export declare function storeRemoveCrossChainStrategy(src: RemoveCrossChainStrategy): (builder: Builder) => void;
-export declare function loadRemoveCrossChainStrategy(slice: Slice): {
-    $$type: "RemoveCrossChainStrategy";
-    target_chain: bigint;
-    from_token: bigint;
-    target_token: bigint;
-};
-export declare class Bridge implements Contract {
-    static init(chain_nonce: bigint, native_coin: bigint, base_uri: string, transfer_fee: bigint, protocol_fee: bigint, bootstrap_validator_key: bigint, bootstrap_validator_address: Address, ton_liquidity_pool: Address): Promise<{
+export declare class EmmetBridge implements Contract {
+    static init(admin: Address, cfo: Address, validator: Address): Promise<{
         code: Cell;
         data: Cell;
     }>;
-    static fromInit(chain_nonce: bigint, native_coin: bigint, base_uri: string, transfer_fee: bigint, protocol_fee: bigint, bootstrap_validator_key: bigint, bootstrap_validator_address: Address, ton_liquidity_pool: Address): Promise<Bridge>;
-    static fromAddress(address: Address): Bridge;
+    static fromInit(admin: Address, cfo: Address, validator: Address): Promise<EmmetBridge>;
+    static fromAddress(address: Address): EmmetBridge;
     readonly address: Address;
     readonly init?: {
         code: Cell;
@@ -800,25 +801,78 @@ export declare class Bridge implements Contract {
     send(provider: ContractProvider, via: Sender, args: {
         value: bigint;
         bounce?: boolean | null | undefined;
-    }, message: JettonTransferNotification | JettonBurnNotification | FreezeTon | MapContract | RemoveMappedContract | "WithdrawFees" | ReceiveInstallment | UniqueReceiveInstallment | SetChainFee | JettonExcesses | UpdateProtocolFee | UpdateBaseUri | UpdateTransferFee | AddValidator | RemoveValidator | SetIncomingStrategy | SetCrossChainStrategy | RemoveCrossChainStrategy | RemoveInternalStrategy | null | "Pause" | "Unpause" | Deploy | GrantRole | RevokeRole | RenounceRole | UpdateRoleAdmin): Promise<void>;
-    getManagerRoleId(provider: ContractProvider): Promise<bigint>;
-    getSignerRoleId(provider: ContractProvider): Promise<bigint>;
+    }, message: TokenExcesses | ReceiveInstallment | FreezeTon | JettonBurnNotification | TokenTransferNotification | null | DeleteChain | DeleteModule | DeleteStategies | DeleteToken | DeleteValidator | Pause | SetAdmin | SetChain | SetCFO | SetModule | SetStrategies | SetToken | SetValidator | Unpause | UpdateChainFee | UpdateConsensusFee | UpdateMinimumTxFee | UpdateProtocolFee | WithdrawGas | Deploy | GrantRole | RevokeRole | RenounceRole | UpdateRoleAdmin): Promise<void>;
+    getEstimateFee(provider: ContractProvider, chain_id: bigint, from_token: bigint, to_token: bigint): Promise<bigint>;
+    getGetAdmin(provider: ContractProvider): Promise<Address>;
+    getGetCfo(provider: ContractProvider): Promise<Address>;
+    getGetChain(provider: ContractProvider, chain_id: bigint): Promise<{
+        $$type: "Chain";
+        name: string;
+        chain_id: bigint;
+    }>;
+    getGetMinTxFee(provider: ContractProvider): Promise<bigint>;
+    getGetModule(provider: ContractProvider, step: bigint): Promise<Address>;
+    getGetNonce(provider: ContractProvider): Promise<bigint>;
+    getGetChainId(provider: ContractProvider): Promise<bigint>;
+    getGetConsensusFee(provider: ContractProvider): Promise<bigint>;
+    getGetLocked(provider: ContractProvider, token: bigint): Promise<bigint>;
+    getGetPaused(provider: ContractProvider): Promise<boolean>;
+    getGetProtocolFee(provider: ContractProvider): Promise<bigint>;
+    getGetStepFee(provider: ContractProvider, chain_id: bigint, step: bigint): Promise<bigint>;
+    getGetThreshold(provider: ContractProvider): Promise<bigint>;
+    getGetToken(provider: ContractProvider, key: bigint): Promise<{
+        $$type: "Token";
+        address: Address;
+        decimals: bigint;
+        emmet_lp: Address;
+        symbol: string;
+        swap_pool: Address;
+        swap_router: Address;
+        wallet: Address;
+    }>;
+    getGetTvl(provider: ContractProvider): Promise<bigint>;
+    getGetValidator(provider: ContractProvider, index: bigint): Promise<Address>;
+    getGetValidatorCount(provider: ContractProvider): Promise<bigint>;
+    getIsProcessed(provider: ContractProvider, hash: bigint): Promise<boolean>;
+    getIsValidator(provider: ContractProvider, address: Address): Promise<boolean>;
+    getAdminRoleId(provider: ContractProvider): Promise<bigint>;
+    getBridgeRoleId(provider: ContractProvider): Promise<bigint>;
     getCfoRoleId(provider: ContractProvider): Promise<bigint>;
-    getValidators(provider: ContractProvider): Promise<Dictionary<bigint, Address>>;
-    getValidatorsCount(provider: ContractProvider): Promise<bigint>;
-    getBaseUri(provider: ContractProvider): Promise<string>;
-    getProtocolFee(provider: ContractProvider): Promise<bigint>;
-    getNonce(provider: ContractProvider): Promise<bigint>;
-    getNativeCoin(provider: ContractProvider): Promise<bigint>;
-    getFees(provider: ContractProvider): Promise<bigint>;
-    getTvl(provider: ContractProvider): Promise<bigint>;
-    getChainNonce(provider: ContractProvider): Promise<bigint>;
-    getTokens(provider: ContractProvider): Promise<Dictionary<bigint, Token>>;
-    getChainFees(provider: ContractProvider): Promise<Dictionary<bigint, bigint>>;
-    getIncomingStrategy(provider: ContractProvider): Promise<Dictionary<bigint, FromTokenToTargetTokenToSteps>>;
-    getCrossChainStrategy(provider: ContractProvider): Promise<Dictionary<bigint, FromTokenToTargetTokenToCrossChainStrategy>>;
     getHasRole(provider: ContractProvider, address: Address, role_id: bigint): Promise<boolean>;
     getRoleAdmin(provider: ContractProvider, role_id: bigint): Promise<bigint>;
-    getAdminRoleId(provider: ContractProvider): Promise<bigint>;
+    getValidatorRoleId(provider: ContractProvider): Promise<bigint>;
+    getGetForeignStrategies(provider: ContractProvider, chain_id: bigint, from_token: bigint, to_token: bigint): Promise<{
+        $$type: "Steps";
+        path: Dictionary<bigint, bigint>;
+        size: bigint;
+    }>;
+    getGetIncomingStrategies(provider: ContractProvider, chain_id: bigint, from_token: bigint, to_token: bigint): Promise<{
+        $$type: "Steps";
+        path: Dictionary<bigint, bigint>;
+        size: bigint;
+    }>;
+    getGetLocalStrategies(provider: ContractProvider, chain_id: bigint, from_token: bigint, to_token: bigint): Promise<{
+        $$type: "Steps";
+        path: Dictionary<bigint, bigint>;
+        size: bigint;
+    }>;
+    getGetStrategies(provider: ContractProvider, chain_id: bigint, from_token: bigint, to_token: bigint): Promise<{
+        $$type: "Strategies";
+        foreign: {
+            $$type: "Steps";
+            path: Dictionary<bigint, bigint>;
+            size: bigint;
+        };
+        incomming: {
+            $$type: "Steps";
+            path: Dictionary<bigint, bigint>;
+            size: bigint;
+        };
+        local: {
+            $$type: "Steps";
+            path: Dictionary<bigint, bigint>;
+            size: bigint;
+        };
+    }>;
 }
 //# sourceMappingURL=index.d.ts.map
