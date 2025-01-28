@@ -24,6 +24,13 @@ export declare namespace ChainFactoryConfigs {
             nativeCoin: string;
             rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
         };
+        songbirdParams: {
+            addressBook: string;
+            chainId: number;
+            chainName: string;
+            nativeCoin: string;
+            rpcs: readonly ["https://rpc.ftso.au/songbird", "https://songbird-api.flare.network/ext/C/rpc", "https://rpc.au.cc/songbird", "https://rpc.ftso.au/songbird"];
+        };
         tonParams: {
             addressBook: Address;
             rpcs: readonly ["https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0"];

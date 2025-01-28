@@ -52,6 +52,7 @@ import { chainFactoryTestnet } from "./your-path-to/chainFactory";
     const ethereum:  Web3Helper  = await chainFactoryTestnet.inner(Chain.ETHEREUM)  as Web3Helper;
     const onlylayer: Web3Helper  = await chainFactoryTestnet.inner(Chain.ONLYLAYER) as Web3Helper;
     const polygon:   Web3Helper  = await chainFactoryTestnet.inner(Chain.POLYGON)   as Web3Helper;
+    const songbird:  Web3Helper  = await chainFactoryTestnet.inner(Chain.SONGBIRD)  as Web3Helper;
     const ton:       TonHelper   = await chainFactoryTestnet.inner(Chain.TON)       as TonHelper;
     ...
 })()
@@ -64,12 +65,10 @@ Getting the token data:
 ```ts
 
 type TTokenName = 
-    'CAVI' 
-    | 'DAI'
-    | 'GrabClub'
+    'NTM' 
     | 'TON'
-    | 'TRT'
     | 'USDC'
+    | 'USDT'
     ;
 
 type TToken {
@@ -217,7 +216,7 @@ export function useTonConnect(): {
 export const SUPPORTED_CHAINS = { ...MAINNETS, ...TESTNETS };
 export type TChainName = keyof typeof SUPPORTED_CHAINS;
 export const ChainToDestinationDomain: { [key in TChainName]: number } = {
-    // CCTP unsupported chains
+    // CCTP supported chains
   ethereum: 0,
   sepolia: 0,
   avalanche: 1,
@@ -233,6 +232,7 @@ export const ChainToDestinationDomain: { [key in TChainName]: number } = {
   polygon: 7,
   polygonAmoy: 7,
   // Other chains
+  songbird: 19,
   ton: 65534,
   tonTestnet: 65535,
   berachainBartio: 80084,
@@ -274,6 +274,7 @@ export const ChainToDestinationDomain: { [key in TChainName]: number } = {
     // EVM chains example:
     } else if ( 
           fromChainID === Chain.POLYGON ||
+          fromChainID === Chain.SONGBIRD ||
           fromChainID === Chain.ETHEREUM ||
           fromChainID === Chain.BSC ||
           fromChainID === Chain.BERACHAIN ||
