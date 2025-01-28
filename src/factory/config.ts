@@ -38,7 +38,7 @@ export namespace ChainFactoryConfigs {
         rpcs: MainnetRPCUri.POLYGON
       },
       songbirdParams: {
-        addressBook: "",
+        addressBook: "0x4f5617EAECA9A55A68b0c1Daf750fB751d3FF3b9",
         chainId: 19,
         chainName: "songbird",
         nativeCoin: "SGB",
