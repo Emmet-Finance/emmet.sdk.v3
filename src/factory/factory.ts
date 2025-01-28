@@ -26,6 +26,7 @@ function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   cToP.set(Chain.ONLYLAYER, chainParams.onlylayerParams);
   cToP.set(Chain.OPTIMISM, chainParams.opParams);
   cToP.set(Chain.POLYGON, chainParams.polygonParams);
+  cToP.set(Chain.SONGBIRD, chainParams.songbirdParams);
   cToP.set(Chain.TON, chainParams.tonParams);
   cToP.set(Chain.TONTESTNET, chainParams.tonParams);
   return cToP;
