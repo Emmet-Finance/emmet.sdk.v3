@@ -9,6 +9,7 @@ export const ChainIDToDomain = {
   56: Chain.BSC,
   8453: Chain.BASE,
   137: Chain.POLYGON,
+  19: Chain.SONGBIRD,
   65534: Chain.TON,
   // Testnets
   80002: Chain.POLYGON,

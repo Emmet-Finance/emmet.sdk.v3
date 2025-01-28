@@ -38,6 +38,12 @@ export const MainnetRPCUri = {
     // "https://polygon.drpc.org"
     // "https://polygon.blockpi.network/v1/rpc/public",
   ],
+  SONGBIRD: [
+    "https://rpc.ftso.au/songbird",
+    "https://songbird-api.flare.network/ext/C/rpc",
+    "https://rpc.au.cc/songbird",
+    "https://rpc.ftso.au/songbird",
+  ],
   TON: [
     "https://toncenter.com/api/v2/jsonRPC?api_key=a0b875b16d9045fed8cee2ad6ee7733990afd045a6e2fbb50708186c9f6decb0",
     // "https://ton-mainnet.core.chainstack.com/5100b867ed6644ea5e9c5e689baaf6fb/api/v2/",

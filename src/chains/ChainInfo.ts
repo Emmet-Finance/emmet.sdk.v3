@@ -67,6 +67,13 @@ CHAIN_INFO.set(Chain.POLYGON, {
   nonce: Chain.POLYGON,
 });
 
+CHAIN_INFO.set(Chain.SONGBIRD, {
+  constructor: web3Helper,
+  decimals: 18,
+  name: "Songbird",
+  nonce: Chain.SONGBIRD
+});
+
 CHAIN_INFO.set(Chain.TON, {
   decimals: 18,
   name: "Ton",

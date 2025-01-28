@@ -37,6 +37,13 @@ export namespace ChainFactoryConfigs {
         nativeCoin: "MATIC",
         rpcs: MainnetRPCUri.POLYGON
       },
+      songbirdParams: {
+        addressBook: "",
+        chainId: 19,
+        chainName: "songbird",
+        nativeCoin: "SGB",
+        rpcs: MainnetRPCUri.SONGBIRD
+      },
       tonParams:{
         addressBook: Address.parse("EQB_pf7BP7jobq2QEbhVsXxU4pGsQVdqx-X5F8YU4jGlyCIQ"),
         rpcs: MainnetRPCUri.TON,
