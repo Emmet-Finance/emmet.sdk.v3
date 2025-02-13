@@ -361,7 +361,7 @@ export async function tonHandler({
       )
       .endCell();
 
-      const body = beginCell()
+    const body = beginCell()
       .storeUint(Op.transfer, 32)
       .storeUint(1n, 64)
       .storeCoins(amt)
@@ -372,15 +372,15 @@ export async function tonHandler({
       .storeMaybeRef(forward_payload)
       .endCell();
 
-      await wallet.internal(
-        signer,
-        {
-          value: gasArgs.value + MIN_TX_FEE * 5n,
-          sendMode: SendMode.PAY_GAS_SEPARATELY,
-          bounce: true,
-          body
-        },
-      )
+    await wallet.internal(
+      signer,
+      {
+        value: gasArgs.value + MIN_TX_FEE * 5n,
+        sendMode: SendMode.PAY_GAS_SEPARATELY,
+        bounce: true,
+        body
+      },
+    )
 
     return body.hash().toString("hex");
 
@@ -395,8 +395,8 @@ export async function tonHandler({
     try {
       for (let i = 0; i < strategy.length; i++) {
 
-        if (strategy[i] 
-            && BigInt(strategy[i]) === TonStrategies.BURN) return true;
+        if (strategy[i]
+          && BigInt(strategy[i]) === TonStrategies.BURN) return true;
       }
     } catch (error) {
       console.warn("Emmet.SDK isWrappedToken", error)
@@ -961,78 +961,94 @@ export async function tonHandler({
 
       fee = await bridgeReader.getEstimateFee(cid, toKey(fromSymbol), toKey(targetSymbol));
 
+      const provider = fetchClient();
+      const userBalance = await provider.getBalance(signer.address!);
+
+      if(userBalance < fee) {
+        return {
+          hash: "Insufficient TON for gas",
+          tx: "ERROR",
+        };
+      }
+
       const gs = {
         value: fee
       };
 
-      if (toKey(fromSymbol) === nativeTokenId) {
-        await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
-      } else if (isWrapped) {
-        console.log("burning");
-        await transferJettonToBurner(
-          fromSymbol,
-          targetSymbol,
-          signer,
-          amt,
-          destAddress,
-          cid,
-          gs,
-        );
-      } else {
-        console.log("LnM or LP")
-        await transferJettonToBridge(
-          fromSymbol,
-          targetSymbol,
-          signer,
-          cid,
-          destAddress,
-          amt,
-          gs,
-        );
-      }
-
-      let foundTx = false;
-      let hash = "";
-      let retries = 0;
-      while (!foundTx && retries < 10) {
-        await new Promise((e) => setTimeout(e, 2000));
-        const latestTx = (
-          await fetchClient().getTransactions(bridge, { limit: 1 })
-        )[0];
-        if (latestTx.hash().toString("base64") === lastBridgeTxHash) {
-          await new Promise((e) => setTimeout(e, 10000));
-          retries++;
-          continue;
+      try {
+        if (toKey(fromSymbol) === nativeTokenId) {
+          await transferTon(bc, signer, destAddress, targetSymbol, cid, amt, gs);
+        } else if (isWrapped) {
+          await transferJettonToBurner(
+            fromSymbol,
+            targetSymbol,
+            signer,
+            amt,
+            destAddress,
+            cid,
+            gs,
+          );
+        } else {
+          await transferJettonToBridge(
+            fromSymbol,
+            targetSymbol,
+            signer,
+            cid,
+            destAddress,
+            amt,
+            gs,
+          );
         }
-        const txs = await fetchClient().getTransactions(bridge, { limit: 2 });
-        for (const tx of txs) {
-          for (let i = 0; i < tx.outMessages.size; i++) {
-            const msg = tx.outMessages.get(i) ?? raise("Unreachable");
-            if (tx.hash().toString("base64") === lastBridgeTxHash) {
-              await new Promise((e) => setTimeout(e, 10000));
-              continue;
-            }
-            if (msg.body.asSlice().loadUint(32) !== 1673830231) {
-              continue;
-            }
-            const otx = loadOutgoingTransaction(msg.body.asSlice());
-            if (
-              destAddress === otx.to.asSlice().loadStringRefTail() &&
-              amt === otx.amount &&
-              otx.from_token.asSlice().loadStringRefTail() === fromSymbol
-            ) {
-              foundTx = true;
-              hash = tx.hash().toString("hex");
+
+        let foundTx = false;
+        let hash = "";
+        let retries = 0;
+        while (!foundTx && retries < 10) {
+          await new Promise((e) => setTimeout(e, 2000));
+          const latestTx = (
+            await fetchClient().getTransactions(bridge, { limit: 1 })
+          )[0];
+          if (latestTx.hash().toString("base64") === lastBridgeTxHash) {
+            await new Promise((e) => setTimeout(e, 10000));
+            retries++;
+            continue;
+          }
+          const txs = await fetchClient().getTransactions(bridge, { limit: 2 });
+          for (const tx of txs) {
+            for (let i = 0; i < tx.outMessages.size; i++) {
+              const msg = tx.outMessages.get(i) ?? raise("Unreachable");
+              if (tx.hash().toString("base64") === lastBridgeTxHash) {
+                await new Promise((e) => setTimeout(e, 10000));
+                continue;
+              }
+              if (msg.body.asSlice().loadUint(32) !== 1673830231) {
+                continue;
+              }
+              const otx = loadOutgoingTransaction(msg.body.asSlice());
+              if (
+                destAddress === otx.to.asSlice().loadStringRefTail() &&
+                amt === otx.amount &&
+                otx.from_token.asSlice().loadStringRefTail() === fromSymbol
+              ) {
+                foundTx = true;
+                hash = tx.hash().toString("hex");
+              }
             }
           }
+          retries++;
         }
-        retries++;
+
+        return {
+          hash: hash,
+          tx: hash,
+        };
+      } catch (error) {
+        return {
+          hash: "Token transfer failed",
+          tx: "ERROR",
+        };
       }
 
-      return {
-        hash: hash,
-        tx: hash,
-      };
     },
   };
 }

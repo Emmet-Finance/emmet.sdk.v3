@@ -373,7 +373,7 @@ export async function web3Helper({
       } catch (error: any | { message: string }) {
         console.warn("Emmet.SDK getLpData " + error.message);
         await sleep(1000);
-        
+
       }
       return data;
     },
@@ -590,7 +590,8 @@ export async function web3Helper({
       ts: string,
       da: string,
       fee: bigint | undefined,
-      gasArgs: any
+      gasArgs: any,
+      senderAddress?: string
     ) => {
 
       const params: SendParams = {
@@ -605,24 +606,50 @@ export async function web3Helper({
         isSuccess: true
       }
 
-      const sendGas = await bridge
-        .connect(signer)
-        .sendInstallment.estimateGas(params, {
-          value: fee! * 11n / 10n,
-        });
+      try {
+        let sendGas = await bridge
+          .connect(signer)
+          .sendInstallment.estimateGas(params, {
+            value: fee! * 11n / 10n,
+          });
 
-      const tx = await bridge
-        .connect(signer)
-        .sendInstallment(params, {
-          ...gasArgs,
-          value: fee! * 11n / 10n,
-          gasLimit: sendGas,
-        });
+        const provider = await fetchProvider();
+        const userBalance = await provider.getBalance(senderAddress!);
 
-      return {
-        hash: tx.hash,
-        tx: tx,
-      };
+        if (sendGas < userBalance) {
+          return {
+            hash: "Insufficient funds",
+            tx: "ERROR" as unknown as ContractTransactionResponse
+          }
+        }
+
+        const tx = await bridge
+          .connect(signer)
+          .sendInstallment(params, {
+            ...gasArgs,
+            value: fee! * 11n / 10n,
+            gasLimit: sendGas,
+          });
+
+        return {
+          hash: tx.hash,
+          tx: tx,
+        };
+      } catch (error:any) {
+        if(error && error.shortMessage){
+          const msgParts = error.shortMessage.split(":");
+          return {
+            hash: msgParts[msgParts.length - 1].replace('"', ""),
+            tx: "ERROR" as unknown as ContractTransactionResponse
+          }
+        } else {
+          return {
+            hash: "Transfer failed. reason unknown.",
+            tx: "ERROR" as unknown as ContractTransactionResponse
+          }
+        }
+      }
+
     },
     // -----------------------------------------------------------------
     async txFee(targetChainId: BigNumberish, fromToken: string, targetToken: string) {
