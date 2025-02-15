@@ -490,7 +490,7 @@ async function web3Helper({ rpcs, addressBook, chainName, nativeCoin, }) {
                 const provider = await fetchProvider();
                 // @ts-ignore
                 const userBalance = await provider.getBalance(signer);
-                if (sendGas < userBalance) {
+                if (sendGas > userBalance) {
                     return {
                         hash: "Insufficient funds",
                         tx: "ERROR"
