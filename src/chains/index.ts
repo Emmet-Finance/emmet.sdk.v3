@@ -211,7 +211,6 @@ export interface SendInstallment<Signer, Ret, GasArgs> {
     destAddress: string,
     fee?: bigint,
     gasArgs?: GasArgs,
-    senderAddress?: string,
   ) => Promise<{ hash: string; tx: Ret }>;
 }
 

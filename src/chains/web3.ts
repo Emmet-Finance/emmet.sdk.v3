@@ -573,6 +573,11 @@ export async function web3Helper({
       gasArgs: any
     ) => {
       const erc = WrappedERC20__factory.connect(tid, signer);
+      try {
+        
+      } catch (error) {
+        
+      }
       const preTransferGas = await erc.approve.estimateGas(spender, amt);
       const approved = await erc.approve(spender, amt, {
         ...gasArgs,
@@ -591,7 +596,6 @@ export async function web3Helper({
       da: string,
       fee: bigint | undefined,
       gasArgs: any,
-      senderAddress?: string
     ) => {
 
       const params: SendParams = {
@@ -614,7 +618,8 @@ export async function web3Helper({
           });
 
         const provider = await fetchProvider();
-        const userBalance = await provider.getBalance(senderAddress!);
+        // @ts-ignore
+        const userBalance = await provider.getBalance(signer);
 
         if (sendGas < userBalance) {
           return {
@@ -637,6 +642,7 @@ export async function web3Helper({
         };
       } catch (error:any) {
         if(error && error.shortMessage){
+          console.warn("Emmet.SDK", error)
           const msgParts = error.shortMessage.split(":");
           return {
             hash: msgParts[msgParts.length - 1].replace('"', ""),
