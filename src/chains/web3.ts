@@ -621,7 +621,7 @@ export async function web3Helper({
         // @ts-ignore
         const userBalance = await provider.getBalance(signer);
 
-        if (sendGas < userBalance) {
+        if (sendGas > userBalance) {
           return {
             hash: "Insufficient funds",
             tx: "ERROR" as unknown as ContractTransactionResponse
