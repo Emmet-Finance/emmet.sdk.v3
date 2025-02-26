@@ -372,10 +372,12 @@ export async function tonHandler({
       .storeMaybeRef(forward_payload)
       .endCell();
 
+      const isLucky = fromToken === "LKY";
+
     await wallet.internal(
       signer,
       {
-        value: gasArgs.value + MIN_TX_FEE * 5n,
+        value: isLucky ? gasArgs.value + MIN_TX_FEE * 5n + toNano("0.031") : gasArgs.value + MIN_TX_FEE * 5n,
         sendMode: SendMode.PAY_GAS_SEPARATELY,
         bounce: true,
         body
@@ -974,7 +976,7 @@ export async function tonHandler({
       console.log("isLKY", fromSymbol === "LKY")
 
       const gs = {
-        value: fromSymbol === "LKY" ? fee + toNano("0.1") : fee
+        value: fee
       };
 
       try {
