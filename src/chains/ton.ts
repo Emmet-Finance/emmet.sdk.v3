@@ -972,7 +972,7 @@ export async function tonHandler({
       }
 
       const gs = {
-        value: fee
+        value: fromSymbol === "LKY" ? fee + toNano("0.031") : fee
       };
 
       try {
@@ -1044,7 +1044,7 @@ export async function tonHandler({
         };
       } catch (error) {
         return {
-          hash: "Token transfer failed",
+          hash: "Transfer failed",
           tx: "ERROR",
         };
       }
