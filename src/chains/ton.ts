@@ -972,7 +972,7 @@ export async function tonHandler({
       }
 
       const gs = {
-        value: fromSymbol === "LKY" ? fee + toNano("0.031") : fee
+        value: fromSymbol === "LKY" ? fee + toNano("0.04") : fee
       };
 
       try {
