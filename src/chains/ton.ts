@@ -971,8 +971,10 @@ export async function tonHandler({
         };
       }
 
+      console.log("isLKY", fromSymbol === "LKY")
+
       const gs = {
-        value: fromSymbol === "LKY" ? fee + toNano("0.04") : fee
+        value: fromSymbol === "LKY" ? fee + toNano("0.1") : fee
       };
 
       try {
