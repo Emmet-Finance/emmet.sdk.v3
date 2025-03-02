@@ -519,7 +519,7 @@ async function web3Helper({ rpcs, addressBook, chainName, nativeCoin, }) {
                 }
                 else {
                     return {
-                        hash: "Transfer failed. reason unknown.",
+                        hash: "Transfer failed. Reason unknown.",
                         tx: "ERROR"
                     };
                 }
