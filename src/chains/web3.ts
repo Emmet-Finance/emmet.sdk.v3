@@ -650,7 +650,7 @@ export async function web3Helper({
           }
         } else {
           return {
-            hash: "Transfer failed. reason unknown.",
+            hash: "Transfer failed. Reason unknown.",
             tx: "ERROR" as unknown as ContractTransactionResponse
           }
         }

@@ -198,6 +198,7 @@ export async function tonHandler({
       ),
     );
   }
+  // -------------------------------------
   async function getStrategies(targetChain: bigint, fromSymbol: string, targetSymbol: string) {
 
     const strategy = await bridgeReader.getGetStrategies(
@@ -372,7 +373,7 @@ export async function tonHandler({
       .storeMaybeRef(forward_payload)
       .endCell();
 
-      const isLucky = fromToken === "LKY";
+    const isLucky = fromToken === "LKY";
 
     await wallet.internal(
       signer,
@@ -966,7 +967,7 @@ export async function tonHandler({
       const provider = fetchClient();
       const userBalance = await provider.getBalance(signer.address!);
 
-      if(userBalance < fee) {
+      if (userBalance < fee) {
         return {
           hash: "Insufficient TON for gas",
           tx: "ERROR",
@@ -1046,11 +1047,20 @@ export async function tonHandler({
           hash: hash,
           tx: hash,
         };
-      } catch (error) {
-        return {
-          hash: "Transfer failed",
-          tx: "ERROR",
-        };
+      } catch (error: any) {
+        if (error && error.shortMessage) {
+          console.warn("Emmet.SDK", error)
+          const msgParts = error.shortMessage.split(":");
+          return {
+            hash: msgParts[msgParts.length - 1].replace('"', ""),
+            tx: "ERROR"
+          }
+        } else {
+          return {
+            hash: "Transfer failed. Reason unknown.",
+            tx: "ERROR"
+          }
+        }
       }
 
     },
