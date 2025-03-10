@@ -960,7 +960,7 @@ export async function tonHandler({
       const bc = fetchClient().open(EmmetBridge.fromAddress(bridge));
 
       const strategies = await getStrategies(cid, fromSymbol, targetSymbol);
-      const isWrapped: boolean = isWrappedToken(strategies.outgoing);
+      const isWrapped: boolean = isWrappedToken(strategies.outgoing) ||  ["NTM"].includes(fromSymbol);
 
       fee = await bridgeReader.getEstimateFee(cid, toKey(fromSymbol), toKey(targetSymbol));
 
