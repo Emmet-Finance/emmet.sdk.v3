@@ -11,21 +11,21 @@
     "lint": "npx @biomejs/biome lint src/  "
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.5.3",
-    "@types/node": "^20.12.7",
-    "typescript": "^5.4.5"
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.13.11",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
     "@emmet-contracts/web3": "git+https://github.com/Emmet-Finance/emmet-types#278e4efec282aadd7fac13ce44901de13f521959",
-    "@ston-fi/api": "^0.12.1",
-    "@ston-fi/sdk": "2.0.0-rc.8",
-    "@ton/core": "^0.56.3",
-    "@ton/crypto": "^3.2.0",
-    "@ton/ton": "^13.11.1",
+    "@ston-fi/api": "^0.21.0",
+    "@ston-fi/sdk": "2.3.0",
+    "@ton/core": "^0.60.1",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.2.1",
     "buffer": "^6.0.3",
     "dotenv": "^16.4.7",
     "ethers": "^6.13.5",
     "ethers-decode-error": "^2.1.3"
   },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+  "packageManager": "yarn@1.22.22"
 }
