@@ -16,6 +16,7 @@ export type MetaMap = {
     7: EvmMeta;
     19: EvmMeta;
     56: EvmMeta;
+    169: EvmMeta;
     65534: TonMeta;
     65535: TonMeta;
     728696: EvmMeta;
@@ -31,6 +32,7 @@ export declare namespace Chain {
     const POLYGON = 7;
     const SONGBIRD = 19;
     const BSC = 56;
+    const MANTA = 169;
     const TON = 65534;
     const TONTESTNET = 65535;
     const ONLYLAYER = 728696;
@@ -52,6 +54,7 @@ export interface ChainParams {
     arbParams: Web3Params;
     bscParams: Web3Params;
     baseParams: Web3Params;
+    mantaParams: Web3Params;
     polygonParams: Web3Params;
     songbirdParams: Web3Params;
     tonParams: TonParams;
