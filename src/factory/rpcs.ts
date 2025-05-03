@@ -27,6 +27,12 @@ export const MainnetRPCUri = {
     "https://bsc-dataseed2.defibit.io",
     "https://bsc-dataseed3.defibit.io"
   ],
+  MANTA: [
+    "https://pacific-rpc.manta.network/http",
+    "https://1rpc.io/manta",
+    "https://manta.nirvanalabs.xyz/mantapublic",
+    "https://manta-pacific.drpc.org",
+  ],
   POLYGON: [
     `https://polygon-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079",

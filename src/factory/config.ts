@@ -28,6 +28,15 @@ export namespace ChainFactoryConfigs {
         nativeCoin: "BNB",
         rpcs: MainnetRPCUri.BSC
       },
+      mantaParams: {
+        addressBook: ethers.getAddress(
+          "0x03C81f858B294c8499195A1371FE7A58B522f2D8"
+        ),
+        chainId: 169,
+        chainName: "manta",
+        nativeCoin: "MANTA",
+        rpcs: MainnetRPCUri.MANTA
+      },
       polygonParams: {
         addressBook: ethers.getAddress(
           "0xaCADE1aBb88C13403b22b1f7EAB70A8062bcA374",

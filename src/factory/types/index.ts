@@ -33,6 +33,7 @@ export type MetaMap = {
   // CCTP Unsupported
   19: EvmMeta; // Songbird
   56: EvmMeta; // BSC
+  169: EvmMeta; // Manta
   65534: TonMeta; // TON Mainnet
   65535: TonMeta; // TON Testnet
   728696: EvmMeta;
@@ -50,6 +51,7 @@ export namespace Chain {
   // CCTP Unsupported
   export const SONGBIRD = 19;
   export const BSC = 56;
+  export const MANTA = 169;
   export const TON = 65534;
   export const TONTESTNET = 65535;
   export const ONLYLAYER = 728696;
@@ -84,6 +86,7 @@ export interface ChainParams {
   arbParams: Web3Params;
   bscParams: Web3Params;
   baseParams: Web3Params;
+  mantaParams: Web3Params;
   polygonParams: Web3Params;
   songbirdParams: Web3Params;
   tonParams: TonParams;

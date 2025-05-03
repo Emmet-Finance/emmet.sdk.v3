@@ -5,6 +5,7 @@ export type TChainName = "arbitrum"
     | "base"
     | "bsc"
     | "ethereum"
+    | "manta"
     | "optimism"
     | "polygon"
     | "solana"
@@ -20,6 +21,7 @@ export const CHAIN_NAME_TO_INNER_ID: { [key in TChainName]: number } = {
     base: Chain.BASE,
     bsc: Chain.BSC,
     ethereum: Chain.ETHEREUM,
+    manta: Chain.MANTA,
     optimism: Chain.OPTIMISM,
     polygon: Chain.POLYGON,
     solana: Chain.SOLANA,
