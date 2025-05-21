@@ -633,7 +633,7 @@ export async function web3Helper({
           .sendInstallment(params, {
             ...gasArgs,
             value: fee! * 11n / 10n,
-            gasLimit: sendGas,
+            gasLimit: sendGas + 100000n,
           });
 
         return {

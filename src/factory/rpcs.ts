@@ -1,9 +1,6 @@
-const AL_KEY: string = "sXEn3HrcMdXyp-UJApfoDmDDA5KSuZKJ";
-
 export const MainnetRPCUri = {
 
   AVALANCHE:[
-    `https://avax-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://avalanche-c-chain-rpc.publicnode.com",
     "https://api.avax.network/ext/bc/C/rpc",
     "https://avalanche.public-rpc.com",
@@ -15,7 +12,6 @@ export const MainnetRPCUri = {
     // "https://avax-pokt.nodies.app/ext/bc/C/rpc",
   ],
   BSC: [
-    `https://bnb-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://bsc.drpc.org",
     "https://rpc.ankr.com/bsc",
     "https://bsc-dataseed.bnbchain.org",
@@ -34,7 +30,6 @@ export const MainnetRPCUri = {
     "https://manta-pacific.drpc.org",
   ],
   POLYGON: [
-    `https://polygon-mainnet.g.alchemy.com/v2/${AL_KEY}`,
     "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079",
     "https://polygon-rpc.com",
     // "https://polygon-mainnet.g.allthatnode.com/full/evm/e95e54a182194638b7ba5f4598270b44",

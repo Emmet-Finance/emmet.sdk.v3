@@ -232,18 +232,18 @@ export interface GetTokenBalance {
 
 export type AddressBookKeys =
   | "Consensus"
-  | "CrossChainMessenger"
-  | "EmmetData"
-  | "EmmetDataAdmin"
+  | "CrossChainMessengerV2"
+  | "EmmetDataV2"
   | "EmmetBridge"
+  | "CCTPModule"
+  | "LockAndMint"
+  | "LPModule"
   | "BNB/USD" // price feed
   | "MATIC/USD" // Price Feed
   | "TON/USD" // price feed
   | "Explorer"
   | `elp${string}` // LP tokens
   //       T O K E N S
-  | "Bolgur"
-  | "GrabClub"
   | "EMMET"
   | "TON"
   | "USDC"

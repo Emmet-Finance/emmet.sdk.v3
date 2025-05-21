@@ -12,7 +12,7 @@ export namespace ChainFactoryConfigs {
     return {
       avaxParams: {
         addressBook: ethers.getAddress(
-          "0xcCa50e985e4e9a2a9668fA3aA8EbC2568E6a6060",
+          "0x072C8752Ba7e79617A6a64Db6a5756eBc4fFc503",
         ),
         chainId: 43114,
         chainName: "avalanche",
@@ -39,7 +39,7 @@ export namespace ChainFactoryConfigs {
       },
       polygonParams: {
         addressBook: ethers.getAddress(
-          "0xaCADE1aBb88C13403b22b1f7EAB70A8062bcA374",
+          "0x9485A5992766b14898149272D18Ae41e3Ffc36Bc",
         ),
         chainId: 137,
         chainName: "polygon",

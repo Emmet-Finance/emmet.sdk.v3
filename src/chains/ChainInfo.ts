@@ -46,6 +46,13 @@ CHAIN_INFO.set(Chain.ETHEREUM, {
   nonce: Chain.ETHEREUM,
 });
 
+CHAIN_INFO.set(Chain.MANTA, {
+  constructor: web3Helper,
+  decimals: 18,
+  name: "Manta",
+  nonce: Chain.MANTA,
+});
+
 CHAIN_INFO.set(Chain.ONLYLAYER, {
   constructor: web3Helper,
   decimals: 18,
