@@ -185,7 +185,7 @@ export interface GetTokenBalance {
      */
     tokenBalance: (token: string, address: string) => Promise<bigint>;
 }
-export type AddressBookKeys = "Consensus" | "CrossChainMessenger" | "EmmetData" | "EmmetDataAdmin" | "EmmetBridge" | "BNB/USD" | "MATIC/USD" | "TON/USD" | "Explorer" | `elp${string}` | "Bolgur" | "GrabClub" | "EMMET" | "TON" | "USDC" | "USDT";
+export type AddressBookKeys = "Consensus" | "CrossChainMessengerV2" | "EmmetDataV2" | "EmmetBridge" | "CCTPModule" | "LockAndMint" | "LPModule" | "BNB/USD" | "MATIC/USD" | "TON/USD" | "Explorer" | `elp${string}` | "EMMET" | "TON" | "USDC" | "USDT";
 export interface AddressBook {
     address: (contr: AddressBookKeys) => Promise<string>;
 }

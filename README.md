@@ -50,6 +50,7 @@ import { chainFactoryTestnet } from "./your-path-to/chainFactory";
     ...
     const berachain: Web3Helper  = await chainFactoryTestnet.inner(Chain.BERACHAIN) as Web3Helper;
     const ethereum:  Web3Helper  = await chainFactoryTestnet.inner(Chain.ETHEREUM)  as Web3Helper;
+    const manta:     Web3Helper  = await chainFactoryTestnet.inner(Chain.MANTA)     as Web3Helper;
     const onlylayer: Web3Helper  = await chainFactoryTestnet.inner(Chain.ONLYLAYER) as Web3Helper;
     const polygon:   Web3Helper  = await chainFactoryTestnet.inner(Chain.POLYGON)   as Web3Helper;
     const songbird:  Web3Helper  = await chainFactoryTestnet.inner(Chain.SONGBIRD)  as Web3Helper;
@@ -65,7 +66,8 @@ Getting the token data:
 ```ts
 
 type TTokenName = 
-    'NTM' 
+    'EMMET'
+    | 'NTM' 
     | 'TON'
     | 'USDC'
     | 'USDT'
@@ -276,6 +278,7 @@ export const ChainToDestinationDomain: { [key in TChainName]: number } = {
           fromChainID === Chain.POLYGON ||
           fromChainID === Chain.SONGBIRD ||
           fromChainID === Chain.ETHEREUM ||
+          fromChainID === Chain.MANTA ||
           fromChainID === Chain.BSC ||
           fromChainID === Chain.BERACHAIN ||
           fromChainID === Chain.ONLYLAYER

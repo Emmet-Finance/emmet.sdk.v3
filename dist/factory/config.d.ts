@@ -8,14 +8,14 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly [`https://avax-mainnet.g.alchemy.com/v2/${string}`, "https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc", "https://avalanche.public-rpc.com", "https://avalanche-c-chain-rpc.publicnode.com", "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc", "https://avax-pokt.nodies.app/ext/bc/C/rpc"];
+            rpcs: readonly ["https://avalanche-c-chain-rpc.publicnode.com", "https://api.avax.network/ext/bc/C/rpc", "https://avalanche.public-rpc.com", "https://avalanche-c-chain-rpc.publicnode.com", "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc", "https://avax-pokt.nodies.app/ext/bc/C/rpc"];
         };
         bscParams: {
             addressBook: string;
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly [`https://bnb-mainnet.g.alchemy.com/v2/${string}`, "https://bsc.drpc.org", "https://rpc.ankr.com/bsc", "https://bsc-dataseed.bnbchain.org", "https://bscrpc.com", "https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-dataseed2.defibit.io", "https://bsc-dataseed3.defibit.io"];
+            rpcs: readonly ["https://bsc.drpc.org", "https://rpc.ankr.com/bsc", "https://bsc-dataseed.bnbchain.org", "https://bscrpc.com", "https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-dataseed2.defibit.io", "https://bsc-dataseed3.defibit.io"];
         };
         mantaParams: {
             addressBook: string;
@@ -29,7 +29,7 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
+            rpcs: readonly ["https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
         };
         songbirdParams: {
             addressBook: string;
@@ -49,7 +49,7 @@ export declare namespace ChainFactoryConfigs {
             pTonAddress: string;
         };
         multisigParams: {
-            rpcs: readonly [`https://polygon-mainnet.g.alchemy.com/v2/${string}`, "https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
+            rpcs: readonly ["https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
             ab: string;
         };
     };
