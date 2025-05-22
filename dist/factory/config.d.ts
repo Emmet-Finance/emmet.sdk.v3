@@ -44,9 +44,6 @@ export declare namespace ChainFactoryConfigs {
             nativeTokenId: bigint;
             chainId: bigint;
             chainName: string;
-            stonApiUrl: string;
-            stonRouterAddress: string;
-            pTonAddress: string;
         };
         multisigParams: {
             rpcs: readonly ["https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
@@ -60,9 +57,6 @@ export declare namespace ChainFactoryConfigs {
             nativeTokenId: bigint;
             chainId: bigint;
             chainName: string;
-            stonApiUrl: string;
-            stonRouterAddress: string;
-            pTonAddress: string;
         };
         bscParams: {
             chainName: string;

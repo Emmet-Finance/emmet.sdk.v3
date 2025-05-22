@@ -1,5 +1,5 @@
 import { Address, type Sender, TonClient } from "@ton/ton";
-import { type ChainID, type ChainName, type Decimals, type FetchTxInfo, type GetBalance, type GetBridgeAddress, type GetEmmetHashFromTx, type GetEstimatedTime, type GetProvider, type GetTokenBalance, type GetTxFee, type NativeCoinName, type ProtocolFee, type SendInstallment, type TokenInfo, type ValidateAddress, type AddressBook, type StakeLiquidity, type WithdrawFees, type WithdrawLiquidity, type IsTransferFromLp, type GetProtocolFeeInUSD, type GetSwapResultAmount, type GetCrossChainStrategy, type GetTokenAddress, type SwapTokens, ILiquidityPool } from ".";
+import { type ChainID, type ChainName, type Decimals, type FetchTxInfo, type GetBalance, type GetBridgeAddress, type GetEmmetHashFromTx, type GetEstimatedTime, type GetProvider, type GetTokenBalance, type GetTxFee, type NativeCoinName, type ProtocolFee, type SendInstallment, type TokenInfo, type ValidateAddress, type AddressBook, type StakeLiquidity, type WithdrawFees, type WithdrawLiquidity, type IsTransferFromLp, type GetProtocolFeeInUSD, type GetCrossChainStrategy, type GetTokenAddress, ILiquidityPool } from ".";
 export type TonGasArgs = {
     value: bigint;
     bounce?: boolean | null | undefined;
@@ -16,16 +16,13 @@ export type TonHelper = AddressBook & ChainID & ChainName & Decimals & GetBridge
 }> & WithdrawFees<Sender, string, {
     value: bigint;
     bounce?: boolean;
-}> & IsTransferFromLp & GetSwapResultAmount & SwapTokens<Sender, undefined>;
+}> & IsTransferFromLp;
 export interface TonParams {
     rpcs: readonly string[];
     nativeTokenId: bigint;
     chainName: string;
     chainId: bigint;
     addressBook: Address;
-    stonApiUrl: string;
-    stonRouterAddress: string;
-    pTonAddress: string;
 }
 /**
  * Holds the code execution for a number of `ms` milliseconds
@@ -33,7 +30,7 @@ export interface TonParams {
  * @returns halts the program execution for the `ms` milliseconds
  */
 export declare const sleep: (ms: number) => Promise<unknown>;
-export declare function tonHandler({ rpcs, nativeTokenId, chainName, chainId, stonApiUrl, addressBook, stonRouterAddress, pTonAddress, }: TonParams): Promise<TonHelper>;
+export declare function tonHandler({ rpcs, nativeTokenId, chainName, chainId, addressBook, }: TonParams): Promise<TonHelper>;
 export declare function raise(msg: string): never;
 export declare function assertNotNull<T>(t: T | null | undefined): t is T;
 //# sourceMappingURL=ton.d.ts.map
