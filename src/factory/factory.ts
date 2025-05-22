@@ -23,6 +23,7 @@ function mapNonceToParams(chainParams: Partial<ChainParams>): ParamMap {
   cToP.set(Chain.BERACHAIN, chainParams.berachainParams);
   cToP.set(Chain.BSC, chainParams.bscParams);
   cToP.set(Chain.ETHEREUM, chainParams.ethParams);
+  cToP.set(Chain.MANTA, chainParams.mantaParams);
   cToP.set(Chain.ONLYLAYER, chainParams.onlylayerParams);
   cToP.set(Chain.OPTIMISM, chainParams.opParams);
   cToP.set(Chain.POLYGON, chainParams.polygonParams);
@@ -76,11 +77,11 @@ export async function ChainFactoryBuilder(
     getConsensusProvider()
   );
 
-  const inner = async <T extends ChainNonce>(chain: T) => {
-    let helper = helpers.get(chain);
+  const inner = async <T extends ChainNonce>(chainNonce: T) => {
+    let helper = helpers.get(chainNonce);
     if (helper === undefined) {
-      helper = await CHAIN_INFO.get(chain)!.constructor(cToP.get(chain)!);
-      helpers.set(chain, helper);
+      helper = await CHAIN_INFO.get(chainNonce)!.constructor(cToP.get(chainNonce)!);
+      helpers.set(chainNonce, helper);
     }
     return helper!;
   };
