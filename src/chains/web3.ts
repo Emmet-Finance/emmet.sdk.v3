@@ -78,7 +78,7 @@ export async function web3Helper({
   //  CONSENSUS
   const consensus: Consensus = await getConsensus();
   // DATA
-  const emmetData = await addrBook.get("EmmetData");
+  const emmetData = await addrBook.get("EmmetDataV2");
   const data = EmmetDataV2__factory.connect(emmetData, await fetchProvider());
 
   //          F U N C T I O N S
