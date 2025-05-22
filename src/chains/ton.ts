@@ -33,10 +33,8 @@ import {
   type WithdrawLiquidity,
   type IsTransferFromLp,
   type GetProtocolFeeInUSD,
-  type GetSwapResultAmount,
   type GetCrossChainStrategy,
   type GetTokenAddress,
-  type SwapTokens,
   strategyMap,
   type TStrategy,
   ILiquidityPool,
@@ -46,8 +44,6 @@ import {
 import { EmmetBridge, loadOutgoingTransaction } from "../contracts/ton";
 import { JettonMinter, Op } from "../contracts/ton/jetton-master";
 import { AddressBook as TonAddressBook } from "../contracts/ton/address-book";
-import { StonApiClient } from "@ston-fi/api";
-import { DEX, pTON } from "@ston-fi/sdk";
 import { JettonLP } from "../contracts/ton/pools/tact_JettonLP";
 import { TonLP } from "../contracts/ton/pools/ton/tact_TonLP";
 import { LPWallet } from "../contracts/ton/pools/ton/tact_LPWallet";
@@ -92,11 +88,11 @@ export type TonHelper = AddressBook &
   StakeLiquidity<Sender, string, { value: bigint; bounce?: boolean }> &
   WithdrawLiquidity<Sender, string, { value: bigint; bounce?: boolean }> &
   WithdrawFees<Sender, string, { value: bigint; bounce?: boolean }> &
-  IsTransferFromLp &
+  IsTransferFromLp;
 
   // S W A P
-  GetSwapResultAmount &
-  SwapTokens<Sender, undefined>;
+  // GetSwapResultAmount &
+  // SwapTokens<Sender, undefined>;
 
 export interface TonParams {
   rpcs: readonly string[];
@@ -104,9 +100,9 @@ export interface TonParams {
   chainName: string;
   chainId: bigint;
   addressBook: Address;
-  stonApiUrl: string;
-  stonRouterAddress: string;
-  pTonAddress: string;
+  // stonApiUrl: string;
+  // stonRouterAddress: string;
+  // pTonAddress: string;
 }
 
 /**
@@ -121,10 +117,7 @@ export async function tonHandler({
   nativeTokenId,
   chainName,
   chainId,
-  stonApiUrl,
   addressBook,
-  stonRouterAddress,
-  pTonAddress,
 }: TonParams): Promise<TonHelper> {
   // -------------------------------------
   const clients = rpcs.map((rpc) => new TonClient({ endpoint: rpc }));
@@ -450,85 +443,12 @@ export async function tonHandler({
       tx: hash,
     };
   }
-  const ston = new StonApiClient({
-    baseURL: stonApiUrl,
-  });
   // -------------------------------------
   return {
 
     // -----------------------------------------------------------------
     //                    S W A P - R E L A T E D
     // -----------------------------------------------------------------
-    async swapTokens(sender, fromSymbol, targetSymbol, amount, _slippage) {
-
-      try { // https://docs.ston.fi/docs/developer-section/sdk/dex-v2/swap
-
-        if (fromSymbol === targetSymbol) {
-          throw new Error("From and Target tokens are the same");
-        }
-
-        const stonRouter = fetchClient().open(new DEX!.v2_2!.Router(stonRouterAddress));
-        const proxyTon = pTON.v2_1.create(pTonAddress);
-
-        if (!sender.address) throw new Error("Sender address not passed");
-
-        const ft = await bridgeReader.getGetToken(toKey(fromSymbol));
-        if (!ft) throw new Error("From Token not found");
-
-        const tt = await bridgeReader.getGetToken(toKey(targetSymbol));
-        if (!tt) throw new Error("Target Token not found");
-
-
-        if (fromSymbol === "TON") {
-          await stonRouter.sendSwapTonToJetton(sender, {
-            askJettonAddress: tt.address,
-            minAskAmount: 0,
-            offerAmount: amount,
-            proxyTon,
-            userWalletAddress: sender.address,
-          });
-          return;
-        }
-        if (targetSymbol === "TON") {
-          await stonRouter.sendSwapJettonToTon(sender, {
-            minAskAmount: 0,
-            offerAmount: amount,
-            proxyTon,
-            userWalletAddress: sender.address,
-            offerJettonAddress: ft.address,
-          });
-          return;
-        }
-        await stonRouter.sendSwapJettonToJetton(sender, {
-          askJettonAddress: tt.address,
-          minAskAmount: 0,
-          offerAmount: amount,
-          offerJettonAddress: ft.address,
-          userWalletAddress: sender.address,
-        });
-        return;
-
-      } catch (error) {
-        console.warn(error);
-      }
-
-    },
-    // -----------------------------------------------------------------
-    async getSwapResultAmount(fromSymbol, targetSymbol, amount, slippage) {
-      const ft = await bridgeReader.getGetToken(toKey(fromSymbol));
-      if (!ft) throw new Error("From Token not found");
-      const tt = await bridgeReader.getGetToken(toKey(targetSymbol));
-      if (!tt) throw new Error("Target Token not found");
-      const simulation = await ston.simulateSwap({
-        askAddress: tt.address.toString(),
-        offerAddress: ft.address.toString(),
-        offerUnits: amount.toString(),
-        slippageTolerance: (slippage / 10000).toString(),
-      });
-      return BigInt(simulation.minAskUnits);
-    },
-
-
 
     // -----------------------------------------------------------------
     //                  L I Q U D I T Y  P O O L

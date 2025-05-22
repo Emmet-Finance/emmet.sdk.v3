@@ -59,9 +59,9 @@ export namespace ChainFactoryConfigs {
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
         chainId: 65534n, // TON Mainnet
         chainName: "ton",
-        stonApiUrl: "https://api.ston.fi/",
-        stonRouterAddress: "EQBjM7B2PKa82IPKrUFbMFaKeQDFGTMRnrvY1TmptC7Kxz7B",
-        pTonAddress: "EQBnGWMCf3-FZZq1W4IWcWiGAc3PHuZ0_H-7sad2oY00o83S"
+        // stonApiUrl: "https://api.ston.fi/",
+        // stonRouterAddress: "EQBjM7B2PKa82IPKrUFbMFaKeQDFGTMRnrvY1TmptC7Kxz7B",
+        // pTonAddress: "EQBnGWMCf3-FZZq1W4IWcWiGAc3PHuZ0_H-7sad2oY00o83S"
       },
       multisigParams: {
         rpcs: MainnetRPCUri.POLYGON,
@@ -79,9 +79,9 @@ export namespace ChainFactoryConfigs {
         nativeTokenId: BigInt(`0x${sha256_sync("TON").toString("hex")}`),
         chainId: 65535n, // TON Testnet
         chainName: "tonTestnet",
-        stonApiUrl: "https://api.ston.fi/",
-        stonRouterAddress: "kQCas2p939ESyXM_BzFJzcIe3GD5S0tbjJDj6EBVn-SPsEkN",
-        pTonAddress: "kQDwpyxrmYQlGDViPk-oqP4XK6J11I-bx7fJAlQCWmJB4m74",
+        // stonApiUrl: "https://api.ston.fi/",
+        // stonRouterAddress: "kQCas2p939ESyXM_BzFJzcIe3GD5S0tbjJDj6EBVn-SPsEkN",
+        // pTonAddress: "kQDwpyxrmYQlGDViPk-oqP4XK6J11I-bx7fJAlQCWmJB4m74",
       },
       bscParams: {
         chainName: "bscTestnet",

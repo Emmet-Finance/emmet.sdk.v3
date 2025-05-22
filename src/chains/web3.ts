@@ -21,7 +21,7 @@ import {
   Consensus,
   EmmetAddressBook__factory,
   EmmetBridge__factory,
-  EmmetData__factory,
+  EmmetDataV2__factory,
   EmmetLP,
   EmmetLP__factory,
   ERC20__factory,
@@ -31,6 +31,7 @@ import {
 import { CrossChainTransaction } from "@emmet-contracts/web3/dist/contracts/consensus/Consensus";
 import { getConsensus } from "./getConsensus";
 import { Web3Helper, Web3Params } from "./web3helper";
+import { IDataTypes } from "@emmet-contracts/web3/dist/contracts/data/EmmetDataV2";
 
 const coder = new AbiCoder();
 
@@ -78,7 +79,7 @@ export async function web3Helper({
   const consensus: Consensus = await getConsensus();
   // DATA
   const emmetData = await addrBook.get("EmmetData");
-  const data = EmmetData__factory.connect(emmetData, await fetchProvider());
+  const data = EmmetDataV2__factory.connect(emmetData, await fetchProvider());
 
   //          F U N C T I O N S
   // -------------------------------------
@@ -136,14 +137,14 @@ export async function web3Helper({
 
       try {
 
-        const ccts = await data.getStrategy(
+        const ccts = await data.getStrategies(
           targetChain,
           fromSymbol,
           targetSymbol,
         );
 
         const map = [
-          { strategies: ccts.outgoing, targetArray: outgoing },
+          { strategies: ccts.local, targetArray: outgoing },
           { strategies: ccts.incoming, targetArray: incoming },
           { strategies: ccts.foreign, targetArray: foreign }
         ];
@@ -267,8 +268,12 @@ export async function web3Helper({
     },
     // -----------------------------------------------------------------
     async token(symbol: string) {
-      const token = await data.getToken(symbol);
-      return token;
+      const t: IDataTypes.TokenStructOutput = await data.getToken(symbol);
+      return {
+        token: t.target,
+        priceFeed: t.priceFeed,
+        decimals: t.tokenDecimals,
+      };
     },
     // -----------------------------------------------------------------
     decimals: async (pool: string | undefined) => {
@@ -302,7 +307,7 @@ export async function web3Helper({
 
       try {
 
-        const ts = await data.getStrategy(
+        const ts = await data.getStrategies(
           targetChain,
           fromToken,
           targetToken,
@@ -515,12 +520,12 @@ export async function web3Helper({
       fromToken: string,
       targetToken: string
     ) {
-      const ts = await data.getStrategy(
+      const ts = await data.getStrategies(
         targetChain,
         fromToken,
         targetToken,
       );
-      const _isTransferFromLp = ts[1].includes(7n);
+      const _isTransferFromLp = ts.local.includes(7n);
       return _isTransferFromLp;
     },
     // -----------------------------------------------------------------
@@ -659,12 +664,10 @@ export async function web3Helper({
     },
     // -----------------------------------------------------------------
     async txFee(targetChainId: BigNumberish, fromToken: string, targetToken: string) {
-      const isFeeERC20: boolean = false;
       const protocolFee = await bridge.estimateFee(
         targetChainId,
         fromToken,
         targetToken,
-        isFeeERC20
       );
       return protocolFee;
     },
