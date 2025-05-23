@@ -40,11 +40,6 @@ export type TLPData = {
   apy: bigint,
   available_underlying: bigint,
   decimals: bigint,
-  fee_growth_global: bigint,
-  fee_decimals: bigint,
-  protocol_fee: bigint,
-  protocol_fee_amount: bigint,
-  token_fee: bigint,
   total_supply: bigint
 }
 
@@ -70,7 +65,7 @@ export interface ILiquidityPool<Signer, RetTx, GasArgs>
    * @param staker the Address of the depositor
    * @returns The number of available tokens
    */
-  getRewards: (poolName: string, staker: string) => Promise<bigint>;
+  getRewards?: (poolName: string, staker: string) => Promise<bigint>;
 
   /**
    * Fetches the `staker`'s position if any
@@ -78,7 +73,7 @@ export interface ILiquidityPool<Signer, RetTx, GasArgs>
    * @param staker the Address of the depositor
    * @returns see type `TLPPosition`
    */
-  getPosition: (poolName: string, staker: string) => Promise<TLPPosition>;
+  getPosition?: (poolName: string, staker: string) => Promise<TLPPosition>;
 
   /**
    * Stakes the underlying asset

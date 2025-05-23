@@ -14,7 +14,6 @@ import type {
   TStrategy,
   SendParams,
   TLPData,
-  TLPPosition,
 } from ".";
 import { strategyMap, EStrategy, sleep } from ".";
 import {
@@ -22,8 +21,8 @@ import {
   EmmetAddressBook__factory,
   EmmetBridge__factory,
   EmmetDataV2__factory,
-  EmmetLP,
-  EmmetLP__factory,
+  EmmetLiquidityPoolV2,
+  EmmetLiquidityPoolV2__factory,
   ERC20__factory,
   WrappedERC20__factory,
 } from "@emmet-contracts/web3";
@@ -93,14 +92,14 @@ export async function web3Helper({
     return address;
   }
   // -------------------------------------
-  async function getLpByName(poolName: string, signer?: ContractRunner | null): Promise<EmmetLP | undefined> {
-    let lp: EmmetLP | undefined = undefined;
+  async function getLpByName(poolName: string, signer?: ContractRunner | null): Promise<EmmetLiquidityPoolV2 | undefined> {
+    let lp: EmmetLiquidityPoolV2 | undefined = undefined;
     try {
       const lpAddress: string = await getAddressByName(poolName);
-      lp = EmmetLP__factory.connect(
+      lp = EmmetLiquidityPoolV2__factory.connect(
         lpAddress,
         signer ? signer : await fetchProvider(),
-      ) as EmmetLP;
+      ) as EmmetLiquidityPoolV2;
 
     } catch (error: { message: string } | any) {
       throw new Error("Emmet.SDK getLpByName: " + error.message);
@@ -349,11 +348,6 @@ export async function web3Helper({
         apy: 0n,
         available_underlying: 0n,
         decimals: 0n,
-        fee_growth_global: 0n,
-        fee_decimals: 0n,
-        protocol_fee: 0n,
-        protocol_fee_amount: 0n,
-        token_fee: 0n,
         total_supply: 0n,
       }
       try {
@@ -363,14 +357,9 @@ export async function web3Helper({
         if (lpData) {
           data = {
             $$type: "LPData", // Set the required value for $$type
-            apy: lpData.apy,
-            available_underlying: lpData.availableUnderlying,
+            apy: lpData.apy_,
+            available_underlying: lpData.balance,
             decimals: lpData.tokenDecimals,
-            fee_growth_global: lpData.globalRewards,
-            fee_decimals: lpData.feesDecimals,
-            protocol_fee: lpData.communityFee,
-            protocol_fee_amount: lpData.stakerFee,
-            token_fee: lpData.stakerFee, // Adjust as needed
             total_supply: lpData.supply,
           };
         }
@@ -381,43 +370,6 @@ export async function web3Helper({
 
       }
       return data;
-    },
-    // -----------------------------------------------------------------
-    async getRewards(poolName, staker): Promise<bigint> {
-      let rewards: bigint = 0n;
-      try {
-        const lp = await getLpByName(formatedPoolName(poolName));
-        rewards = await lp?.getProviderRewards(staker) as bigint;
-      } catch (error: any | { message: string }) {
-        console.warn("Emmet.SDK getRewards " + error.message);
-      }
-      return rewards;
-    },
-    // -----------------------------------------------------------------
-    async getPosition(poolName, staker) {
-      let position: TLPPosition = {
-        "$$type": "Position",
-        balance: 0n,
-        last_fee_growth: 0n,
-        rewards: 0n
-      }
-
-      try {
-        const lp = await getLpByName(formatedPoolName(poolName));
-        const lpPosition = await lp?.getPosition(staker);
-        if (lpPosition) {
-          position = {
-            ...position,
-            balance: lpPosition.balance,
-            last_fee_growth: lpPosition.internalFeeGrowth,
-            rewards: lpPosition.rewards
-          }
-        }
-      } catch (error: any | { message: string }) {
-        console.warn("Emmet.SDK getPosition " + error.message);
-      }
-
-      return position;
     },
     // -----------------------------------------------------------------
     async stakeToken(poolName, signer, amount, gasArgs) {
@@ -448,7 +400,7 @@ export async function web3Helper({
       amount: bigint,
       ga: Overrides | undefined
     ) => {
-      const lp = EmmetLP__factory.connect(pool, signer);
+      const lp = EmmetLiquidityPoolV2__factory.connect(pool, signer);
       const deposit = await lp.deposit(amount, { ...ga });
       return {
         hash: deposit.hash,
@@ -456,18 +408,9 @@ export async function web3Helper({
       };
     },
     // -----------------------------------------------------------------
-    withdrawLiquidity: async (signer: any, pool: string, amt: BigNumberish, ga: any) => {
-      const lp = EmmetLP__factory.connect(pool, signer);
-      const withdraw = await lp.withdrawTokens(amt, { ...ga });
-      return {
-        hash: withdraw.hash,
-        tx: withdraw,
-      };
-    },
-    // -----------------------------------------------------------------
-    withdrawFees: async (signer: any, pool: string, ga: any) => {
-      const lp = EmmetLP__factory.connect(pool, signer);
-      const withdraw = await lp.withdrawFees({ ...ga });
+    withdrawLiquidity: async (signer: any, pool: string, ga: any) => {
+      const lp = EmmetLiquidityPoolV2__factory.connect(pool, signer);
+      const withdraw = await lp.withdraw({ ...ga });
       return {
         hash: withdraw.hash,
         tx: withdraw,
@@ -475,43 +418,20 @@ export async function web3Helper({
     },
     // -----------------------------------------------------------------
     getLpCurrentAPY: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const apy = await lp.currentAPY();
+      const lp = EmmetLiquidityPoolV2__factory.connect(pool, await fetchProvider());
+      const apy = await lp.apy();
       return apy;
     },
     // -----------------------------------------------------------------
     getLpTotalSupply: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
+      const lp = EmmetLiquidityPoolV2__factory.connect(pool, await fetchProvider());
       const totalSupply = await lp.totalSupply();
       return totalSupply;
     },
     // -----------------------------------------------------------------
-    getLpTokenFee: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const tokenFee = await lp.tokenFee();
-      return tokenFee;
-    },
-    getLpProtocolFee: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const protocolFee = await lp.protocolFee();
-      return protocolFee;
-    },
-    // -----------------------------------------------------------------
-    getLpProtocolFeeAmount: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const protocolFeeAmount = await lp.protocolFeeAmount();
-      return protocolFeeAmount;
-    },
-    // -----------------------------------------------------------------
-    getLpFeeGrowthGlobal: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const feeGrowthGlobal = await lp.feeGrowthGlobal();
-      return feeGrowthGlobal;
-    },
-    // -----------------------------------------------------------------
     getLpFeeDecimals: async (pool: string) => {
-      const lp = EmmetLP__factory.connect(pool, await fetchProvider());
-      const feeDecimals = await lp.feeDecimals();
+      const lp = EmmetLiquidityPoolV2__factory.connect(pool, await fetchProvider());
+      const feeDecimals = await lp.percentDecimals();
       return feeDecimals;
     },
     // -----------------------------------------------------------------

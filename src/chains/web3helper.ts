@@ -30,11 +30,6 @@ import type {
     TokenInfo,
     ValidateAddress,
     WithdrawLiquidity,
-    GetLpTokenFee,
-    GetLpProtocolFee,
-    GetLpProtocolFeeAmount,
-    WithdrawFees,
-    GetLpFeeGrowthGlobal,
     GetLpFeeDecimals,
     IsTransferFromLp,
     GetCrossChainStrategy,
@@ -69,10 +64,6 @@ export type Web3Helper = GetBalance &
     Decimals &
     GetLpCurrentAPY &
     GetLpTotalSupply &
-    GetLpTokenFee &
-    GetLpProtocolFee &
-    GetLpProtocolFeeAmount &
-    GetLpFeeGrowthGlobal &
     GetLpFeeDecimals &
     IsTransferFromLp &
     GetCrossChainStrategy &
@@ -83,8 +74,7 @@ export type Web3Helper = GetBalance &
     PreTransfer<JsonRpcSigner, PayableOverrides> &
     SendInstallment<JsonRpcSigner, ContractTransactionResponse, PayableOverrides> &
     StakeLiquidity<JsonRpcSigner, ContractTransactionResponse, Overrides> &
-    WithdrawLiquidity<JsonRpcSigner, ContractTransactionResponse, Overrides> &
-    WithdrawFees<JsonRpcSigner, ContractTransactionResponse, Overrides> 
+    WithdrawLiquidity<JsonRpcSigner, ContractTransactionResponse, Overrides>
     ;
 
 export interface Web3Params {
