@@ -229,8 +229,16 @@ export async function web3Helper({
       return address ? address : "";
     },
     // -----------------------------------------------------------------
-    tokenBalance: async (tkn: string, addr: AddressLike) =>
-      WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr),
+    tokenBalance: async (tkn: string, addr: AddressLike) => {
+      let _balance: bigint = 0n;
+      try {
+        return WrappedERC20__factory.connect(tkn, await fetchProvider()).balanceOf(addr);
+      } catch (error) {
+        console.log("Emmet.SDK tokenBalance", error);
+      }
+      return _balance;
+    },
+      
     // -----------------------------------------------------------------
     async txInfo(hash: string) {
       const provider = await fetchProvider();
