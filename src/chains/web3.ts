@@ -359,7 +359,9 @@ export async function web3Helper({
         total_supply: 0n,
       }
       try {
+        await sleep(1000); // Wait for the contract to be ready
         const lp = await getLpByName(formatedPoolName(poolName));
+        await sleep(1000); // Wait for the contract to be ready
         // Use a fallback value to ensure type safety
         const lpData = await lp?.getData();
         if (lpData) {
@@ -374,8 +376,8 @@ export async function web3Helper({
 
       } catch (error: any | { message: string }) {
         console.warn("Emmet.SDK getLpData " + error.message);
-        await sleep(1000);
-
+        await sleep(9000);
+        return await (await this).getLpData(poolName);
       }
       return data;
     },
