@@ -22,14 +22,14 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly ["https://pacific-rpc.manta.network/http", "https://1rpc.io/manta", "https://manta.nirvanalabs.xyz/mantapublic", "https://manta-pacific.drpc.org"];
+            rpcs: readonly ["https://pacific-rpc.manta.network/http", "https://1rpc.io/manta", "https://manta.nirvanalabs.xyz/mantapublic", "https://manta-pacific.drpc.org", "https://manta-pacific-gascap.calderachain.xyz/http", "https://endpoints.omniatech.io/v1/manta-pacific/mainnet/public"];
         };
         polygonParams: {
             addressBook: string;
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly ["https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
+            rpcs: readonly ["https://polygon-rpc.com", "https://rpc.therpc.io/polygon", "https://gateway.tenderly.co/public/polygon", "https://polygon-mainnet.g.alchemy.com/v2/demo", "https://polygon-pokt.nodies.app", "https://rpc.therpc.io/polygon", "https://polygon.drpc.org"];
         };
         songbirdParams: {
             addressBook: string;
@@ -46,7 +46,7 @@ export declare namespace ChainFactoryConfigs {
             chainName: string;
         };
         multisigParams: {
-            rpcs: readonly ["https://solitary-maximum-friday.matic.quiknode.pro/08a337d30e47f0883134773e941aa12a9069c079", "https://polygon-rpc.com"];
+            rpcs: readonly ["https://polygon-rpc.com", "https://rpc.therpc.io/polygon", "https://gateway.tenderly.co/public/polygon", "https://polygon-mainnet.g.alchemy.com/v2/demo", "https://polygon-pokt.nodies.app", "https://rpc.therpc.io/polygon", "https://polygon.drpc.org"];
             ab: string;
         };
     };
