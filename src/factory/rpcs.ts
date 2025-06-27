@@ -33,10 +33,8 @@ export const MainnetRPCUri = {
   ],
   POLYGON: [
     "https://polygon-rpc.com",
-    "https://rpc.therpc.io/polygon",
     "https://gateway.tenderly.co/public/polygon",
     "https://polygon-pokt.nodies.app",
-    "https://rpc.therpc.io/polygon",
     "https://polygon.drpc.org",
     // "https://polygon-bor-rpc.publicnode.com",
     // "https://1rpc.io/matic",
