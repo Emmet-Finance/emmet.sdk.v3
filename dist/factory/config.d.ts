@@ -29,7 +29,7 @@ export declare namespace ChainFactoryConfigs {
             chainId: number;
             chainName: string;
             nativeCoin: string;
-            rpcs: readonly ["https://polygon-rpc.com", "https://rpc.therpc.io/polygon", "https://gateway.tenderly.co/public/polygon", "https://polygon-mainnet.g.alchemy.com/v2/demo", "https://polygon-pokt.nodies.app", "https://rpc.therpc.io/polygon", "https://polygon.drpc.org"];
+            rpcs: readonly ["https://polygon-rpc.com", "https://rpc.therpc.io/polygon", "https://gateway.tenderly.co/public/polygon", "https://polygon-pokt.nodies.app", "https://rpc.therpc.io/polygon", "https://polygon.drpc.org"];
         };
         songbirdParams: {
             addressBook: string;
@@ -46,7 +46,7 @@ export declare namespace ChainFactoryConfigs {
             chainName: string;
         };
         multisigParams: {
-            rpcs: readonly ["https://polygon-rpc.com", "https://rpc.therpc.io/polygon", "https://gateway.tenderly.co/public/polygon", "https://polygon-mainnet.g.alchemy.com/v2/demo", "https://polygon-pokt.nodies.app", "https://rpc.therpc.io/polygon", "https://polygon.drpc.org"];
+            rpcs: readonly ["https://polygon-rpc.com", "https://rpc.therpc.io/polygon", "https://gateway.tenderly.co/public/polygon", "https://polygon-pokt.nodies.app", "https://rpc.therpc.io/polygon", "https://polygon.drpc.org"];
             ab: string;
         };
     };
